@@ -1,0 +1,7 @@
+test:
+  adapter: postgresql
+  database: postgres_ext
+  username: postgres
+  encoding: utf8
+  port: 5432
+  min_messages: warning
