@@ -14,9 +14,9 @@
 ActiveRecord::Schema.define(:version => 20120501163758) do
 
   create_table "people", :force => true do |t|
-    t.string   "ip",         :limit => nil
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.inet      "ip"
+    t.timestamp "created_at", :null => false
+    t.timestamp "updated_at", :null => false
   end
 
 end
