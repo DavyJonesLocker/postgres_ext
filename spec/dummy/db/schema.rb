@@ -14,7 +14,8 @@
 ActiveRecord::Schema.define(:version => 20120501163758) do
 
   create_table "people", :force => true do |t|
-    t.inet      "ip"
+    t.inet      "ip",         :null => false
+    t.cidr      "subnet"
     t.timestamp "created_at", :null => false
     t.timestamp "updated_at", :null => false
   end

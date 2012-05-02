@@ -9,6 +9,10 @@ module ActiveRecord
         case field_type
         when 'inet'
           :inet
+        when 'cidr'
+          :cidr
+        when 'macaddr'
+          :macaddr
         else
           super
         end
@@ -20,8 +24,18 @@ module ActiveRecord
           options = args.extract_options!
           column(args[0], 'inet', options)
         end
+
+        def cidr(*args)
+          options = args.extract_options!
+          column(args[0], 'cidr', options)
+        end
+
+        def macaddr(*args)
+          options = args.extract_options!
+          column(args[0], 'macaddr', options)
+        end
       end
-      NATIVE_DATABASE_TYPES.merge!(:inet => {:name => 'inet'})
+      NATIVE_DATABASE_TYPES.merge!(:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'})
     end
   end
 end
