@@ -14,10 +14,15 @@
 ActiveRecord::Schema.define(:version => 20120501163758) do
 
   create_table "people", :force => true do |t|
-    t.inet      "ip",         :null => false
-    t.cidr      "subnet"
-    t.timestamp "created_at", :null => false
-    t.timestamp "updated_at", :null => false
+    t.inet          "ip"
+    t.cidr          "subnet"
+    t.cidr          "subnet2"
+    t.integer_array "arrayzerd"
+    t.inet_array    "inet_arrayzerd"
+    t.string_array  "str_arrayzerd",  :limit => 5
+    t.string        "test"
+    t.timestamp     "created_at",                  :null => false
+    t.timestamp     "updated_at",                  :null => false
   end
 
 end
