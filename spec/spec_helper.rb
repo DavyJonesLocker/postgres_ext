@@ -3,8 +3,6 @@ ENV['RAILS_ENV'] = 'test'
 require File.expand_path('../dummy/config/environment.rb',  __FILE__)
 
 require 'rspec/rails'
-require 'capybara/rspec'
-require 'valid_attribute'
 require 'factory_girl_rails'
 require 'debugger'
 require 'bourne'
@@ -18,5 +16,4 @@ Dir[File.join(ENGINE_RAILS_ROOT, 'spec/support/**/*.rb')].each { |f| require f }
 RSpec.configure do |config|
   config.mock_with :mocha
   config.use_transactional_fixtures = true
-  config.include Factory::Syntax::Methods
 end

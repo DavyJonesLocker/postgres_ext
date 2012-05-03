@@ -24,4 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'factory_girl_rails', '~> 3.2.0'
   gem.add_development_dependency 'pg', '~> 0.13.2'
   gem.add_development_dependency 'debugger', '~> 1.1.2'
+  gem.add_development_dependency 'fivemat'
 end
