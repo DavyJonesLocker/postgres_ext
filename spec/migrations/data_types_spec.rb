@@ -75,6 +75,75 @@ describe 'Native Data Types Migrations' do
   end
 
   describe 'Array types' do
+    describe 'Inet array type' do
+      it 'creates an inet array column' do
+        lambda do
+          Testing.connection.create_table :data_types do |t|
+            t.inet_array :inet_array_1
+            t.inet_array :inet_array_2, :inet_array_3
+            t.column :inet_array_4, :inet_array
+          end
+        end.should_not raise_exception
+
+        columns = Testing.connection.columns(:data_types)
+        inet_array_1 = columns.detect { |c| c.name == 'inet_array_1'}
+        inet_array_2 = columns.detect { |c| c.name == 'inet_array_2'}
+        inet_array_3 = columns.detect { |c| c.name == 'inet_array_3'}
+        inet_array_4 = columns.detect { |c| c.name == 'inet_array_4'}
+
+        inet_array_1.sql_type.should eq 'inet[]'
+        inet_array_2.sql_type.should eq 'inet[]'
+        inet_array_3.sql_type.should eq 'inet[]'
+        inet_array_4.sql_type.should eq 'inet[]'
+      end
+    end
+
+    describe 'CIDR array type' do
+      it 'creates an cidr array column' do
+        lambda do
+          Testing.connection.create_table :data_types do |t|
+            t.cidr_array :cidr_array_1
+            t.cidr_array :cidr_array_2, :cidr_array_3
+            t.column :cidr_array_4, :cidr_array
+          end
+        end.should_not raise_exception
+
+        columns = Testing.connection.columns(:data_types)
+        cidr_array_1 = columns.detect { |c| c.name == 'cidr_array_1'}
+        cidr_array_2 = columns.detect { |c| c.name == 'cidr_array_2'}
+        cidr_array_3 = columns.detect { |c| c.name == 'cidr_array_3'}
+        cidr_array_4 = columns.detect { |c| c.name == 'cidr_array_4'}
+
+        cidr_array_1.sql_type.should eq 'cidr[]'
+        cidr_array_2.sql_type.should eq 'cidr[]'
+        cidr_array_3.sql_type.should eq 'cidr[]'
+        cidr_array_4.sql_type.should eq 'cidr[]'
+      end
+    end
+
+    describe 'macaddr array type' do
+      it 'creates an macaddr array column' do
+        lambda do
+          Testing.connection.create_table :data_types do |t|
+            t.macaddr_array :macaddr_array_1
+            t.macaddr_array :macaddr_array_2, :macaddr_array_3
+            t.column :macaddr_array_4, :macaddr_array
+          end
+        end.should_not raise_exception
+
+        columns = Testing.connection.columns(:data_types)
+        macaddr_array_1 = columns.detect { |c| c.name == 'macaddr_array_1'}
+        macaddr_array_2 = columns.detect { |c| c.name == 'macaddr_array_2'}
+        macaddr_array_3 = columns.detect { |c| c.name == 'macaddr_array_3'}
+        macaddr_array_4 = columns.detect { |c| c.name == 'macaddr_array_4'}
+
+        macaddr_array_1.sql_type.should eq 'macaddr[]'
+        macaddr_array_2.sql_type.should eq 'macaddr[]'
+        macaddr_array_3.sql_type.should eq 'macaddr[]'
+        macaddr_array_4.sql_type.should eq 'macaddr[]'
+      end
+    end
+
     describe 'Integer array types' do
       it 'creates an integer array column' do
         lambda do
