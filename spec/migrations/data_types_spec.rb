@@ -97,7 +97,7 @@ describe 'Native Data Types Migrations' do
         int_array_4.sql_type.should eq 'integer[]'
       end
 
-      it 'adhears to the limit option' do
+      it 'adheres to the limit option' do
         lambda do
           Testing.connection.create_table :data_types do |t|
             t.integer_array :one_int_array, :limit => 1
@@ -141,7 +141,7 @@ describe 'Native Data Types Migrations' do
         string_array_4.sql_type.should eq 'character varying(255)[]'
       end
 
-      it 'adhears to the limit option' do
+      it 'adheres to the limit option' do
         lambda do
           Testing.connection.create_table :data_types do |t|
             t.string_array :one_string_array, :limit => 1
