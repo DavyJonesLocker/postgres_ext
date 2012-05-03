@@ -5,8 +5,7 @@ module ActiveRecord
     class PostgreSQLColumn
       private
 
-      def simplified_type(field_type)
-        #debugger
+      def simplified_type_with_extended_types(field_type)
         case field_type
         when 'inet'
           :inet
@@ -17,9 +16,11 @@ module ActiveRecord
         when /(\[\])$/
           "#{simplified_type field_type[0..field_type.length - 3]}_array".to_sym
         else
-          super
+          simplified_type_without_extended_types field_type
         end
       end
+
+      alias_method_chain :simplified_type, :extended_types
     end
 
     class PostgreSQLAdapter
@@ -68,17 +69,19 @@ module ActiveRecord
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
-      def type_to_sql(type, limit = nil, precision = nil, scale = nil)
-        column_type_sql = super
-
+      def type_to_sql_with_extended_types(type, limit = nil, precision = nil, scale = nil)
         if native = native_database_types[type.to_sym]
           if (type != :primary_key) && native[:array]
+            column_type_sql = type_to_sql_without_extended_types(native[:name], limit, precision, scale) rescue native[:name]
             column_type_sql << '[]'
+          else
+            column_type_sql = type_to_sql_without_extended_types(type, limit, precision, scale)
           end
         end
 
         column_type_sql
       end
+      alias_method_chain :type_to_sql, :extended_types
     end
   end
 end
