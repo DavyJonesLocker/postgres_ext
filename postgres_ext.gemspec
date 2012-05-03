@@ -19,9 +19,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'rails', '~> 3.2.0'
   gem.add_development_dependency 'rspec-rails', '~> 2.9.0'
-  gem.add_development_dependency 'capybara', '~> 1.1.2'
   gem.add_development_dependency 'bourne', '~> 1.1.2'
-  gem.add_development_dependency 'factory_girl_rails', '~> 3.2.0'
   gem.add_development_dependency 'pg', '~> 0.13.2'
   gem.add_development_dependency 'debugger', '~> 1.1.2' if RUBY_VERSION == '1.9.3'
   gem.add_development_dependency 'fivemat'
