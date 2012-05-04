@@ -2,17 +2,48 @@ require 'spec_helper'
 
 describe 'Schema dumper for extended types' do
   let!(:connection) { ActiveRecord::Base.connection }
-  describe 'Inet schema dump' do
+  describe 'INET schema dump' do
     it 'correctly generates inet column statements' do
       stream = StringIO.new
       connection.create_table :testings do |t|
-        t.inet :inet_column
+        t.inet :ip_column
       end
 
       ActiveRecord::SchemaDumper.dump(connection, stream)
       output = stream.string
 
-      output.should match /inet/
+      output.should match /t\.inet/
+    end
+  end
+
+  describe 'INTEGER array schema dump' do
+    it 'generates integer_array columns in schema dumps' do
+      stream = StringIO.new
+
+      connection.create_table :testings do |t|
+        t.integer_array :int_array
+      end
+
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+      output = stream.string
+
+      output.should match /t\.integer_array/
+    end
+
+    it 'generates limit options on integer_array columns' do
+      stream = StringIO.new
+
+      connection.create_table :testings do |t|
+        t.integer_array :one_int_array, :limit => 1
+        t.integer_array :eight_int_array, :limit => 8
+      end
+
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+      output = stream.string
+
+      #Small int has a limit of 2
+      output.should match %r{t\.integer_array.*one_int_array.*:limit => 2}
+      output.should match %r{t\.integer_array.*eight_int_array.*:limit => 8}
     end
   end
 end
