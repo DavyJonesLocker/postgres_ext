@@ -119,7 +119,7 @@ module ActiveRecord
       def type_cast_with_extended_types(value, column)
 
         case value
-        when NetAddr::CIDR
+        when NetAddr::CIDR, NetAddr::CIDRv4, NetAddr::CIDRv6
           return value.to_s
         else type_cast_without_extended_types(value,column)
         end
