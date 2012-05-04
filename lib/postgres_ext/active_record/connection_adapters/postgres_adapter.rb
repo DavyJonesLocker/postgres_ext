@@ -3,6 +3,40 @@ require 'active_record/connection_adapters/postgresql_adapter'
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLColumn
+      def klass
+        case type
+        when :inet, :cidr   then NetAddr::CIDR
+        end
+        super
+      end
+      def type_cast(value)
+        #debugger
+        return nil if value.nil?
+        return coder.load(value) if encoded?
+
+        klass = self.class
+
+        case type
+        when :inet, :cidr   then klass.string_to_cidr_address(value)
+        else super
+        end
+      end
+      def type_cast_code(var_name)
+        #debugger
+        klass = self.class.name
+
+        case type
+        when :inet then "#{klass}.string_to_cidr_address(#{var_name})"
+        else super
+        end
+      end
+
+      class << self
+        def string_to_cidr_address(string)
+          return string unless String === string
+          return NetAddr::CIDR.create(string)
+        end
+      end
       private
 
       def simplified_type_with_extended_types(field_type)
@@ -81,6 +115,16 @@ module ActiveRecord
         column_type_sql
       end
       alias_method_chain :type_to_sql, :extended_types
+
+      def type_cast_with_extended_types(value, column)
+
+        case value
+        when NetAddr::CIDR
+          return value.to_s
+        else type_cast_without_extended_types(value,column)
+        end
+      end
+      alias_method_chain :type_cast, :extended_types
     end
   end
 end

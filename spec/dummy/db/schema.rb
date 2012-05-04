@@ -21,8 +21,12 @@ ActiveRecord::Schema.define(:version => 20120501163758) do
     t.inet_array    "inet_arrayzerd"
     t.string_array  "str_arrayzerd",  :limit => 5
     t.string        "test"
-    t.timestamp     "created_at",                  :null => false
-    t.timestamp     "updated_at",                  :null => false
+    t.datetime      "created_at",                  :null => false
+    t.datetime      "updated_at",                  :null => false
+  end
+
+  create_table "test", :id => false, :force => true do |t|
+    t.string "test_a", :limit => nil
   end
 
 end
