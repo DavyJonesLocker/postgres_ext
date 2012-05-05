@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(:version => 20120501163758) do
   end
 
   create_table "test", :id => false, :force => true do |t|
-    t.string "test_a", :limit => nil
+    t.string "test_a"
   end
 
 end

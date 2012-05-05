@@ -3,14 +3,15 @@ require 'active_record/connection_adapters/postgresql_adapter'
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLColumn
-      def klass
+      def klass_with_extended_types
         case type
         when :inet, :cidr   then NetAddr::CIDR
+        else
+          klass_without_extended_types
         end
-        super
       end
-      def type_cast(value)
-        #debugger
+      alias_method_chain :klass, :extended_types
+      def type_cast_with_extended_types(value)
         return nil if value.nil?
         return coder.load(value) if encoded?
 
@@ -18,18 +19,21 @@ module ActiveRecord
 
         case type
         when :inet, :cidr   then klass.string_to_cidr_address(value)
-        else super
+        else 
+          type_cast_without_extended_types(value)
         end
       end
-      def type_cast_code(var_name)
-        #debugger
+      alias_method_chain :type_cast, :extended_types
+      def type_cast_code_with_extended_types(var_name)
         klass = self.class.name
 
         case type
-        when :inet then "#{klass}.string_to_cidr_address(#{var_name})"
-        else super
+        when :inet, :cidr   then "#{klass}.string_to_cidr_address(#{var_name})"
+        else
+          type_cast_code_without_extended_types(var_name)
         end
       end
+      alias_method_chain :type_cast_code, :extended_types
 
       class << self
         def string_to_cidr_address(string)
@@ -121,7 +125,8 @@ module ActiveRecord
         case value
         when NetAddr::CIDR, NetAddr::CIDRv4, NetAddr::CIDRv6
           return value.to_s
-        else type_cast_without_extended_types(value,column)
+        else
+          type_cast_without_extended_types(value, column)
         end
       end
       alias_method_chain :type_cast, :extended_types
