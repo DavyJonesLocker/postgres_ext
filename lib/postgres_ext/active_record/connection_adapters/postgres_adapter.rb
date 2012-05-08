@@ -1,4 +1,5 @@
 require 'active_record/connection_adapters/postgresql_adapter'
+require 'ipaddr'
 
 module ActiveRecord
   module ConnectionAdapters
@@ -62,10 +63,10 @@ module ActiveRecord
     end
 
     class PostgreSQLAdapter
-      EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'},
-                        :inet_array => {:name => 'inet', :array => true}, :cidr_array => {:name => 'cidr', :array => true},
-                        :macaddr_array => {:name => 'macaddr', :array => true}, :integer_array => {:name => 'integer', :array => true},
-                        :string_array => {:name => 'string', :limit => 255, :array => true}}
+      EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}}
+      class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
+        attr_accessor :array
+      end
 
       class TableDefinition
         EXTENDED_TYPES.keys.map(&:to_s).each do |column_type|
@@ -77,6 +78,33 @@ module ActiveRecord
               column_names.each { |name| column(name, type, options) }  #   column_names.each { |name| column(name, type, options) }
             end                                                         # end
           EOV
+        end
+
+        def column(name, type=nil, options = {})
+          name = name.to_s
+          type = type.to_sym
+
+          column = self[name] || new_column_definition(@base, name, type)
+
+          limit = options.fetch(:limit) do
+            native[type][:limit] if native[type].is_a?(Hash)
+          end
+
+          column.limit     = limit
+          column.precision = options[:precision]
+          column.scale     = options[:scale]
+          column.default   = options[:default]
+          column.null      = options[:null]
+          column.array     = options[:array]
+          self
+        end
+
+        private
+        def new_column_definition(base, name, type)
+          definition = ColumnDefinition.new base, name, type
+          @columns << definition
+          @columns_hash[name] = definition
+          definition
         end
       end
 
@@ -107,24 +135,17 @@ module ActiveRecord
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
-      def type_to_sql_with_extended_types(type, limit = nil, precision = nil, scale = nil)
-        if native = native_database_types[type.to_sym]
-          if (type != :primary_key) && native[:array]
-            column_type_sql = (type_to_sql_without_extended_types(native[:name], limit, precision, scale) rescue native[:name]).dup
-            column_type_sql << '[]'
-          else
-            column_type_sql = type_to_sql_without_extended_types(type, limit, precision, scale).dup
-          end
+      def add_column_options!(sql, options)
+        if options[:column].array
+          sql << '[]'
         end
-        column_type_sql
+        super
       end
-      alias_method_chain :type_to_sql, :extended_types
 
       def type_cast_with_extended_types(value, column)
-
         case value
         when NetAddr::CIDR, NetAddr::CIDRv4, NetAddr::CIDRv6
-          return value.to_s
+          return "#{value.ip}#{value.netmask}"
         else
           type_cast_without_extended_types(value, column)
         end
