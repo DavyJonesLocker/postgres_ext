@@ -81,21 +81,11 @@ module ActiveRecord
         end
 
         def column(name, type=nil, options = {})
-          name = name.to_s
-          type = type.to_sym
+          super
 
-          column = self[name] || new_column_definition(@base, name, type)
-
-          limit = options.fetch(:limit) do
-            native[type][:limit] if native[type].is_a?(Hash)
-          end
-
-          column.limit     = limit
-          column.precision = options[:precision]
-          column.scale     = options[:scale]
-          column.default   = options[:default]
-          column.null      = options[:null]
+          column = self[name]
           column.array     = options[:array]
+
           self
         end
 
