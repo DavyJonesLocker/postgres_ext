@@ -154,7 +154,6 @@ module ActiveRecord
       def type_cast_with_extended_types(value, column)
         case value
         when Array
-          debugger
           if column.array
             return "{#{value.map{|val| type_cast(val, column)}.join(',')}}"
           end
