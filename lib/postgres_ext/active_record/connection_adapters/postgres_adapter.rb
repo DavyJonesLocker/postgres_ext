@@ -4,9 +4,19 @@ require 'ipaddr'
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLColumn
+      attr_accessor :array
+      def initialize(name, default, sql_type = nil, null = true)
+        if sql_type =~ /\[\]$/
+          @array = true
+          super(name, default, sql_type[0..sql_type.length - 3], null)
+          @sql_type = sql_type
+        else
+          super
+        end
+      end
       def klass_with_extended_types
         case type
-        when :inet, :cidr   then NetAddr::CIDR
+        when :inet, :cidr   then IPAddr
         else
           klass_without_extended_types
         end
@@ -17,7 +27,15 @@ module ActiveRecord
         return coder.load(value) if encoded?
 
         klass = self.class
-
+        if self.array
+          if array_match = value.match(/{(.*)}/)
+            values = []
+            array_match[1].split(/({.*})|,/).each do |array_value|
+              values << type_cast(array_value) unless array_value.empty?
+            end
+            return values
+          end
+        end
         case type
         when :inet, :cidr   then klass.string_to_cidr_address(value)
         else 
@@ -39,7 +57,7 @@ module ActiveRecord
       class << self
         def string_to_cidr_address(string)
           return string unless String === string
-          return NetAddr::CIDR.create(string)
+          return IPAddr.new(string)
         end
       end
       private
@@ -53,6 +71,7 @@ module ActiveRecord
         when 'macaddr'
           :macaddr
         when /(\[\])$/
+          debugger
           "#{simplified_type field_type[0..field_type.length - 3]}_array".to_sym
         else
           simplified_type_without_extended_types field_type
@@ -134,8 +153,13 @@ module ActiveRecord
 
       def type_cast_with_extended_types(value, column)
         case value
-        when NetAddr::CIDR, NetAddr::CIDRv4, NetAddr::CIDRv6
-          return "#{value.ip}#{value.netmask}"
+        when Array
+          debugger
+          if column.array
+            return "{#{value.map{|val| type_cast(val, column)}.join(',')}}"
+          end
+        when IPAddr
+          return "#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}"
         else
           type_cast_without_extended_types(value, column)
         end

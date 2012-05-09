@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe 'MACADDR array schema dump' do
+describe 'array schema dump' do
   let!(:connection) { ActiveRecord::Base.connection }
-  it 'correctly generates macaddr array column statements' do
+  it 'correctly generates cidr column statements' do
     stream = StringIO.new
     connection.create_table :testings do |t|
-      t.macaddr_array :mac_address_array_column
+      t.cidr :network_column, :array => true
     end
 
     ActiveRecord::SchemaDumper.dump(connection, stream)
     output = stream.string
 
-    output.should match /t\.macaddr_array/
+    output.should match /t\.cidr "network_column".*?:array => true/
   end
 end
