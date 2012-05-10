@@ -30,8 +30,12 @@ module ActiveRecord
         if self.array
           if array_match = value.match(/{(.*)}/)
             values = []
-            array_match[1].split(/({.*})|,/).each do |array_value|
-              values << type_cast(array_value) unless array_value.empty?
+            array_match[1].split(/({.*})|"(.*)"|,/).each do |array_value|
+              if array_value == 'NULL'
+                values << nil
+              else
+                values << type_cast(array_value) unless array_value.empty?
+              end
             end
             return values
           end
@@ -152,6 +156,9 @@ module ActiveRecord
       end
 
       def type_cast_with_extended_types(value, column)
+        if column.array && value.nil?
+          return 'NULL'
+        end
         case value
         when Array
           if column.array
