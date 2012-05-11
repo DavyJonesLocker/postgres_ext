@@ -1,5 +1,7 @@
 # PostgresExt
 
+## Current Status: [![Build Status](https://secure.travis-ci.org/dockyard/postgres_ext.png?branch=master)](http://travis-ci.org/dockyard/postgres_ext)
+
 TODO: Write a gem description
 
 ## Installation
