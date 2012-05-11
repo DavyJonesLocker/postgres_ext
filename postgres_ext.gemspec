@@ -24,4 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pg', '~> 0.13.2'
   gem.add_development_dependency 'debugger', '~> 1.1.2' if RUBY_VERSION == '1.9.3'
   gem.add_development_dependency 'fivemat'
+  gem.add_development_dependency 'rvm-tester'
 end

@@ -28,9 +28,9 @@ module ActiveRecord
 
         klass = self.class
         if self.array
-          if array_match = value.match(/{(.*)}/)
+          if array_match = value.match(/\{(.*)\}/)
             values = []
-            array_match[1].split(/({.*?})|(".*?")|,/).each do |array_value|
+            array_match[1].split(/(\{.*?\})|(".*?")|,/).each do |array_value|
               if array_value == 'NULL'
                 values << nil
               else
