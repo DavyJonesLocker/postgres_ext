@@ -30,11 +30,15 @@ module ActiveRecord
         if self.array
           if array_match = value.match(/{(.*)}/)
             values = []
-            array_match[1].split(/({.*})|"(.*)"|,/).each do |array_value|
+            array_match[1].split(/({.*?})|(".*?")|,/).each do |array_value|
               if array_value == 'NULL'
                 values << nil
               else
-                values << type_cast(array_value) unless array_value.empty?
+                if quoted_string = array_value.match(/"(.*)"/)
+                  values << type_cast(quoted_string[1]) unless quoted_string[1].empty?
+                else
+                  values << type_cast(array_value) unless array_value.empty?
+                end
               end
             end
             return values

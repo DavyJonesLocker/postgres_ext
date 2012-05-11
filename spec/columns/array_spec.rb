@@ -9,7 +9,7 @@ describe 'Array column' do
     describe '#type_class' do
       context 'has null value' do
         it 'converts the PostgreSQL value to an array with a nil value' do
-          string_array_column.type_cast('{1,NULL,"null"}').should eq ['1',nil,'null']
+          string_array_column.type_cast('{1,NULL,"NULL"}').should eq ['1',nil,'NULL']
         end
       end
     end
@@ -31,6 +31,11 @@ describe 'Array column' do
       context 'multi dimensional array' do
         it 'converts a PostgreSQL array value to an array of integer arrays' do
           integer_array_column.type_cast('{1,{2,3},4}').should eq [1,[2,3],4]
+        end
+      end
+      context 'multi dimensional array with multiple arrays' do
+        it 'converts a PostgreSQL array value to an array of integer arrays' do
+          integer_array_column.type_cast('{1,{2,3},{4}}').should eq [1,[2,3],[4]]
         end
       end
     end
