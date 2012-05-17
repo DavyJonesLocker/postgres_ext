@@ -17,6 +17,10 @@ describe 'Array column' do
         it 'converts the PostgreSQL value containing escaped " to an array' do
           string_array_column.type_cast('{"has \" quote",another value}').should eq ['has " quote', 'another value']
         end
+
+        it 'converts the PostgreSQL value containgin commas to an array' do
+          string_array_column.type_cast('{"has , comma",another value,"more, commas"}').should eq ['has , comma', 'another value', 'more, commas']
+        end
       end
     end
   end

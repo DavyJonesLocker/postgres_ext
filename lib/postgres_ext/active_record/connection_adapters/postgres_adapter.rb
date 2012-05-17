@@ -1,5 +1,6 @@
 require 'active_record/connection_adapters/postgresql_adapter'
 require 'ipaddr'
+require 'csv'
 
 module ActiveRecord
   module ConnectionAdapters
@@ -30,11 +31,14 @@ module ActiveRecord
         if self.array
           if array_match = value.match(/\{(.*)\}/)
             values = []
-            array_match[1].split(/(\{.*?\})|("[\\"|.]*?")|,/).each do |array_value|
-              if array_value == 'NULL'
+            array_match = array_match[1].gsub %r{\\"}, '""'
+            array_match = array_match.gsub %r{({.*?})},'"\1"'
+            array_match = array_match.gsub %r{(,|{)NULL(,|})}, '\1$$NULL$$\1'
+            array_values = CSV.new(array_match).first
+            array_values.each do |array_value|
+              if array_value == '$$NULL$$'
                 values << nil
               else
-                array_value = array_value.gsub /\\"/, '"'
                 if quoted_string = array_value.match(/^"(.*)"$/)
                   values << type_cast(quoted_string[1]) unless quoted_string[1].empty?
                 else
