@@ -12,6 +12,12 @@ describe 'Array column' do
           string_array_column.type_cast('{1,NULL,"NULL"}').should eq ['1',nil,'NULL']
         end
       end
+
+      context 'corner cases, strings with commas and quotations' do
+        it 'converts the PostgreSQL value containing escaped " to an array' do
+          string_array_column.type_cast('{"has \" quote",another value}').should eq ['has " quote', 'another value']
+        end
+      end
     end
   end
 

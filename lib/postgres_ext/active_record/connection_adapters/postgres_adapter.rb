@@ -30,11 +30,12 @@ module ActiveRecord
         if self.array
           if array_match = value.match(/\{(.*)\}/)
             values = []
-            array_match[1].split(/(\{.*?\})|(".*?")|,/).each do |array_value|
+            array_match[1].split(/(\{.*?\})|("[\\"|.]*?")|,/).each do |array_value|
               if array_value == 'NULL'
                 values << nil
               else
-                if quoted_string = array_value.match(/"(.*)"/)
+                array_value = array_value.gsub /\\"/, '"'
+                if quoted_string = array_value.match(/^"(.*)"$/)
                   values << type_cast(quoted_string[1]) unless quoted_string[1].empty?
                 else
                   values << type_cast(array_value) unless array_value.empty?
@@ -51,6 +52,9 @@ module ActiveRecord
         end
       end
       alias_method_chain :type_cast, :extended_types
+      def string_to_array(value)
+
+      end
       def type_cast_code_with_extended_types(var_name)
         klass = self.class.name
 
@@ -160,21 +164,36 @@ module ActiveRecord
       end
 
       def type_cast_with_extended_types(value, column)
-        if column.array && value.nil?
-          return 'NULL'
-        end
         case value
+        when NilClass
+          if column.array
+            'NULL'
+          else
+            type_cast_without_extended_types(value, column)
+          end
         when Array
           if column.array
-            return "{#{value.map{|val| type_cast(val, column)}.join(',')}}"
+            array_to_string(value, column) 
+          else
+            type_cast_without_extended_types(value, column)
           end
         when IPAddr
-          return "#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}"
+          ipaddr_to_string(value)
         else
           type_cast_without_extended_types(value, column)
         end
       end
       alias_method_chain :type_cast, :extended_types
+
+      private
+
+      def ipaddr_to_string(value)
+        "#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}"
+      end
+
+      def array_to_string(value, column)
+        "{#{value.map{|val| type_cast(val, column)}.join(',')}}"
+      end
     end
   end
 end
