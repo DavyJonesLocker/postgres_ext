@@ -37,17 +37,6 @@ describe 'Array column' do
           integer_array_column.type_cast('{1,2,3,4}').should eq [1,2,3,4]
         end
       end
-
-      context 'multi dimensional array' do
-        it 'converts a PostgreSQL array value to an array of integer arrays' do
-          integer_array_column.type_cast('{1,{2,3},4}').should eq [1,[2,3],4]
-        end
-      end
-      context 'multi dimensional array with multiple arrays' do
-        it 'converts a PostgreSQL array value to an array of integer arrays' do
-          integer_array_column.type_cast('{1,{2,3},{4}}').should eq [1,[2,3],[4]]
-        end
-      end
     end
 
     describe 'integer array to SQL statment conversion' do
@@ -61,12 +50,6 @@ describe 'Array column' do
         it 'returns a PostgreSQL array' do
           value = integer_array_column.type_cast('{1,2,3,4}')
           adapter.type_cast(value, integer_array_column).should eq '{1,2,3,4}'
-        end
-      end
-      context 'multi dimensional array' do
-        it 'returns a PostgreSQL array' do
-          value = integer_array_column.type_cast('{1,{2,3},4}')
-          adapter.type_cast(value, integer_array_column).should eq '{1,{2,3},4}'
         end
       end
     end

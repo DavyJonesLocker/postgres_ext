@@ -1,10 +1,11 @@
 require 'active_record/connection_adapters/postgresql_adapter'
 require 'ipaddr'
-require 'csv'
+require 'pg_array_parser'
 
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLColumn
+      include PgArrayParser
       attr_accessor :array
       def initialize(name, default, sql_type = nil, null = true)
         if sql_type =~ /\[\]$/
@@ -28,37 +29,38 @@ module ActiveRecord
         return coder.load(value) if encoded?
 
         klass = self.class
-        if self.array
-          if array_match = value.match(/\{(.*)\}/)
-            values = []
-            array_match = array_match[1].gsub %r{\\"}, '""'
-            array_match = array_match.gsub %r{({.*?})},'"\1"'
-            array_match = array_match.gsub %r{(,|{)NULL(,|})}, '\1$$NULL$$\1'
-            array_values = CSV.new(array_match).first
-            array_values.each do |array_value|
-              if array_value == '$$NULL$$'
-                values << nil
-              else
-                if quoted_string = array_value.match(/^"(.*)"$/)
-                  values << type_cast(quoted_string[1]) unless quoted_string[1].empty?
-                else
-                  values << type_cast(array_value) unless array_value.empty?
-                end
-              end
-            end
-            return values
+        if self.array && value.start_with?('{') && value.end_with?('}')
+          string_to_array value
+        else
+          case type
+          when :inet, :cidr   then klass.string_to_cidr_address(value)
+          else 
+            type_cast_without_extended_types(value)
           end
-        end
-        case type
-        when :inet, :cidr   then klass.string_to_cidr_address(value)
-        else 
-          type_cast_without_extended_types(value)
         end
       end
       alias_method_chain :type_cast, :extended_types
       def string_to_array(value)
-
+        string_array = parse_pg_array value
+        if type == :string
+          string_array
+        else
+          type_cast_array(string_array)
+        end
       end
+
+      def type_cast_array(array)
+        casted_array = []
+        array.each do |value|
+          if Array === value
+            casted_array.push type_cast_array(value)
+          else
+            casted_array.push type_cast value
+          end
+        end
+        casted_array
+      end
+
       def type_cast_code_with_extended_types(var_name)
         klass = self.class.name
 
