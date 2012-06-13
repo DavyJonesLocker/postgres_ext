@@ -7,15 +7,16 @@ module ActiveRecord
     class PostgreSQLColumn
       include PgArrayParser
       attr_accessor :array
-      def initialize(name, default, sql_type = nil, null = true)
+      def initialize_with_extended_types(name, default, sql_type = nil, null = true)
         if sql_type =~ /\[\]$/
           @array = true
           super(name, default, sql_type[0..sql_type.length - 3], null)
           @sql_type = sql_type
         else
-          super
+          initialize_without_extended_types(name,default, sql_type, null)
         end
       end
+      alias_method_chain :initialize, :extended_types
       def klass_with_extended_types
         case type
         when :inet, :cidr   then IPAddr
