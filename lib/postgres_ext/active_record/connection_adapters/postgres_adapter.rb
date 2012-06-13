@@ -10,7 +10,7 @@ module ActiveRecord
       def initialize_with_extended_types(name, default, sql_type = nil, null = true)
         if sql_type =~ /\[\]$/
           @array = true
-          super(name, default, sql_type[0..sql_type.length - 3], null)
+          initialize_without_extended_types(name, default, sql_type[0..sql_type.length - 3], null)
           @sql_type = sql_type
         else
           initialize_without_extended_types(name,default, sql_type, null)
