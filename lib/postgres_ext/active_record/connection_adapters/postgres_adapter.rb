@@ -82,6 +82,8 @@ module ActiveRecord
 
       def simplified_type_with_extended_types(field_type)
         case field_type
+        when 'uuid'
+          :uuid
         when 'inet'
           :inet
         when 'cidr'
@@ -89,7 +91,6 @@ module ActiveRecord
         when 'macaddr'
           :macaddr
         when /(\[\])$/
-          debugger
           "#{simplified_type field_type[0..field_type.length - 3]}_array".to_sym
         else
           simplified_type_without_extended_types field_type
@@ -100,7 +101,7 @@ module ActiveRecord
     end
 
     class PostgreSQLAdapter
-      EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}}
+      EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}}
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
       end
