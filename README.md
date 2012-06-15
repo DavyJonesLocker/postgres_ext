@@ -23,6 +23,9 @@ Or install it yourself as:
 Just `require 'postgres_ext'` and use ActiveRecord as you normally would! postgres_ext extends
 ActiveRecord's data type handling.
 
+ * [Migration/Schema.rb support](#migrationschemarb-support)
+ * [Type Casting support](#type-casting-support)
+
 ## Migration/Schema.rb support
 
 ### INET
