@@ -1,8 +1,13 @@
 # PostgresExt
 
+Adds support for missing PostgreSQL data types to ActiveRecord.
+
 ## Current Status: [![Build Status](https://secure.travis-ci.org/dockyard/postgres_ext.png?branch=master)](http://travis-ci.org/dockyard/postgres_ext)
 
-Adds support for missing PostgreSQL data types to ActiveRecord.
+## Roadmap
+
+ * Arel support for INET, CIDR and Array related where clauses
+ * Backport HStore code from Rails 4.0
 
 ## Installation
 
