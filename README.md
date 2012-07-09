@@ -142,9 +142,9 @@ person.favorite_numbers
 person.save
 
 person_2 = Person.first
-person_2.favoite_numbers
+person_2.favorite_numbers
 # => [1,2,3]
-person_2.favoite_numbers.first.class
+person_2.favorite_numbers.first.class
 # => Fixnum
 ```
 
