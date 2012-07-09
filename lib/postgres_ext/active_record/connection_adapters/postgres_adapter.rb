@@ -165,7 +165,7 @@ module ActiveRecord
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
       def add_column_options!(sql, options)
-        if options[:column].array
+        if options[:array] || options[:column].try(:array)
           sql << '[]'
         end
         super
