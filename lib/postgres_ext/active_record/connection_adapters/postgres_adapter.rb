@@ -171,11 +171,13 @@ module ActiveRecord
         super
       end
 
-      def type_cast_with_extended_types(value, column)
+      def type_cast_with_extended_types(value, column, part_array = false)
         case value
         when NilClass
-          if column.array
+          if column.array && part_array
             'NULL'
+          elsif column.array && !part_array
+            value
           else
             type_cast_without_extended_types(value, column)
           end
@@ -200,7 +202,7 @@ module ActiveRecord
       end
 
       def array_to_string(value, column)
-        "{#{value.map{|val| type_cast(val, column)}.join(',')}}"
+        "{#{value.map{|val| type_cast(val, column, true)}.join(',')}}"
       end
     end
   end
