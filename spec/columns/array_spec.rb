@@ -55,27 +55,4 @@ describe 'Array column' do
     end
   end
 
-  context 'model usage' do
-    let!(:adapter) { ActiveRecord::Base.connection }
-    before do
-      adapter.create_table :users do |t|
-        t.string :nick_names, :array => true
-        t.integer :test
-      end
-      class User < ActiveRecord::Base; end
-    end
-
-    after do
-      adapter.drop_table :users
-      Object.send(:remove_const, :User)
-    end
-
-    describe '#create' do
-      it 'creates a user when there is no array assignment' do
-        u = User.create()
-        u.reload
-        u.nick_names.should eq nil
-      end
-    end
-  end
 end

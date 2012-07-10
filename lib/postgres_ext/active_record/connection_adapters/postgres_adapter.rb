@@ -30,8 +30,10 @@ module ActiveRecord
         return coder.load(value) if encoded?
 
         klass = self.class
-        if self.array && value.start_with?('{') && value.end_with?('}')
+        if self.array && String === value && value.start_with?('{') && value.end_with?('}')
           string_to_array value
+        elsif self.array && Array === value
+          value
         else
           case type
           when :inet, :cidr   then klass.string_to_cidr_address(value)
@@ -42,11 +44,15 @@ module ActiveRecord
       end
       alias_method_chain :type_cast, :extended_types
       def string_to_array(value)
-        string_array = parse_pg_array value
-        if type == :string
-          string_array
+        if Array === value
+          value
         else
-          type_cast_array(string_array)
+          string_array = parse_pg_array value
+          if type == :string
+            string_array
+          else
+            type_cast_array(string_array)
+          end
         end
       end
 
@@ -65,10 +71,14 @@ module ActiveRecord
       def type_cast_code_with_extended_types(var_name)
         klass = self.class.name
 
-        case type
-        when :inet, :cidr   then "#{klass}.string_to_cidr_address(#{var_name})"
+        if self.array
+          "#{klass}.new('#{self.name}', #{self.default.nil? ? 'nil' : "'#{self.default}'"}, '#{self.sql_type}').string_to_array(#{var_name})"
         else
-          type_cast_code_without_extended_types(var_name)
+          case type
+          when :inet, :cidr   then "#{klass}.string_to_cidr_address(#{var_name})"
+          else
+            type_cast_code_without_extended_types(var_name)
+          end
         end
       end
       alias_method_chain :type_cast_code, :extended_types
