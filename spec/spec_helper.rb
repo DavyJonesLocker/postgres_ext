@@ -15,4 +15,11 @@ Dir[File.join(ENGINE_RAILS_ROOT, 'spec/support/**/*.rb')].each { |f| require f }
 RSpec.configure do |config|
   config.mock_with :mocha
   config.use_transactional_fixtures = true
+  config.backtrace_clean_patterns = [
+    #/\/lib\d*\/ruby\//,
+    #/bin\//,
+    #/gems/,
+    #/spec\/spec_helper\.rb/,
+    /lib\/rspec\/(core|expectations|matchers|mocks)/
+  ]
 end

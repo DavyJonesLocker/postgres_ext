@@ -101,8 +101,6 @@ module ActiveRecord
           :cidr
         when 'macaddr'
           :macaddr
-        when /(\[\])$/
-          "#{simplified_type field_type[0..field_type.length - 3]}_array".to_sym
         else
           simplified_type_without_extended_types field_type
         end
@@ -204,6 +202,15 @@ module ActiveRecord
         end
       end
       alias_method_chain :type_cast, :extended_types
+
+      def quote_with_extended_types(value, column = nil)
+        if [Array, IPAddr].include? value.class
+          "'#{type_cast(value, column)}'"
+        else
+          quote_without_extended_types(value, column)
+        end
+      end
+      alias_method_chain :quote, :extended_types
 
       private
 
