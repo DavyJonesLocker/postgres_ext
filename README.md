@@ -31,6 +31,14 @@ ActiveRecord's data type handling.
  * [Migration/Schema.rb support](#migrationschemarb-support)
  * [Type Casting support](#type-casting-support)
 
+### Usage Notes
+Take care when dealing with arrays and other types that allow you to
+update their value in place. In place changes are not currently tracked
+in Rails (see [this issue](https://github.com/rails/rails/issues/6954)).
+To track changes that happen via `#<<` or other instance methods, be
+sure to call `<attribute>_will_change!` so that Active Record nows to
+persist the change.
+
 ## Migration/Schema.rb support
 
 ### INET
@@ -147,6 +155,7 @@ person_2.favorite_numbers
 person_2.favorite_numbers.first.class
 # => Fixnum
 ```
+
 
 ## Authors
 
