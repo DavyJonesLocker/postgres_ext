@@ -36,7 +36,7 @@ Take care when dealing with arrays and other types that allow you to
 update their value in place. In place changes are not currently tracked
 in Rails (see [this issue](https://github.com/rails/rails/issues/6954)).
 To track changes that happen via `#<<` or other instance methods, be
-sure to call `<attribute>_will_change!` so that Active Record nows to
+sure to call `<attribute>_will_change!` so that Active Record knows to
 persist the change.
 
 ## Migration/Schema.rb support
