@@ -9,5 +9,9 @@ module Arel
     def array_any_eq(other)
       Nodes::ArrayAnyEq.new self, other
     end
+
+    def array_overlap(other)
+      Nodes::ArrayOverlap.new self, other
+    end
   end
 end

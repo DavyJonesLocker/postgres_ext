@@ -10,5 +10,10 @@ module Arel
       alias :operand1 :left
       alias :operand2 :right
     end
+
+    class ArrayOverlap < Arel::Nodes::Binary
+      alias :operand1 :left
+      alias :operand2 :right
+    end
   end
 end

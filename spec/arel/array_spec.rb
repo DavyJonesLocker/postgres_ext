@@ -18,7 +18,7 @@ describe 'Array Column Predicates' do
     Object.send(:remove_const, :ArelArray)
   end
 
-  describe 'Array Any' do
+  describe 'Array Any Equal' do
     it 'converts Arel array_any_eq statement' do
       arel_table = ArelArray.arel_table
 
@@ -31,6 +31,25 @@ describe 'Array Column Predicates' do
       arel_table = ArelArray.arel_table
 
       ArelArray.where(arel_table[:tags].array_any_eq('one')).should include(one)
+    end
+  end
+
+  describe 'Array Overlap' do
+    it 'converts Arel array_overlap statment' do
+      arel_table = ArelArray.arel_table
+
+      arel_table.where(arel_table[:tags].array_overlap(['tag','tag 2'])).to_sql.should match /&& '\{tag,tag 2\}'/
+    end
+
+    it 'returns matched records' do
+      one = ArelArray.create!(:tags => ['one'])
+      two = ArelArray.create!(:tags => ['two'])
+      arel_table = ArelArray.arel_table
+
+      ArelArray.where(arel_table[:tags].array_overlap(['one'])).should include(one)
+      ArelArray.where(arel_table[:tags].array_overlap(['two'])).should include(two)
+      ArelArray.where(arel_table[:tags].array_overlap(['two','one'])).should include(two)
+      ArelArray.where(arel_table[:tags].array_overlap(['two','one'])).should include(one)
     end
   end
 end
