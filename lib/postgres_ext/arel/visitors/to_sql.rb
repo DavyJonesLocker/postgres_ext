@@ -7,6 +7,10 @@ module Arel
         "#{visit o.left} << #{visit o.right}"
       end
 
+      def visit_Arel_Nodes_ArrayAnyEq o
+        "#{visit o.right} = ANY(#{visit o.left})"
+      end
+
       def visit_IPAddr value
         "'#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}'"
       end

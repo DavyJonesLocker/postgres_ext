@@ -4,7 +4,7 @@ describe 'INET related AREL functions' do
   let!(:adapter) { ActiveRecord::Base.connection }
   before do
     adapter.create_table :ip_addresses, :force => true do |t|
-      t.inet :address, :array => true
+      t.inet :address
     end
 
     class IpAddress < ActiveRecord::Base
