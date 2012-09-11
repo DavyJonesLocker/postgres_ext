@@ -20,6 +20,10 @@ module Arel
         end
       end
 
+      def visit_Arel_Nodes_ArrayAny o
+        "ANY(#{visit o.send("relation")})"
+      end
+
       def visit_IPAddr value
         "'#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}'"
       end
