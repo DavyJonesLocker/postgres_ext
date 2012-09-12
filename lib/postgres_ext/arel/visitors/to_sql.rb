@@ -7,10 +7,6 @@ module Arel
         "#{visit o.left} << #{visit o.right}"
       end
 
-      def visit_Arel_Nodes_ArrayAnyEq o
-        "#{visit o.right} = ANY(#{visit o.left})"
-      end
-
       def visit_Arel_Nodes_ArrayOverlap o
         if Array === o.right 
           right = "{#{o.right.map{|v| change_string(visit(v))}.join(',')}}"

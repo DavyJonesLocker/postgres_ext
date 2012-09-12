@@ -5,9 +5,6 @@ module Arel
       def operator; :<< end
     end
 
-    class ArrayAnyEq < Arel::Nodes::Binary
-    end
-
     class ArrayOverlap < Arel::Nodes::Binary
     end
   end
