@@ -21,7 +21,7 @@ module Arel
       end
 
       def change_string value
-        if value.match /"|,|{/
+        if value.match /"|,|\{/
           value.gsub(/"/, "\"").gsub(/'/,'"')
         else
           value.gsub(/'/,'')
