@@ -9,7 +9,7 @@ module Arel
 
     class Binary
       def initialize(left, right)
-        if ArrayAny === left
+        if ArrayAttribute === left
           @left = right
           @right = left
         else
@@ -25,7 +25,13 @@ module Arel
     class ArrayOverlap < Arel::Nodes::Binary
     end
 
-    class ArrayAny < Arel::Attribute
+    class ArrayAttribute < Arel::Attribute
+    end
+
+    class ArrayAny < ArrayAttribute
+    end
+
+    class ArrayAll < ArrayAttribute
     end
   end
 end

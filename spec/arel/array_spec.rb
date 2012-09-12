@@ -31,6 +31,12 @@ describe 'Array Column Predicates' do
       arel_table.where(arel_table[:tags].array_any.eq('my tag')).to_sql.should match /'my tag' = ANY\("arel_arrays"\."tags"\)/
     end
 
+    it 'converts Arel array_all.eq statement' do
+      arel_table = ArelArray.arel_table
+
+      arel_table.where(arel_table[:tags].array_all.eq('my tag')).to_sql.should match /'my tag' = ALL\("arel_arrays"\."tags"\)/
+    end
+
     it 'converts Arel array_any.gt statement' do
       arel_table = ArelArray.arel_table
 
