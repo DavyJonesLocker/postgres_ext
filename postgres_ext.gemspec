@@ -28,5 +28,4 @@ Gem::Specification.new do |gem|
   end
   gem.add_development_dependency 'debugger', '~> 1.1.2' if RUBY_VERSION == '1.9.3'
   gem.add_development_dependency 'fivemat'
-  gem.add_development_dependency 'rvm-tester'
 end

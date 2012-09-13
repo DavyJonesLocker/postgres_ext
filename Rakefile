@@ -30,13 +30,4 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.pattern = 'spec/**/*_spec.rb'
 end
 
-require 'rvm-tester'
-RVM::Tester::TesterTask.new(:suite) do |t|
-  t.bundle_install = true                # updates Gemfile.lock, default is true
-  t.use_travis = true                    # looks for Rubies in .travis.yml (on by default)
-  t.command = "bundle exec rake spec"    # runs plain "rake" by default
-  t.env = {"VERBOSE" => "1"}             # set any ENV vars
-  t.verbose = true                       # shows more output, off by default
-end
-
 task :default => :spec
