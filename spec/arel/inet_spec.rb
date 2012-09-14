@@ -28,7 +28,6 @@ describe 'INET related AREL functions' do
       arel_table = IpAddress.arel_table
 
       arel_table.where(arel_table[:address].contained_within(IPAddr.new('127.0.0.1/24'))).to_sql.should match /<< '127.0.0.0\/24'/
-
     end
   end
 end
