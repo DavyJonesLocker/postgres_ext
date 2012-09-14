@@ -1,3 +1,8 @@
+## 0.0.7
+
+Adds Arel predicate functions for array overlap operator (`&&`) and
+INET/CIDR contained within operator (`<<`)
+
 ## 0.0.6
 
 Lots of array related fixes:
