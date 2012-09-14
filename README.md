@@ -161,7 +161,7 @@ person_2.favorite_numbers.first.class
 ## Querying PostgreSQL datatypes
 
   * [Arrays](#arrays-2)
-  * INET/CIDR
+  * [INET/CIDR](#inetcidr)
 
 ### Arrays
 
@@ -182,7 +182,8 @@ ARRAY[1,2,3] && ARRAY[3,5,6]
 -- t
 ```
 
-Postgres\_ext defines `array_overlap`, an ARel predicate for the `&&` operator.
+Postgres\_ext defines `array_overlap`, an [Arel](https://github.com/rails/arel)
+predicate for the `&&` operator.
 
 ```ruby
 user_arel = User.arel_table
@@ -243,7 +244,8 @@ inet '192.168.1.6' << inet '192.168.1.0/24'
 -- t
 ```
 
-Postgres\_ext defines `contained_within`, an ARel predicate for the `<<` operator.
+Postgres\_ext defines `contained_within`, an [Arel](https://github.com/rails/arel)
+predicate for the `<<` operator.
 
 ```ruby
 user_arel = User.arel_table
