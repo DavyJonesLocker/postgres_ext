@@ -109,12 +109,12 @@ module ActiveRecord
       alias_method_chain :simplified_type, :extended_types
     end
 
+  class ColumnDefinition
+    attr_accessor :array
+  end
+
     class PostgreSQLAdapter
       EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}}
-      class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
-        attr_accessor :array
-      end
-
       class TableDefinition
         EXTENDED_TYPES.keys.map(&:to_s).each do |column_type|
           class_eval <<-EOV, __FILE__, __LINE__ + 1
@@ -127,22 +127,14 @@ module ActiveRecord
           EOV
         end
 
-        def column(name, type=nil, options = {})
-          super
-
+        def column_with_extended_types(name, type=nil, options = {})
+          column_without_extended_types(name, type, options)
           column = self[name]
           column.array     = options[:array]
 
           self
         end
-
-        private
-        def new_column_definition(base, name, type)
-          definition = ColumnDefinition.new base, name, type
-          @columns << definition
-          @columns_hash[name] = definition
-          definition
-        end
+        alias_method_chain :column, :extended_types
       end
 
       class Table < ActiveRecord::ConnectionAdapters::Table
@@ -172,11 +164,12 @@ module ActiveRecord
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
+      alias :add_column_options_without_extended_types :add_column_options!
       def add_column_options!(sql, options)
         if options[:array] || options[:column].try(:array)
           sql << '[]'
         end
-        super
+        add_column_options_without_extended_types(sql, options)
       end
 
       def change_table(table_name, options = {})
