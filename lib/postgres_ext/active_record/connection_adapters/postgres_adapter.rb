@@ -145,7 +145,7 @@ module ActiveRecord
         end
       end
 
-      class Table
+      class Table < ActiveRecord::ConnectionAdapters::Table
         EXTENDED_TYPES.keys.map(&:to_s).each do |column_type|
           class_eval <<-EOV, __FILE__, __LINE__ + 1
             def #{column_type}(*args)                                          # def string(*args)
@@ -177,6 +177,16 @@ module ActiveRecord
           sql << '[]'
         end
         super
+      end
+
+      def change_table(table_name, options = {})
+        if supports_bulk_alter? && options[:bulk]
+          recorder = ActiveRecord::Migration::CommandRecorder.new(self)
+          yield Table.new(table_name, recorder)
+          bulk_change_table(table_name, recorder.commands)
+        else
+          yield Table.new(table_name, self)
+        end
       end
 
       def type_cast_with_extended_types(value, column, part_array = false)
