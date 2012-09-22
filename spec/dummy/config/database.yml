@@ -1,14 +1,14 @@
 test:
   adapter: postgresql
   database: postgres_ext_test
-  username: postgres
+  username:
   encoding: utf8
   port: 5432
   min_messages: warning
 development:
   adapter: postgresql
   database: postgres_ext_dev
-  username: postgres
+  username:
   encoding: utf8
   port: 5432
   min_messages: warning
