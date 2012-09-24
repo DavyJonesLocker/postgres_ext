@@ -3,7 +3,6 @@ ENV['RAILS_ENV'] = 'test'
 require File.expand_path('../dummy/config/environment.rb',  __FILE__)
 
 require 'rspec/rails'
-require 'debugger' if RUBY_VERSION == '1.9.3'
 require 'bourne'
 
 ENGINE_RAILS_ROOT=File.join(File.dirname(__FILE__), '../')
