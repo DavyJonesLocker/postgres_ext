@@ -26,7 +26,9 @@ Gem::Specification.new do |gem|
   else
     gem.add_development_dependency 'pg', '~> 0.13.2'
   end
-  gem.add_development_dependency 'debugger', '~> 1.1.2' if RUBY_VERSION == '1.9.3'
-  gem.add_development_dependency 'ruby-debug' if RUBY_PLATFORM =~ /java/
+  unless ENV['CI']
+    gem.add_development_dependency 'debugger', '~> 1.1.2' if RUBY_VERSION == '1.9.3'
+    gem.add_development_dependency 'ruby-debug' if RUBY_PLATFORM =~ /java/
+  end
   gem.add_development_dependency 'fivemat'
 end
