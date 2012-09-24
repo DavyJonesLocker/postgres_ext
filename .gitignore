@@ -18,3 +18,4 @@ tmp
 bin/
 .rbenv-version*
 
+spec/dummy/config/database.yml
