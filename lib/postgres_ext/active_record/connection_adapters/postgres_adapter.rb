@@ -189,6 +189,26 @@ module ActiveRecord
         end
       end
 
+      if RUBY_PLATFORM =~ /java/
+        # The activerecord-jbdc-adapter implements PostgreSQLAdapter#add_column differently from the active-record version
+        # so we have to patch that version in JRuby, but not in MRI/YARV
+        def add_column(table_name, column_name, type, options = {})
+          default = options[:default]
+          notnull = options[:null] == false
+          sql_type = type_to_sql(type, options[:limit], options[:precision], options[:scale])
+
+          if options[:array]
+            sql_type << '[]'
+          end
+
+          # Add the column.
+          execute("ALTER TABLE #{quote_table_name(table_name)} ADD COLUMN #{quote_column_name(column_name)} #{sql_type}")
+
+          change_column_default(table_name, column_name, default) if options_include_default?(options)
+          change_column_null(table_name, column_name, false, default) if notnull
+        end
+      end
+
       def type_cast_with_extended_types(value, column, part_array = false)
         case value
         when NilClass
