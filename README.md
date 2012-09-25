@@ -257,10 +257,3 @@ User.where(user_arel[:ip_address].contained_witin('127.0.0.1/24')).to_sql
 
 Dan McClain [twitter](http://twitter.com/_danmcclain) [github](http://github.com/danmcclain)
 
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
