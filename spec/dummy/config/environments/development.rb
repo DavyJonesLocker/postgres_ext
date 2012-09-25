@@ -1,5 +1,5 @@
 Dummy::Application.configure do
-  require 'debugger' if RUBY_VERSION == '1.9.3'
+  require 'debugger' if RUBY_VERSION == '1.9.3' && ! ENV['CI']
   # Settings specified here will take precedence over those in config/application.rb
 
   # In the development environment your application's code is reloaded on

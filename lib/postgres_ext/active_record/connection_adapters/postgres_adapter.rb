@@ -4,6 +4,11 @@ require 'pg_array_parser'
 
 module ActiveRecord
   module ConnectionAdapters
+    # class IndexDefinition < Struct.new(:table, :name, :unique, :columns, :lengths, :orders, :where, :index_type)
+    class IndexDefinition
+      attr_accessor :index_type, :where
+    end
+
     class PostgreSQLColumn
       include PgArrayParser
       attr_accessor :array
@@ -179,6 +184,15 @@ module ActiveRecord
         super
       end
 
+      def add_index(table_name, column_name, options = {})
+        index_name, unique, index_columns, _ = add_index_options(table_name, column_name, options)
+        if options.is_a? Hash
+          index_type = options[:index_type] ? " USING #{options[:index_type]} " : ""
+          index_options = options[:where] ? " WHERE #{options[:where]}" : ""
+        end
+        execute "CREATE #{unique} INDEX #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{index_type}(#{index_columns})#{index_options}"
+      end
+
       def change_table(table_name, options = {})
         if supports_bulk_alter? && options[:bulk]
           recorder = ActiveRecord::Migration::CommandRecorder.new(self)
@@ -241,6 +255,52 @@ module ActiveRecord
         end
       end
       alias_method_chain :quote, :extended_types
+
+      # this is based upon rails 4 changes to include different index methods
+      # Returns an array of indexes for the given table.
+      def indexes(table_name, name = nil)
+         result = select_rows(<<-SQL, name)
+           SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
+           FROM pg_class t
+           INNER JOIN pg_index d ON t.oid = d.indrelid
+           INNER JOIN pg_class i ON d.indexrelid = i.oid
+           WHERE i.relkind = 'i'
+             AND d.indisprimary = 'f'
+             AND t.relname = '#{table_name}'
+             AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = ANY (current_schemas(false)) )
+          ORDER BY i.relname
+        SQL
+        result.map do |row|
+          index_name = row[0]
+          unique = row[1] == 't'
+          indkey = row[2].split(" ")
+          inddef = row[3]
+          oid = row[4]
+
+          columns = Hash[select_rows(<<-SQL, "Columns for index #{row[0]} on #{table_name}")]
+          SELECT a.attnum::text, a.attname
+          FROM pg_attribute a
+          WHERE a.attrelid = #{oid}
+          AND a.attnum IN (#{indkey.join(",")})
+          SQL
+          column_names = columns.values_at(*indkey).compact
+
+          # add info on sort order for columns (only desc order is explicitly specified, asc is the default)
+          desc_order_columns = inddef.scan(/(\w+) DESC/).flatten
+          orders = desc_order_columns.any? ? Hash[desc_order_columns.map {|order_column| [order_column, :desc]}] : {}
+          #changed from rails 3.2
+          where = inddef.scan(/WHERE (.+)$/).flatten[0]
+          index_type = inddef.scan(/USING (.+?) /).flatten[0].to_sym
+          if column_names.present?
+            index_def = IndexDefinition.new(table_name, index_name, unique, column_names, [], orders)
+            index_def.where = where
+            index_def.index_type = index_type if index_type && index_type != :btree
+            index_def
+          # else nil
+          end
+          #/changed
+        end.compact
+      end
 
       private
 
