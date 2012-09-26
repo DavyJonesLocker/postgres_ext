@@ -65,7 +65,7 @@ describe 'Models with array columns' do
           u.changed?.should be_false
 
           u.save
-          u.update_at.should eq update_at
+          u.updated_at.should eq updated_at
         end
       end
     end
