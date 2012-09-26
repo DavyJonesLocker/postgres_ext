@@ -56,18 +56,6 @@ describe 'Models with array columns' do
           u.nick_names.should eq ['different', 'values']
         end
       end
-
-      describe 'setting value, no change' do
-        it 'is not changed' do
-          u = User.create(:nick_names => ['some', 'things'])
-          updated_at = u.updated_at
-          u.nick_names = ['some', 'things']
-          u.changed?.should be_false
-
-          u.save
-          u.updated_at.should eq updated_at
-        end
-      end
     end
   end
 
