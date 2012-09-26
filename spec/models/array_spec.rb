@@ -7,7 +7,10 @@ describe 'Models with array columns' do
     before do
       adapter.create_table :users, :force => true do |t|
         t.string :nick_names, :array => true
+
+        t.timestamps
       end
+
       class User < ActiveRecord::Base
         attr_accessible :nick_names
       end
@@ -51,6 +54,18 @@ describe 'Models with array columns' do
 
           u.reload
           u.nick_names.should eq ['different', 'values']
+        end
+      end
+
+      describe 'setting value, no change' do
+        it 'is not changed' do
+          u = User.create(:nick_names => ['some', 'things'])
+          updated_at = u.updated_at
+          u.nick_names = ['some', 'things']
+          u.changed?.should be_false
+
+          u.save
+          u.update_at.should eq update_at
         end
       end
     end
