@@ -72,6 +72,21 @@ describe 'Models with array columns' do
         end
       end
     end
+
+    context '#update_attributes' do
+      describe 'setting a value via update_attributes' do
+        it 'returns the value set when the record is retrieved' do
+          user = User.create(:nick_names => [])
+          user.reload
+
+          user.update_attributes(:nick_names => ['some', 'values'])
+          user.save
+
+          user.reload
+          user.nick_names.should eq ['some', 'values']
+        end
+      end
+    end
   end
 
   context 'default values' do
