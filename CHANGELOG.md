@@ -1,3 +1,7 @@
+## 0.0.8
+
+Fixes add and change column 
+
 ## 0.0.7
 
 Adds Arel predicate functions for array overlap operator (`&&`) and
