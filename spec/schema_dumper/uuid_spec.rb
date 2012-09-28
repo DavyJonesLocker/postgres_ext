@@ -5,7 +5,7 @@ describe 'UUID schema dump' do
   it 'correctly generates uuid column statements' do
     stream = StringIO.new
     connection.create_table :testings do |t|
-      t.uuid :network_column
+      t.uuid :uuid_column
     end
 
     ActiveRecord::SchemaDumper.dump(connection, stream)
