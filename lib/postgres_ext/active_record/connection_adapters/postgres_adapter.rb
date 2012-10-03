@@ -109,12 +109,12 @@ module ActiveRecord
       alias_method_chain :simplified_type, :extended_types
     end
 
+  class ColumnDefinition
+    attr_accessor :array
+  end
+
     class PostgreSQLAdapter
       EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}}
-      class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
-        attr_accessor :array
-      end
-
       class TableDefinition
         EXTENDED_TYPES.keys.map(&:to_s).each do |column_type|
           class_eval <<-EOV, __FILE__, __LINE__ + 1
@@ -127,56 +127,24 @@ module ActiveRecord
           EOV
         end
 
-        def column(name, type=nil, options = {})
-          super
-
+        def column_with_extended_types(name, type=nil, options = {})
+          column_without_extended_types(name, type, options)
           column = self[name]
           column.array     = options[:array]
 
           self
         end
-
-        private
-        def new_column_definition(base, name, type)
-          definition = ColumnDefinition.new base, name, type
-          @columns << definition
-          @columns_hash[name] = definition
-          definition
-        end
-      end
-
-      class Table < ActiveRecord::ConnectionAdapters::Table
-        EXTENDED_TYPES.keys.map(&:to_s).each do |column_type|
-          class_eval <<-EOV, __FILE__, __LINE__ + 1
-            def #{column_type}(*args)                                          # def string(*args)
-              options = args.extract_options!                                  #   options = args.extract_options!
-              column_names = args                                              #   column_names = args
-              type = :'#{column_type}'                                         #   type = :string
-              column_names.each do |name|                                      #   column_names.each do |name|
-                column = ColumnDefinition.new(@base, name.to_s, type)          #     column = ColumnDefinition.new(@base, name, type)
-                if options[:limit]                                             #     if options[:limit]
-                  column.limit = options[:limit]                               #       column.limit = options[:limit]
-                elsif native[type].is_a?(Hash)                                 #     elsif native[type].is_a?(Hash)
-                  column.limit = native[type][:limit]                          #       column.limit = native[type][:limit]
-                end                                                            #     end
-                column.precision = options[:precision]                         #     column.precision = options[:precision]
-                column.scale = options[:scale]                                 #     column.scale = options[:scale]
-                column.default = options[:default]                             #     column.default = options[:default]
-                column.null = options[:null]                                   #     column.null = options[:null]
-                @base.add_column(@table_name, name, column.sql_type, options)  #     @base.add_column(@table_name, name, column.sql_type, options)
-              end                                                              #   end
-            end                                                                # end
-          EOV
-        end
+        alias_method_chain :column, :extended_types
       end
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
+      alias :add_column_options_without_extended_types :add_column_options!
       def add_column_options!(sql, options)
         if options[:array] || options[:column].try(:array)
           sql << '[]'
         end
-        super
+        add_column_options_without_extended_types(sql, options)
       end
 
       def change_table(table_name, options = {})
@@ -250,6 +218,30 @@ module ActiveRecord
 
       def array_to_string(value, column)
         "{#{value.map{|val| type_cast(val, column, true)}.join(',')}}"
+      end
+    end
+    class Table
+      PostgreSQLAdapter::EXTENDED_TYPES.keys.map(&:to_s).each do |column_type|
+        class_eval <<-EOV, __FILE__, __LINE__ + 1
+          def #{column_type}(*args)                                          # def string(*args)
+            options = args.extract_options!                                  #   options = args.extract_options!
+            column_names = args                                              #   column_names = args
+            type = :'#{column_type}'                                         #   type = :string
+            column_names.each do |name|                                      #   column_names.each do |name|
+              column = ColumnDefinition.new(@base, name.to_s, type)          #     column = ColumnDefinition.new(@base, name, type)
+              if options[:limit]                                             #     if options[:limit]
+                column.limit = options[:limit]                               #       column.limit = options[:limit]
+              elsif native[type].is_a?(Hash)                                 #     elsif native[type].is_a?(Hash)
+                column.limit = native[type][:limit]                          #       column.limit = native[type][:limit]
+              end                                                            #     end
+              column.precision = options[:precision]                         #     column.precision = options[:precision]
+              column.scale = options[:scale]                                 #     column.scale = options[:scale]
+              column.default = options[:default]                             #     column.default = options[:default]
+              column.null = options[:null]                                   #     column.null = options[:null]
+              @base.add_column(@table_name, name, column.sql_type, options)  #     @base.add_column(@table_name, name, column.sql_type, options)
+            end                                                              #   end
+          end                                                                # end
+        EOV
       end
     end
   end
