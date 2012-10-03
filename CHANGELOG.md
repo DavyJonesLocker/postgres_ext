@@ -1,3 +1,7 @@
+## 0.0.9
+
+Adds more robust index types with add_index options :index_type and :where.
+
 ## 0.0.8
 
 Fixes add and change column 

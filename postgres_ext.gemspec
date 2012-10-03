@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = PostgresExt::VERSION
 
   gem.add_dependency 'activerecord', '~> 3.2.0'
-  gem.add_dependency 'pg_array_parser', '~> 0.0.3'
+  gem.add_dependency 'pg_array_parser', '~> 0.0.8'
 
   gem.add_development_dependency 'rails', '~> 3.2.0'
   gem.add_development_dependency 'rspec-rails', '~> 2.9.0'
@@ -27,8 +27,11 @@ Gem::Specification.new do |gem|
     gem.add_development_dependency 'pg', '~> 0.13.2'
   end
   unless ENV['CI']
-    gem.add_development_dependency 'debugger', '~> 1.1.2' if RUBY_VERSION == '1.9.3'
-    gem.add_development_dependency 'ruby-debug' if RUBY_PLATFORM =~ /java/
+    if RUBY_PLATFORM =~ /java/
+      gem.add_development_dependency 'ruby-debug'
+    elsif RUBY_VERSION == '1.9.3'
+      gem.add_development_dependency 'debugger', '~> 1.1.2'
+    end
   end
   gem.add_development_dependency 'fivemat'
 end

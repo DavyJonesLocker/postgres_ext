@@ -253,6 +253,25 @@ user_arel = User.arel_table
 User.where(user_arel[:ip_address].contained_witin('127.0.0.1/24')).to_sql
 # => SELECT \"users\".* FROM \"users\" WHERE \"users\".\"ip_address\" << '127.0.0.1/24'
 ```
+
+## Indexes
+
+### Index types
+
+Postgres\_ext allows you to specify an index type at index creation.
+
+```ruby
+add_index :table_name, :column, :index_type => :gin
+```
+
+### Where clauses
+
+Postgres\_ext allows you to specify a where clause at index creation.
+
+```ruby
+add_index :table_name, :column, :where => 'column < 50'
+```
+
 ## Authors
 
 Dan McClain [twitter](http://twitter.com/_danmcclain) [github](http://github.com/danmcclain)

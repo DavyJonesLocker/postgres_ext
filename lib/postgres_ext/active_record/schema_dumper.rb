@@ -2,6 +2,11 @@ require 'active_record/schema_dumper'
 
 module ActiveRecord
   class SchemaDumper
+    VALID_COLUMN_SPEC_KEYS = [:name, :limit, :precision, :scale, :default, :null, :array]
+    def self.valid_column_spec_keys
+      VALID_COLUMN_SPEC_KEYS
+    end
+
     private
     def table(table, stream)
       columns = @connection.columns(table)
@@ -30,11 +35,13 @@ module ActiveRecord
         column_specs = columns.map do |column|
           raise StandardError, "Unknown type '#{column.sql_type}' for column '#{column.name}'" if @types[column.type].nil?
           next if column.name == pk
-          column_spec(column)
+          spec = column_spec(column)
+          (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
+          spec
         end.compact
 
         # find all migration keys used in this table
-        keys = [:name, :limit, :precision, :scale, :default, :null, :array] & column_specs.map{ |k| k.keys }.flatten
+        keys = self.class.valid_column_spec_keys & column_specs.map{ |k| k.keys }.flatten
 
         # figure out the lengths for each column based on above keys
         lengths = keys.map{ |key| column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }
@@ -73,6 +80,37 @@ module ActiveRecord
       stream
     end
 
+    #mostly rails 3.2 code
+    def indexes(table, stream)
+      if (indexes = @connection.indexes(table)).any?
+        add_index_statements = indexes.map do |index|
+          statement_parts = [
+            ('add_index ' + index.table.inspect),
+            index.columns.inspect,
+            (':name => ' + index.name.inspect),
+          ]
+          statement_parts << ':unique => true' if index.unique
+
+          index_lengths = (index.lengths || []).compact
+          statement_parts << (':length => ' + Hash[index.columns.zip(index.lengths)].inspect) unless index_lengths.empty?
+
+          index_orders = (index.orders || {})
+          statement_parts << (':order => ' + index.orders.inspect) unless index_orders.empty?
+
+          # changed from rails 2.3
+          statement_parts << (':where => ' + index.where.inspect) if index.where
+          statement_parts << (':index_type => ' + index.index_type.inspect) if index.index_type
+          # /changed
+
+          '  ' + statement_parts.join(', ')
+        end
+
+        stream.puts add_index_statements.sort.join("\n")
+        stream.puts
+      end
+    end
+
+    #mostly rails 3.2 code (pulled out of table method)
     def column_spec(column)
       spec = {}
       spec[:name]      = column.name.inspect
@@ -89,8 +127,9 @@ module ActiveRecord
       spec[:scale]     = column.scale.inspect if column.scale
       spec[:null]      = 'false' unless column.null
       spec[:default]   = default_string(column.default) if column.has_default?
+      # changed from rails 3.2 code
       spec[:array]     = 'true' if column.respond_to?(:array) && column.array
-      (spec.keys - [:name, :type]).each{ |k| spec[k].insert(0, "#{k.inspect} => ")}
+      # /changed
       spec
     end
   end
