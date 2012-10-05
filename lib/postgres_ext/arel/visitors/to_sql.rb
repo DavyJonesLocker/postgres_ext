@@ -21,6 +21,7 @@ module Arel
       end
 
       def change_string value
+        return value unless value.is_a?(String)
         if value.match /"|,|\{/
           value.gsub(/"/, "\"").gsub(/'/,'"')
         else
