@@ -62,15 +62,9 @@ module ActiveRecord
       end
 
       def type_cast_array(array)
-        casted_array = []
-        array.each do |value|
-          if Array === value
-            casted_array.push type_cast_array(value)
-          else
-            casted_array.push type_cast value
-          end
+        array.map do |value|
+          Array === value ? type_cast_array(value) : type_cast(value)
         end
-        casted_array
       end
 
       def type_cast_code_with_extended_types(var_name)
