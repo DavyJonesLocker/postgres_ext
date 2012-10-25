@@ -218,7 +218,7 @@ accompish this:
 user_arel = User.arel_table
 
 any_tags_function = Arel::Nodes::NamedFunction.new('ANY', [user_arel[:tags]])
-predicate = Arel::Nodes::Equality('test', any_tags_function)
+predicate = Arel::Nodes::Equality.new('test', any_tags_function)
 
 User.where(predicate).to_sql
 #=> SELECT \"users\".* FROM \"users\" WHERE 'test' = ANY(\"users\".\"tags\")
