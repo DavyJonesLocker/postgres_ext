@@ -99,9 +99,9 @@ ones added by postgre\_ext), and respect length constraints
 create_table :testing do |t|
   t.integer :int_array, :array => true
   # integer[]
-  t.integer :int_array, :array => true, :length => 2
+  t.integer :int_array, :array => true, :limit => 2
   # smallint[]
-  t.string :macaddr_column_1, :array => true, :length => 30
+  t.string :macaddr_column_1, :array => true, :limit => 30
   # char varying(30)[]
 end
 ```

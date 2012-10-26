@@ -18,8 +18,20 @@ describe 'Array column' do
           string_array_column.type_cast('{"has \" quote",another value}').should eq ['has " quote', 'another value']
         end
 
-        it 'converts the PostgreSQL value containgin commas to an array' do
+        it 'converts the PostgreSQL value containing commas to an array' do
           string_array_column.type_cast('{"has , comma",another value,"more, commas"}').should eq ['has , comma', 'another value', 'more, commas']
+        end
+
+        it 'converts strings containing , to the proper value' do
+          adapter.type_cast(['c,'], string_array_column).should eq '{"c,"}'
+        end
+        
+        it "handles strings with double quotes" do
+          adapter.type_cast(['a"b'], string_array_column).should eq '{"a\\"b"}'
+        end
+
+        it 'converts arrays of strings containing nil to the proper value' do
+          adapter.type_cast(['one', nil, 'two'], string_array_column).should eq '{"one",NULL,"two"}'
         end
       end
     end
