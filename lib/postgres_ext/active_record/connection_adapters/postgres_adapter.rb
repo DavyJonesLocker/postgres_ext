@@ -303,7 +303,19 @@ module ActiveRecord
       end
 
       def array_to_string(value, column)
-        "{#{value.map{|val| type_cast(val, column, true)}.join(',')}}"
+        "{#{value.map { |val| item_to_string(val, column) }.join(',')}}"
+      end
+      
+      private
+      
+      def item_to_string(value, column)
+        if value.nil?
+          'NULL'
+        elsif value.is_a?String
+          '"' + type_cast(value, column, true).gsub('"', '\\"') + '"'
+        else
+          type_cast(value, column, true)
+        end
       end
     end
   end
