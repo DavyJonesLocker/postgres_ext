@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'spec_helper'
 
 describe 'Array column' do
@@ -13,6 +15,12 @@ describe 'Array column' do
         end
       end
 
+      context 'utf8' do
+        it "handles incoming UTF8 as UTF8" do
+          string_array_column.type_cast('{"Аркалио"}').should eq ['Аркалио']
+        end
+      end
+
       context 'corner cases, strings with commas and quotations' do
         it 'converts the PostgreSQL value containing escaped " to an array' do
           string_array_column.type_cast('{"has \" quote",another value}').should eq ['has " quote', 'another value']
@@ -25,7 +33,7 @@ describe 'Array column' do
         it 'converts strings containing , to the proper value' do
           adapter.type_cast(['c,'], string_array_column).should eq '{"c,"}'
         end
-        
+
         it "handles strings with double quotes" do
           adapter.type_cast(['a"b'], string_array_column).should eq '{"a\\"b"}'
         end
