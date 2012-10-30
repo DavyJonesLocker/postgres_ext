@@ -259,8 +259,10 @@ module ActiveRecord
       alias_method_chain :type_cast, :extended_types
 
       def quote_with_extended_types(value, column = nil)
-        if [Array, IPAddr].include? value.class
+        if value.is_a? IPAddr
           "'#{type_cast(value, column)}'"
+        elsif value.is_a? Array
+          "'#{array_to_string(value, column, true)}'"
         else
           quote_without_extended_types(value, column)
         end
@@ -319,15 +321,28 @@ module ActiveRecord
         "#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}"
       end
 
-      def array_to_string(value, column)
-        "{#{value.map { |val| item_to_string(val, column) }.join(',')}}"
+      def array_to_string(value, column, encode_single_quotes = false)
+        "{#{value.map { |val| item_to_string(val, column, encode_single_quotes) }.join(',')}}"
       end
 
-      def item_to_string(value, column)
+      def item_to_string(value, column, encode_single_quotes = false)
         if value.nil?
           'NULL'
-        elsif value.is_a?String
-          '"' + type_cast(value, column, true).gsub('"', '\\"') + '"'
+        elsif value.is_a? String
+          value = type_cast(value, column, true).dup
+          # Encode backslashes.  One backslash becomes 4 in the resulting SQL.
+          # (why 4, and not 2?  Trial and error shows 4 works, 2 fails to parse.)
+          value.gsub!('\\', '\\\\\\\\')
+          # Encode a bare " in the string as \"
+          value.gsub!('"', '\\"')
+          # PostgreSQL parses the string values differently if they are quoted for
+          # use in a statement, or if it will be used as part of a bound argument.
+          # For directly-inserted values (UPDATE foo SET bar='{"array"}') we need to
+          # escape ' as ''.  For bound arguments, do not escape them.
+          if encode_single_quotes
+            value.gsub!("'", "''")
+          end
+          "\"#{value}\""
         else
           type_cast(value, column, true)
         end
