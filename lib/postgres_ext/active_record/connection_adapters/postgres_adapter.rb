@@ -20,6 +20,7 @@ module ActiveRecord
         else
           initialize_without_extended_types(name,default, sql_type, null)
         end
+        database_encoding  # caches the encoding currently in use
       end
       alias_method_chain :initialize, :extended_types
       def klass_with_extended_types
@@ -42,7 +43,7 @@ module ActiveRecord
         else
           case type
           when :inet, :cidr   then klass.string_to_cidr_address(value)
-          else 
+          else
             type_cast_without_extended_types(value)
           end
         end
@@ -54,7 +55,7 @@ module ActiveRecord
         else
           string_array = parse_pg_array value
           if type == :string
-            string_array
+            force_character_encoding(string_array)
           else
             type_cast_array(string_array)
           end
@@ -89,6 +90,19 @@ module ActiveRecord
         end
       end
       private
+      
+      def database_encoding
+        return @database_encoding if @database_encoding
+        @database_encoding = ActiveRecord::Base.connection.encoding
+        @database_encoding = "UTF-8" if @database_encoding == "UTF8"
+        @database_encoding
+      end
+
+      def force_character_encoding(string_array)
+        string_array.map do |item|
+          item.respond_to?(:force_encoding) ? item.force_encoding(database_encoding) : item
+        end
+      end
 
       def simplified_type_with_extended_types(field_type)
         case field_type
@@ -229,7 +243,7 @@ module ActiveRecord
           end
         when Array
           if column.array
-            array_to_string(value, column) 
+            array_to_string(value, column)
           else
             type_cast_without_extended_types(value, column)
           end
@@ -305,9 +319,9 @@ module ActiveRecord
       def array_to_string(value, column)
         "{#{value.map { |val| item_to_string(val, column) }.join(',')}}"
       end
-      
+
       private
-      
+
       def item_to_string(value, column)
         if value.nil?
           'NULL'
