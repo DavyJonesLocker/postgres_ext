@@ -89,6 +89,11 @@ create_table :testing do |t|
   # or
   t.column :uuid_column, :uuid
 end
+
+# or to create a table with a UUID primary key
+create_table :testing, :id => false do |t|
+  t.uuid :id, :primary_key => true
+end
 ```
 
 ### Arrays

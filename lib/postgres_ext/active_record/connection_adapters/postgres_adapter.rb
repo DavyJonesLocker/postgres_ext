@@ -112,6 +112,7 @@ module ActiveRecord
       EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}}
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
+        attr_accessor :primary_key
       end
 
       class TableDefinition
@@ -131,6 +132,7 @@ module ActiveRecord
 
           column = self[name]
           column.array     = options[:array]
+          column.primary_key = options[:primary_key]
 
           self
         end
@@ -174,6 +176,8 @@ module ActiveRecord
       def add_column_options!(sql, options)
         if options[:array] || options[:column].try(:array)
           sql << '[]'
+        elsif options[:primary_key] || options[:column].try(:primary_key)
+          sql << ' PRIMARY KEY'
         end
         super
       end
