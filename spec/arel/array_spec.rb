@@ -23,7 +23,7 @@ describe 'Array Column Predicates' do
     it 'converts Arel array_overlap statment' do
       arel_table = ArelArray.arel_table
 
-      arel_table.where(arel_table[:tags].array_overlap(['tag','tag 2'])).to_sql.should match /&& '\{tag,tag 2\}'/
+      arel_table.where(arel_table[:tags].array_overlap(['tag','tag 2'])).to_sql.should match /&& '\{"tag","tag 2"\}'/
     end
 
     it 'converts Arel array_overlap statment' do

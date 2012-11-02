@@ -87,6 +87,105 @@ describe 'Models with array columns' do
         end
       end
     end
+
+    describe 'strings contain special characters' do
+      context '#save' do
+        it 'contains: \'' do
+          data = ['some\'thing']
+          u = User.create
+          u.nick_names = data
+          u.save!
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: {' do
+          data = ['some{thing']
+          u = User.create
+          u.nick_names = data
+          u.save!
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: }' do
+          data = ['some}thing']
+          u = User.create
+          u.nick_names = data
+          u.save!
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: backslash' do
+          data = ['some\\thing']
+          u = User.create
+          u.nick_names = data
+          u.save!
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: "' do
+          data = ['some"thing']
+          u = User.create
+          u.nick_names = data
+          u.save!
+          u.reload
+          u.nick_names.should eq data
+        end
+      end
+
+      context '#create' do
+        it 'contains: \'' do
+          data = ['some\'thing']
+          u = User.create(:nick_names => data)
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: {' do
+          data = ['some{thing']
+          u = User.create(:nick_names => data)
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: }' do
+          data = ['some}thing']
+          u = User.create(:nick_names => data)
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: backslash' do
+          data = ['some\\thing']
+          u = User.create(:nick_names => data)
+          u.reload
+          u.nick_names.should eq data
+        end
+
+        it 'contains: "' do
+          data = ['some"thing']
+          u = User.create(:nick_names => data)
+          u.reload
+          u.nick_names.should eq data
+        end
+      end
+    end
+
+    describe 'array_overlap' do
+      it "works" do
+        arel = User.arel_table
+        User.create(:nick_names => ['this'])
+        x = User.create
+        x.nick_names = ["s'o{m}e", 'thing']
+        x.save
+        u = User.where(arel[:nick_names].array_overlap(["s'o{m}e"]))
+        u.first.should_not be_nil
+        u.first.nick_names.should eq ["s'o{m}e", 'thing']
+      end
+    end
   end
 
   context 'default values' do
