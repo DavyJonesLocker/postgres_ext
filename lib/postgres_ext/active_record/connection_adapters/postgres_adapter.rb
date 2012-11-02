@@ -20,7 +20,6 @@ module ActiveRecord
         else
           initialize_without_extended_types(name,default, sql_type, null)
         end
-        database_encoding  # caches the encoding currently in use
       end
       alias_method_chain :initialize, :extended_types
       def klass_with_extended_types
@@ -90,17 +89,10 @@ module ActiveRecord
         end
       end
       private
-      
-      def database_encoding
-        return @database_encoding if @database_encoding
-        @database_encoding = ActiveRecord::Base.connection.encoding
-        @database_encoding = "UTF-8" if @database_encoding == "UTF8"
-        @database_encoding
-      end
 
       def force_character_encoding(string_array)
         string_array.map do |item|
-          item.respond_to?(:force_encoding) ? item.force_encoding(database_encoding) : item
+          item.respond_to?(:force_encoding) ? item.force_encoding(ActiveRecord::Base.connection.encoding_for_ruby) : item
         end
       end
 
@@ -126,6 +118,17 @@ module ActiveRecord
       EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}}
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
+      end
+
+      # Translate from the current database encoding to the encoding we
+      # will force string array components into on retrievial.
+      def encoding_for_ruby
+        @database_encoding ||= case ActiveRecord::Base.connection.encoding
+                               when 'UTF8'
+                                 'UTF-8'
+                               else
+                                 ActiveRecord::Base.connection.encoding
+                               end
       end
 
       class TableDefinition
@@ -319,8 +322,6 @@ module ActiveRecord
       def array_to_string(value, column)
         "{#{value.map { |val| item_to_string(val, column) }.join(',')}}"
       end
-
-      private
 
       def item_to_string(value, column)
         if value.nil?
