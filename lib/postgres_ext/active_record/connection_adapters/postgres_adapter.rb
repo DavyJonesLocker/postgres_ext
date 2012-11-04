@@ -67,6 +67,10 @@ module ActiveRecord
         end
       end
 
+      def number?
+        !self.array && super
+      end
+
       def type_cast_code_with_extended_types(var_name)
         klass = self.class.name
 
@@ -88,6 +92,7 @@ module ActiveRecord
           return IPAddr.new(string)
         end
       end
+
       private
 
       def force_character_encoding(string_array)

@@ -7,12 +7,13 @@ describe 'Models with array columns' do
     before do
       adapter.create_table :users, :force => true do |t|
         t.string :nick_names, :array => true
+        t.integer :favorite_numbers, :array => true
 
         t.timestamps
       end
 
       class User < ActiveRecord::Base
-        attr_accessible :nick_names
+        attr_accessible :nick_names, :favorite_numbers
       end
     end
 
@@ -65,6 +66,42 @@ describe 'Models with array columns' do
           user.reload
 
           user.update_attribute(:nick_names, ['some', 'values'])
+          user.save
+
+          user.reload
+          user.nick_names.should eq ['some', 'values']
+        end
+      end
+    end
+
+    context '#<column>? do' do
+      describe 'checking a value via <attribute_name>? 'do
+        it 'returns false if it\'s an empty array' do
+          user = User.create(:nick_names => [], :favorite_numbers => [])
+          user.reload
+
+          user.nick_names?.should be_false
+          user.favorite_numbers?.should be_false
+        end
+
+        it 'returns false if it\'s an empty array' do
+          user = User.create(:nick_names => ['bob'], :favorite_numbers => [0])
+          user.reload
+
+          user.nick_names?.should be_true
+          user.favorite_numbers?.should be_true
+        end
+      end
+    end
+
+    context '#update_column' do
+      describe 'setting a value via update_column' do
+        it 'returns the value set when the record is retrieved' do
+          pending #This fails, not sure where to fix this, takes different code path than #update_attribute
+          user = User.create(:nick_names => [])
+          user.reload
+
+          user.update_column(:nick_names, ['some', 'values'])
           user.save
 
           user.reload
