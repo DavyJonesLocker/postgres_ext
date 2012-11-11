@@ -25,6 +25,8 @@ If you'd like to submit a pull request please adhere to the following:
 5. General Rails/Ruby naming conventions for files and classes
 6. *Do not* use Ruby 1.9 hash syntax
 7. *Do not* use Ruby 1.9 stubby proc syntax
+8. Follow Tim Pope's [model for git commit messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html). This will make it 
+   much easier to generate change logs and navigate through the logs
 
 Plase note that you must adhere to each of the above mentioned rules.
 Failure to do so will result in an immediate closing of the pull
