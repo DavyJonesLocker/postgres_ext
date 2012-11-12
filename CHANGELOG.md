@@ -1,6 +1,16 @@
 ## 0.0.9
 
-Adds more robust index types with add_index options :index_type and :where.
+ * Fixes #<attribute_name>?, Adds (pending) test case for #update_column - Dan McClain (@danmcclain)
+ * Fix handing of pgsql arrays for the literal and argument-binding
+cases - Michael Graff (@skandragon)
+ * Fixes UTF-8 strings in string arrays are not returned as UTF-8
+encoded strings - Michael Graff (@skandragon)
+ * Documentation fixes - Michael Graff (@skandragon) and Dan McClain
+(@danmcclain)
+ * Properly encode strings stored in an array. - Michael Graff
+(@skandragon)
+ * Fixes integer array support - Keenan Brock (@kbrock)
+ * Adds more robust index types with add_index options :index_type and :where. - Keenan Brock (@kbrock)
 
 ## 0.0.8
 
