@@ -334,20 +334,21 @@ module ActiveRecord
         if value.nil?
           'NULL'
         elsif value.is_a? String
-          value = type_cast(value, column, true).dup
+          casted_value = type_cast(value, column, true)
+          casted_value = casted_value.dup unless [Fixnum, Float].include?(casted_value.class)
           # Encode backslashes.  One backslash becomes 4 in the resulting SQL.
           # (why 4, and not 2?  Trial and error shows 4 works, 2 fails to parse.)
-          value.gsub!('\\', '\\\\\\\\')
+          casted_value.gsub!('\\', '\\\\\\\\')
           # Encode a bare " in the string as \"
-          value.gsub!('"', '\\"')
+          casted_value.gsub!('"', '\\"')
           # PostgreSQL parses the string values differently if they are quoted for
           # use in a statement, or if it will be used as part of a bound argument.
           # For directly-inserted values (UPDATE foo SET bar='{"array"}') we need to
           # escape ' as ''.  For bound arguments, do not escape them.
           if encode_single_quotes
-            value.gsub!("'", "''")
+            casted_value.gsub!("'", "''")
           end
-          "\"#{value}\""
+          "\"#{casted_value}\""
         else
           type_cast(value, column, true)
         end
