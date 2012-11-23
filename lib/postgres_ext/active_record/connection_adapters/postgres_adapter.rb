@@ -331,11 +331,12 @@ module ActiveRecord
       end
 
       def item_to_string(value, column, encode_single_quotes = false)
-        if value.nil?
-          'NULL'
-        elsif value.is_a? String
-          casted_value = type_cast(value, column, true)
-          casted_value = casted_value.dup unless [Fixnum, Float].include?(casted_value.class)
+        return 'NULL' if value.nil?
+
+        casted_value = type_cast(value, column, true)
+
+        if casted_value.is_a? String
+          casted_value = casted_value.dup
           # Encode backslashes.  One backslash becomes 4 in the resulting SQL.
           # (why 4, and not 2?  Trial and error shows 4 works, 2 fails to parse.)
           casted_value.gsub!('\\', '\\\\\\\\')
@@ -348,9 +349,10 @@ module ActiveRecord
           if encode_single_quotes
             casted_value.gsub!("'", "''")
           end
+
           "\"#{casted_value}\""
         else
-          type_cast(value, column, true)
+          casted_value
         end
       end
     end
