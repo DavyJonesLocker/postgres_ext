@@ -41,6 +41,18 @@ describe 'Models with array columns' do
           u.reload
           u.nick_names.should eq ['some', 'things']
         end
+
+        it 'creates a user with an int array of some values' do
+          u = User.create(:favorite_numbers => [2,3,5])
+          u.reload
+          u.favorite_numbers.should eq [2,3,5]
+        end
+
+        it 'creates a user with an int array of string values' do
+          u = User.create(:favorite_numbers => ['2','3','5'])
+          u.reload
+          u.favorite_numbers.should eq [2,3,5]
+        end
       end
     end
 
