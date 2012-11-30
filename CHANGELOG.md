@@ -1,3 +1,7 @@
+## 0.0.10
+
+ * Fixes parsing of number arrays when they are set from a string array - Alexey Noskov (@alno)
+
 ## 0.0.9
 
  * Fixes #<attribute_name>?, Adds (pending) test case for #update_column - Dan McClain (@danmcclain)
