@@ -37,10 +37,15 @@ describe 'Array Column Predicates' do
       two = ArelArray.create!(:tags => ['two'])
       arel_table = ArelArray.arel_table
 
-      ArelArray.where(arel_table[:tags].array_overlap(['one'])).should include(one)
-      ArelArray.where(arel_table[:tags].array_overlap(['two'])).should include(two)
-      ArelArray.where(arel_table[:tags].array_overlap(['two','one'])).should include(two)
-      ArelArray.where(arel_table[:tags].array_overlap(['two','one'])).should include(one)
+      query = arel_table.where(arel_table[:tags].array_overlap(['one'])).project(Arel.sql('*'))
+      ArelArray.find_by_sql(query.to_sql).should include(one)
+
+      query = arel_table.where(arel_table[:tags].array_overlap(['two'])).project(Arel.sql('*'))
+      ArelArray.find_by_sql(query.to_sql).should include(two)
+
+      query = arel_table.where(arel_table[:tags].array_overlap(['two','one'])).project(Arel.sql('*'))
+      ArelArray.find_by_sql(query.to_sql).should include(two)
+      ArelArray.find_by_sql(query.to_sql).should include(one)
     end
   end
 end
