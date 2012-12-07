@@ -3,9 +3,9 @@ class CreatePeople < ActiveRecord::Migration
     create_table :people do |t|
       t.inet :ip
       t.cidr :subnet, :subnet2
-      t.integer_array :arrayzerd
-      t.inet_array :inet_arrayzerd
-      t.string_array :str_arrayzerd, :limit => 5
+      t.integer :arrayzerd, :array => true
+      t.inet :inet_arrayzerd, :array => true
+      t.string :str_arrayzerd, :array => true, :limit => 5
       t.string :test
 
       t.timestamps
