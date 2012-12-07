@@ -13,20 +13,18 @@
 
 ActiveRecord::Schema.define(:version => 20120501163758) do
 
-  create_table "people", :force => true do |t|
-    t.inet          "ip"
-    t.cidr          "subnet"
-    t.cidr          "subnet2"
-    t.integer_array "arrayzerd"
-    t.inet_array    "inet_arrayzerd"
-    t.string_array  "str_arrayzerd",  :limit => 5
-    t.string        "test"
-    t.datetime      "created_at",                  :null => false
-    t.datetime      "updated_at",                  :null => false
-  end
+  add_extension "hstore"
 
-  create_table "test", :id => false, :force => true do |t|
-    t.string "test_a"
+  create_table "people", :force => true do |t|
+    t.inet     "ip"
+    t.cidr     "subnet"
+    t.cidr     "subnet2"
+    t.integer  "arrayzerd",                                   :array => true
+    t.inet     "inet_arrayzerd",                              :array => true
+    t.string   "str_arrayzerd",  :limit => 5,                 :array => true
+    t.string   "test"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
   end
 
 end
