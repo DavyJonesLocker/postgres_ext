@@ -6,7 +6,7 @@ If you need to open a new issue you *must* provide the following:
 
 1. Version of Rails
 
-Failure to include the above mentioned requirements will result in the
+Failure to include the aforementioned requirements will result in the
 issue being closed.
 
 If you want to ensure that your issue gets fixed *fast* you should
@@ -28,7 +28,7 @@ If you'd like to submit a pull request please adhere to the following:
 8. Follow Tim Pope's [model for git commit messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html). This will make it 
    much easier to generate change logs and navigate through the logs
 
-Plase note that you must adhere to each of the above mentioned rules.
+Please note that you must adhere to each of the aforementioned rules.
 Failure to do so will result in an immediate closing of the pull
 request. If you update and rebase the pull request to follow the
 guidelines your pull request will be re-opened and considered for
