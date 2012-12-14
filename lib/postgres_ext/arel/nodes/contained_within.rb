@@ -1,5 +1,4 @@
 require 'arel/nodes/binary'
-require 'debugger'
 module Arel
   module Nodes
     class ContainedWithin < Arel::Nodes::Binary
