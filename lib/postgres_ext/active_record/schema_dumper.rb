@@ -7,7 +7,26 @@ module ActiveRecord
       VALID_COLUMN_SPEC_KEYS
     end
 
+    def dump(stream)
+      header(stream)
+      # added
+      extensions(stream)
+      # /added
+      tables(stream)
+      trailer(stream)
+      stream
+    end
+
     private
+
+    def extensions(stream)
+      exts=@connection.extensions
+
+      unless exts.empty?
+        stream.puts exts.map { |name| "  add_extension \"#{name}\""}.join("\n") + "\n\n"
+      end
+    end
+
     def table(table, stream)
       columns = @connection.columns(table)
       begin
