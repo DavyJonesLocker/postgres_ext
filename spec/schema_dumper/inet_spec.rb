@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'INET schema dump' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :testings }
   it 'correctly generates inet column statements' do
     stream = StringIO.new
     connection.create_table :testings do |t|

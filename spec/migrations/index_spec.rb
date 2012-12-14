@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'index migrations' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :index_types }
   it 'creates special index' do
     lambda do
       connection.create_table :index_types do |t|

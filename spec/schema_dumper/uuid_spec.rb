@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'UUID schema dump' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :testings }
   it 'correctly generates uuid column statements' do
     stream = StringIO.new
     connection.create_table :testings do |t|

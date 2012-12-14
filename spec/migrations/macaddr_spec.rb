@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'MACADDR migrations' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :data_types }
   it 'creates an macaddr column' do
     lambda do
       connection.create_table :data_types do |t|

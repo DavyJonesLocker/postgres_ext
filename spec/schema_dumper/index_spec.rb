@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'index schema dumper' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :index_types }
   it 'correctly generates index statements' do
     connection.create_table :index_types do |t|
       t.integer :col1, :array => true

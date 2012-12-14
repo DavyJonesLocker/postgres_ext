@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'INET migrations' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :data_types }
   it 'creates an inet column' do
     lambda do
       connection.create_table :data_types do |t|

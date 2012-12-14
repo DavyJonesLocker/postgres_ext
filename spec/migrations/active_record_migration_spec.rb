@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe 'ActiveRecord Migrations' do
   let!(:connection) { ActiveRecord::Base.connection }
+  after { connection.drop_table :generic_data_types }
   it 'creates non-postgres_ext columns' do
-
     lambda do
       connection.create_table :generic_data_types do |t|
         t.integer :col_1
