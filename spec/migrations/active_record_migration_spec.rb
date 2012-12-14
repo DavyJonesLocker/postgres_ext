@@ -1,11 +1,16 @@
 require 'spec_helper'
 
-describe 'activerecord migrations' do
+describe 'ActiveRecord Migrations' do
   let!(:connection) { ActiveRecord::Base.connection }
   it 'creates non-postgres_ext columns' do
 
     lambda do
-      DoMigration.new.up
+      connection.create_table :generic_data_types do |t|
+        t.integer :col_1
+        t.string :col_2
+        t.datetime :col_3
+      end
+      connection.add_column :generic_data_types, :col_4, :text
     end.should_not raise_exception
 
     columns = connection.columns(:generic_data_types)
@@ -19,18 +24,6 @@ describe 'activerecord migrations' do
     col_2.sql_type.should eq 'character varying(255)'
     col_3.sql_type.should eq 'timestamp without time zone'
     col_4.sql_type.should eq 'text'
-  end
-end
-
-
-class DoMigration < ActiveRecord::Migration
-  def up
-    create_table :generic_data_types do |t|
-      t.integer :col_1
-      t.string :col_2
-      t.datetime :col_3
-    end
-    add_column :generic_data_types, :col_4, :text
   end
 end
 
