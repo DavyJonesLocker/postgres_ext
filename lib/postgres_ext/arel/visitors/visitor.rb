@@ -1,7 +1,8 @@
-require 'arel/visitors/to_sql'
+require 'arel/visitors/visitor'
 module Arel
   module Visitors
-    class ToSql
+    class Visitor
+      # We are adding our visitors to the main visitor for the time being until the right spot is found to monkey patch
       private
       def visit_Arel_Nodes_ContainedWithin o
         "#{visit o.left} << #{visit o.right}"

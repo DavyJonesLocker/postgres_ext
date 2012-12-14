@@ -32,6 +32,12 @@ describe 'Array Column Predicates' do
       arel_table.where(arel_table[:tag_ids].array_overlap([1,2])).to_sql.should match /&& '\{1,2\}'/
     end
 
+    it 'works with count (and other predicates)' do
+      arel_table = ArelArray.arel_table
+
+      ArelArray.where(arel_table[:tag_ids].array_overlap([1,2])).count.should eq 0
+    end
+
     it 'returns matched records' do
       one = ArelArray.create!(:tags => ['one'])
       two = ArelArray.create!(:tags => ['two'])
