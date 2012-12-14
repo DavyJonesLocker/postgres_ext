@@ -12,7 +12,7 @@ module ActiveRecord
       end
 
       def quote_bound_value(value, column = nil, c = connection)
-        if column.present?
+        if column.present? && column != c
           record_column = self.columns.select {|col| col.name == column}.first
           c.quote(value, record_column)
         elsif value.respond_to?(:map) && !value.acts_like?(:string)
