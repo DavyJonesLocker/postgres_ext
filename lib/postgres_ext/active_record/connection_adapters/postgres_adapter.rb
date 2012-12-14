@@ -209,6 +209,10 @@ module ActiveRecord
         execute "CREATE #{unique} INDEX #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{index_type}(#{index_columns})#{index_options}"
       end
 
+      def add_extension(extension_name, options={})
+        execute "CREATE extension if not exists \"#{extension_name}\""
+      end
+
       def change_table(table_name, options = {})
         if supports_bulk_alter? && options[:bulk]
           recorder = ActiveRecord::Migration::CommandRecorder.new(self)
@@ -320,6 +324,10 @@ module ActiveRecord
           end
           #/changed
         end.compact
+      end
+
+      def extensions
+        select_rows('select extname from pg_extension', 'extensions').map { |row| row[0] }.delete_if {|name| name == 'plpgsql'}
       end
 
       private
