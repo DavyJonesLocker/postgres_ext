@@ -109,7 +109,6 @@ describe 'Models with array columns' do
     context '#update_column' do
       describe 'setting a value via update_column' do
         it 'returns the value set when the record is retrieved' do
-          #pending #This fails, not sure where to fix this, takes different code path than #update_attribute
           user = User.create(:nick_names => [])
           user.reload
 

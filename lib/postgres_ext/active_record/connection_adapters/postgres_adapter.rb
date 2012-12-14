@@ -268,6 +268,8 @@ module ActiveRecord
           "'#{type_cast(value, column)}'"
         elsif value.is_a? Array
           "'#{array_to_string(value, column, true)}'"
+        elsif column.respond_to?(:array) && column.array && value =~ /^\{.*\}$/
+          "'#{value}'"
         else
           quote_without_extended_types(value, column)
         end
