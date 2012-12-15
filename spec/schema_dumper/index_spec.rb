@@ -4,7 +4,6 @@ describe 'index schema dumper' do
   let!(:connection) { ActiveRecord::Base.connection }
   after { connection.drop_table :index_types }
   it 'correctly generates index statements' do
-    connection.add_extension('pg_trgm')
     connection.create_table :index_types do |t|
       t.integer :col1, :array => true
       t.integer :col2
