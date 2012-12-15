@@ -119,6 +119,7 @@ module ActiveRecord
           # changed from rails 2.3
           statement_parts << (':where => ' + index.where.inspect) if index.where
           statement_parts << (':index_type => ' + index.index_type.inspect) if index.index_type
+          statement_parts << (':index_opclass => ' + index.index_opclass.inspect) if index.index_opclass
           # /changed
 
           '  ' + statement_parts.join(', ')

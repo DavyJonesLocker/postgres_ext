@@ -4,9 +4,8 @@ require 'pg_array_parser'
 
 module ActiveRecord
   module ConnectionAdapters
-    # class IndexDefinition < Struct.new(:table, :name, :unique, :columns, :lengths, :orders, :where, :index_type)
     class IndexDefinition
-      attr_accessor :index_type, :where
+      attr_accessor :index_type, :where, :index_opclass
     end
 
     class PostgreSQLColumn
@@ -205,8 +204,9 @@ module ActiveRecord
         if options.is_a? Hash
           index_type = options[:index_type] ? " USING #{options[:index_type]} " : ""
           index_options = options[:where] ? " WHERE #{options[:where]}" : ""
+          index_opclass = options[:index_opclass]
         end
-        execute "CREATE #{unique} INDEX #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{index_type}(#{index_columns})#{index_options}"
+        execute "CREATE #{unique} INDEX #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{index_type}(#{index_columns} #{index_opclass})#{index_options}"
       end
 
       def add_extension(extension_name, options={})
@@ -280,9 +280,14 @@ module ActiveRecord
       end
       alias_method_chain :quote, :extended_types
 
+      def opclasses
+        @opclasses ||= select_rows('SELECT opcname FROM pg_opclass').flatten.uniq
+      end
+
       # this is based upon rails 4 changes to include different index methods
       # Returns an array of indexes for the given table.
       def indexes(table_name, name = nil)
+        opclasses
          result = select_rows(<<-SQL, name)
            SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
            FROM pg_class t
@@ -315,10 +320,16 @@ module ActiveRecord
           #changed from rails 3.2
           where = inddef.scan(/WHERE (.+)$/).flatten[0]
           index_type = inddef.scan(/USING (.+?) /).flatten[0].to_sym
+          # TODO: Fix for complext types
+          if index_type
+            index_op = inddef.scan(/USING .+? \(.+? (#{opclasses.join('|')})\)/).flatten
+            index_op = index_op[0].to_sym if index_op.present?
+          end
           if column_names.present?
             index_def = IndexDefinition.new(table_name, index_name, unique, column_names, [], orders)
             index_def.where = where
             index_def.index_type = index_type if index_type && index_type != :btree
+            index_def.index_opclass = index_op if index_type && index_type != :btree && index_op
             index_def
           # else nil
           end
