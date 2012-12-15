@@ -320,7 +320,6 @@ module ActiveRecord
           #changed from rails 3.2
           where = inddef.scan(/WHERE (.+)$/).flatten[0]
           index_type = inddef.scan(/USING (.+?) /).flatten[0].to_sym
-          # TODO: Fix for complext types
           if index_type
             index_op = inddef.scan(/USING .+? \(.+? (#{opclasses.join('|')})\)/).flatten
             index_op = index_op[0].to_sym if index_op.present?
