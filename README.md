@@ -34,12 +34,45 @@ ActiveRecord's data type handling.
  * [Querying PostgreSQL datatypes](#querying-postgresql-datatypes)
 
 ### Usage Notes
-Take care when dealing with arrays and other types that allow you to
-update their value in place. In place changes are not currently tracked
-in Rails (see [this issue](https://github.com/rails/rails/issues/6954)).
-To track changes that happen via `#<<` or other instance methods, be
-sure to call `<attribute>_will_change!` so that Active Record knows to
-persist the change.
+Avoid the use of in place operators (ie `Array#<<`). These changes are
+*not* tracked by Rails ([this issue](https://github.com/rails/rails/issues/6954))
+explains why). In place modifications also modify the default object.
+
+Assuming we have the following model:
+
+```ruby
+create_table :items do |t|
+  t.string :names, :array => true, :default => []
+end
+
+class Item < ActiveRecord::Base
+end
+```
+
+The following will modify the default value of the names attribute.
+
+```ruby
+a = Item.new
+a.names << 'foo'
+
+b = Item.new
+puts b.names
+# => ['foo']
+```
+
+The supported way of modifying `a.names`:
+
+```ruby
+a = Item.new
+a.names += 'foo'
+
+b = Item.new
+puts b.names
+# => []
+```
+
+As a result, in place operators are discouraged and will not be
+supported in postgres\_ext at this time. 
 
 ## Migration/Schema.rb support
 
