@@ -1,6 +1,18 @@
 ## 0.0.10
 
  * Fixes parsing of number arrays when they are set from a string array - Alexey Noskov (@alno)
+ * Cleans up spec organization  - Dan McClain (@danmcclain)
+ * Adds support for index operator classes (:index_opclass) in
+migrations and schema dumps - & Dan McClain (@danmcclain)
+ * Fixes Arel Nodes created by postgres_ext  - Dan McClain (@danmcclain)
+ * Add support to schema.rb to export and import extensions - Keenan
+Brock (@kbrock)
+ * Handles PostgreSQL strings when passed in as defaults by fixing the
+quote method
+ * Documentation updates. - Dan McClain & Doug Yun (@danmcclain
+@duggieawesome)
+ * Fixes #update_column calls - Dan McClain (@danmcclain)
+
 
 ## 0.0.9
 
