@@ -22,6 +22,7 @@ describe 'Index schema dumper' do
 
     output.should match /:index_type => :gin/
     output.should_not match /:index_type => :btree/
+    output.should_not match /:index_opclass =>/
   end
 
   it 'handles index where clauses' do
