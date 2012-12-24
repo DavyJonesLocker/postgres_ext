@@ -10,7 +10,7 @@ module ActiveRecord
     def dump(stream)
       header(stream)
       # added
-      extensions(stream)
+      extensions(stream) if @connection.supports_extensions?
       # /added
       tables(stream)
       trailer(stream)
@@ -20,7 +20,7 @@ module ActiveRecord
     private
 
     def extensions(stream)
-      exts=@connection.extensions
+      exts = @connection.extensions
 
       unless exts.empty?
         stream.puts exts.map { |name| "  add_extension \"#{name}\""}.join("\n") + "\n\n"

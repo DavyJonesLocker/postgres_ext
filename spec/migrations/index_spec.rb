@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'index migrations' do
+describe 'Index migrations' do
   let!(:connection) { ActiveRecord::Base.connection }
 
   before do
@@ -35,7 +35,7 @@ describe 'index migrations' do
     index_2.where.should            match /col2 > 50/
   end
 
-  it 'creates indexes with operator classes' do
+  it 'creates indexes with operator classes', :if => ActiveRecord::Base.connection.supports_extensions? do
     lambda do
       connection.add_index(:index_types, :col3, :index_type => :gin, :index_opclass => :gin_trgm_ops)
     end.should_not raise_exception

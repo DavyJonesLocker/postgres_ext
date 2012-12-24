@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'extension schema dump' do
+describe 'extension schema dump', :if => ActiveRecord::Base.connection.supports_extensions? do
   let!(:connection) { ActiveRecord::Base.connection }
   it 'correctly creates and exports database extensions' do
     stream = StringIO.new

@@ -35,7 +35,7 @@ describe 'Index schema dumper' do
     output.should match /:where => "\(col2 > 50\)"/
   end
 
-  it 'dumps index operator classes' do
+  it 'dumps index operator classes', :if => ActiveRecord::Base.connection.supports_extensions? do
     connection.add_index(:index_types, :col3, :index_type => :gin, :index_opclass => :gin_trgm_ops)
 
     stream = StringIO.new

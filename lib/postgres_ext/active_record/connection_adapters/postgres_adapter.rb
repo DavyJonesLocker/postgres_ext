@@ -11,6 +11,7 @@ module ActiveRecord
     class PostgreSQLColumn
       include PgArrayParser
       attr_accessor :array
+
       def initialize_with_extended_types(name, default, sql_type = nil, null = true)
         if sql_type =~ /\[\]$/
           @array = true
@@ -21,6 +22,7 @@ module ActiveRecord
         end
       end
       alias_method_chain :initialize, :extended_types
+
       def klass_with_extended_types
         case type
         when :inet, :cidr   then IPAddr
@@ -29,6 +31,7 @@ module ActiveRecord
         end
       end
       alias_method_chain :klass, :extended_types
+
       def type_cast_with_extended_types(value)
         return nil if value.nil?
         return coder.load(value) if encoded?
@@ -47,6 +50,7 @@ module ActiveRecord
         end
       end
       alias_method_chain :type_cast, :extended_types
+
       def string_to_array(value)
         if Array === value
           value
@@ -119,20 +123,12 @@ module ActiveRecord
     end
 
     class PostgreSQLAdapter
+      class UnsupportedFeature < Exception; end
+
       EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}}
+
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
-      end
-
-      # Translate from the current database encoding to the encoding we
-      # will force string array components into on retrievial.
-      def encoding_for_ruby
-        @database_encoding ||= case ActiveRecord::Base.connection.encoding
-                               when 'UTF8'
-                                 'UTF-8'
-                               else
-                                 ActiveRecord::Base.connection.encoding
-                               end
       end
 
       class TableDefinition
@@ -157,6 +153,7 @@ module ActiveRecord
         end
 
         private
+
         def new_column_definition(base, name, type)
           definition = ColumnDefinition.new base, name, type
           @columns << definition
@@ -192,6 +189,21 @@ module ActiveRecord
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
+      # Translate from the current database encoding to the encoding we
+      # will force string array components into on retrievial.
+      def encoding_for_ruby
+        @database_encoding ||= case ActiveRecord::Base.connection.encoding
+                               when 'UTF8'
+                                 'UTF-8'
+                               else
+                                 ActiveRecord::Base.connection.encoding
+                               end
+      end
+
+      def supports_extensions?
+        postgresql_version > 90100
+      end
+
       def add_column_options!(sql, options)
         if options[:array] || options[:column].try(:array)
           sql << '[]'
@@ -210,7 +222,8 @@ module ActiveRecord
       end
 
       def add_extension(extension_name, options={})
-        execute "CREATE extension if not exists \"#{extension_name}\""
+        raise UnsupportedFeature.new('Extensions are not support by this version of PostgreSQL') unless supports_extensions?
+        execute "CREATE extension IF NOT EXISTS \"#{extension_name}\""
       end
 
       def change_table(table_name, options = {})
