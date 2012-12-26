@@ -19,8 +19,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'pg_array_parser', '~> 0.0.8'
 
   gem.add_development_dependency 'rails', '~> 3.2.0'
-  gem.add_development_dependency 'rspec-rails', '~> 2.9.0'
-  gem.add_development_dependency 'bourne', '~> 1.1.2'
+  gem.add_development_dependency 'rspec-rails', '~> 2.12.0'
+  gem.add_development_dependency 'bourne', '~> 1.3.0'
   if RUBY_PLATFORM =~ /java/
     gem.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
   else
