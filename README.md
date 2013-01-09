@@ -64,7 +64,7 @@ The supported way of modifying `a.names`:
 
 ```ruby
 a = Item.new
-a.names += 'foo'
+a.names += ['foo']
 
 b = Item.new
 puts b.names
