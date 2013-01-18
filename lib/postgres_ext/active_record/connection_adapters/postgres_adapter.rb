@@ -256,7 +256,7 @@ module ActiveRecord
         end
       end
 
-      def type_cast_with_extended_types(value, column, part_array = false)
+      def type_cast_extended(value, column, part_array = false)
         case value
         when NilClass
           if column.array && part_array
@@ -277,6 +277,10 @@ module ActiveRecord
         else
           type_cast_without_extended_types(value, column)
         end
+      end
+
+      def type_cast_with_extended_types(value, column)
+        type_cast_extended(value, column)
       end
       alias_method_chain :type_cast, :extended_types
 
@@ -366,7 +370,7 @@ module ActiveRecord
       def item_to_string(value, column, encode_single_quotes = false)
         return 'NULL' if value.nil?
 
-        casted_value = type_cast(value, column, true)
+        casted_value = type_cast_extended(value, column, true)
 
         if casted_value.is_a? String
           casted_value = casted_value.dup
