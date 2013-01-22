@@ -56,7 +56,7 @@ module ActiveRecord
           value
         else
           string_array = parse_pg_array value
-          if type == :string
+          if type == :string || type == :text
             force_character_encoding(string_array)
           else
             type_cast_array(string_array)
