@@ -5,6 +5,7 @@ require 'spec_helper'
 describe 'Array column' do
   let!(:integer_array_column) { ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new 'field', nil, 'integer[]'}
   let!(:string_array_column) { ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new 'field', nil, 'character varying(255)[]'}
+  let!(:text_array_column) { ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new 'field', nil, 'text[]'}
   let!(:adapter) { ActiveRecord::Base.connection }
 
   context 'string array' do
@@ -40,6 +41,44 @@ describe 'Array column' do
 
         it 'converts arrays of strings containing nil to the proper value' do
           adapter.type_cast(['one', nil, 'two'], string_array_column).should eq '{"one",NULL,"two"}'
+        end
+      end
+    end
+  end
+
+  context 'text array' do
+    describe '#type_class' do
+      context 'has null value' do
+        it 'converts the PostgreSQL value to an array with a nil value' do
+          text_array_column.type_cast('{1,NULL,"NULL"}').should eq ['1',nil,'NULL']
+        end
+      end
+
+      context 'utf8' do
+        it "handles incoming UTF8 as UTF8" do
+          text_array_column.type_cast('{"Аркалио"}').should eq ['Аркалио']
+        end
+      end
+
+      context 'corner cases, strings with commas and quotations' do
+        it 'converts the PostgreSQL value containing escaped " to an array' do
+          text_array_column.type_cast('{"has \" quote",another value}').should eq ['has " quote', 'another value']
+        end
+
+        it 'converts the PostgreSQL value containing commas to an array' do
+          text_array_column.type_cast('{"has , comma",another value,"more, commas"}').should eq ['has , comma', 'another value', 'more, commas']
+        end
+
+        it 'converts strings containing , to the proper value' do
+          adapter.type_cast(['c,'], text_array_column).should eq '{"c,"}'
+        end
+
+        it "handles strings with double quotes" do
+          adapter.type_cast(['a"b'], text_array_column).should eq '{"a\\"b"}'
+        end
+
+        it 'converts arrays of strings containing nil to the proper value' do
+          adapter.type_cast(['one', nil, 'two'], text_array_column).should eq '{"one",NULL,"two"}'
         end
       end
     end
