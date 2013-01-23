@@ -12,3 +12,6 @@ before_script:
 notifications:
   email: 
     - git@danmcclain.net
+  campfire:
+    rooms:
+      - secure: "yVESPleawl+fzvnzXw/W7rULyCjMEq3gPc3cEqcqM2SBBtEIDNXto2zoTAoR\nC5yqhijr+UtmVMsI7CxVK3XvfkmCJZN9P4DP0uas8XYx5DsSabCdPN0h3pka\nbaDCMCInU5QF4WswL2iuyLsOJeKDRwxh09adsHi1HpMgf0nTKPA="
