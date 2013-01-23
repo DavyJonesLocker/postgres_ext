@@ -124,6 +124,18 @@ create_table :testing do |t|
 end
 ```
 
+### CITEXT
+
+```ruby
+create_table :testing do |t|
+  t.citext :citext_column
+  # or
+  t.citext :citext_column_1, :citext_column_2
+  # or
+  t.column :citext_column, :citext
+end
+```
+
 ### Arrays
 Arrays are created from any ActiveRecord supported datatype (including
 ones added by postgre\_ext), and respect length constraints
