@@ -138,7 +138,7 @@ end
 
 ### Arrays
 Arrays are created from any ActiveRecord supported datatype (including
-ones added by postgre\_ext), and respect length constraints
+ones added by postgres\_ext), and respect length constraints
 
 ```ruby
 create_table :testing do |t|
