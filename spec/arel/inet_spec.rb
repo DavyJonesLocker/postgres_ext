@@ -23,11 +23,34 @@ describe 'INET related AREL functions' do
     end
   end
 
-  describe 'cotained with (<<) operator' do
-    it 'converts Arel contained_within statemnts to <<' do
+  describe 'contained with (<<) operator' do
+    it 'converts Arel contained_within statements to <<' do
       arel_table = IpAddress.arel_table
 
       arel_table.where(arel_table[:address].contained_within(IPAddr.new('127.0.0.1/24'))).to_sql.should match /<< '127.0.0.0\/24'/
+    end
+  end
+
+  describe 'contained within or equals (<<=) operator' do
+    it 'converts Arel contained_within_or_equals statements to  <<=' do
+      arel_table  = IpAddress.arel_table
+
+      arel_table.where(arel_table[:address].contained_within_or_equals(IPAddr.new('127.0.0.1/24'))).to_sql.should match /<<= '127.0.0.0\/24'/
+    end
+  end
+  describe 'contains (>>) operator' do
+    it 'converts Arel contains statements to >>' do
+      arel_table = IpAddress.arel_table
+
+      arel_table.where(arel_table[:address].contains(IPAddr.new('127.0.0.1/24'))).to_sql.should match />> '127.0.0.0\/24'/
+    end
+  end
+
+  describe 'contains or equals (>>=) operator' do
+    it 'converts Arel contains_or_equals statements to  >>=' do
+      arel_table  = IpAddress.arel_table
+
+      arel_table.where(arel_table[:address].contains_or_equals(IPAddr.new('127.0.0.1/24'))).to_sql.should match />>= '127.0.0.0\/24'/
     end
   end
 end

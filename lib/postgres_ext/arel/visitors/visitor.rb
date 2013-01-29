@@ -8,6 +8,18 @@ module Arel
         "#{visit o.left} << #{visit o.right}"
       end
 
+      def visit_Arel_Nodes_ContainedWithinEquals o
+        "#{visit o.left} <<= #{visit o.right}"
+      end
+
+      def visit_Arel_Nodes_Contains o
+        "#{visit o.left} >> #{visit o.right}"
+      end
+
+      def visit_Arel_Nodes_ContainsEquals o
+        "#{visit o.left} >>= #{visit o.right}"
+      end
+
       def visit_Arel_Nodes_ArrayOverlap o
         if Array === o.right 
           right = "{#{o.right.map{|v| change_string(visit(v))}.join(',')}}"
