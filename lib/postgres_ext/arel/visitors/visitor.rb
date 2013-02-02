@@ -31,11 +31,6 @@ module Arel
       def visit_IPAddr value
         "'#{value.to_s}/#{value.instance_variable_get(:@mask_addr).to_s(2).count('1')}'"
       end
-
-      def change_string value
-        return value unless value.is_a?(String)
-        value.gsub(/^\'/, '"').gsub(/\'$/, '"')
-      end
     end
   end
 end
