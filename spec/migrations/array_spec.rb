@@ -34,16 +34,32 @@ describe 'Array migrations' do
     before { connection.create_table :data_types }
     after  { connection.drop_table   :data_types }
     describe 'Add Column' do
-      it 'creates an array column' do
-        lambda do
-          connection.add_column :data_types, :array_5, :cidr, :array => true
-        end.should_not raise_exception
+      context 'no default' do
+        it 'creates an array column' do
+          lambda do
+            connection.add_column :data_types, :array_5, :cidr, :array => true
+          end.should_not raise_exception
 
-        columns = connection.columns(:data_types)
+          columns = connection.columns(:data_types)
 
-        array_5 = columns.detect { |c| c.name == 'array_5'}
-        array_5.sql_type.should eq 'cidr[]'
+          array_5 = columns.detect { |c| c.name == 'array_5'}
+          array_5.sql_type.should eq 'cidr[]'
+        end
       end
+
+      context 'with default' do
+        it 'creates an array column' do
+          lambda do
+            connection.add_column :data_types, :array_6, :integer, :array => true, :default => []
+          end.should_not raise_exception
+
+          columns = connection.columns(:data_types)
+
+          array_6 = columns.detect { |c| c.name == 'array_6'}
+          array_6.sql_type.should eq 'integer[]'
+        end
+      end
+
     end
 
     describe 'Change table methods' do

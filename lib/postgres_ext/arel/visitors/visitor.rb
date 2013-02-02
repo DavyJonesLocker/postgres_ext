@@ -21,9 +21,8 @@ module Arel
       end
 
       def visit_Arel_Nodes_ArrayOverlap o
-        if Array === o.right 
-          right = "{#{o.right.map{|v| change_string(visit(v))}.join(',')}}"
-          "#{visit o.left} && '#{right}'"
+        if Array === o.right
+          "#{visit o.left} && #{visit o.right}"
         else
           "#{visit o.left} && #{visit o.right}"
         end
