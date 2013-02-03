@@ -13,6 +13,9 @@ describe 'where array clauses' do
       attr_accessible :tags, :tags_ids
     end
   end
+  after do
+    adapter.drop_table :overlap_arel_arrays
+  end
   describe '.where(:array_column => [])' do
     it 'returns an array string instead of IN ()' do
       query = OverlapArelArray.where(:tags => ['working']).to_sql
