@@ -5,7 +5,7 @@ module Arel
     class ToSql
       def visit_Array o
         if last_column.respond_to?(:array) && last_column.array
-          quote(o, last_column)
+          quoted o
         else
           o.map { |x| visit x }.join(', ')
         end
