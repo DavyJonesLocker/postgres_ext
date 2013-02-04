@@ -5,6 +5,14 @@ Adds support for missing PostgreSQL data types to ActiveRecord.
 [![Build Status](https://secure.travis-ci.org/dockyard/postgres_ext.png?branch=master)](http://travis-ci.org/dockyard/postgres_ext)
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/dockyard/postgres_ext)
 
+## Looking for help? ##
+
+If it is a bug [please open an issue on
+Github](https://github.com/dockyard/party_foul/issues). If you need help using
+the gem please ask the question on
+[Stack Overflow](http://stackoverflow.com). Be sure to tag the
+question with `DockYard` so we can find it.
+
 ## Roadmap
 
  * Arel support for INET, CIDR and Array related where clauses
