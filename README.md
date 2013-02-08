@@ -13,11 +13,6 @@ the gem please ask the question on
 [Stack Overflow](http://stackoverflow.com). Be sure to tag the
 question with `DockYard` so we can find it.
 
-## Roadmap
-
- * Arel support for INET, CIDR and Array related where clauses
- * Backport HStore code from Rails 4.0
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -37,11 +32,12 @@ Or install it yourself as:
 Just `require 'postgres_ext'` and use ActiveRecord as you normally would! postgres\_ext extends
 ActiveRecord's data type handling.
 
- * [Migration/Schema.rb support](#migrationschemarb-support)
- * [Type Casting support](#type-casting-support)
- * [Querying PostgreSQL datatypes](#querying-postgresql-datatypes)
+ * [Migration/Schema.rb support](tree/master/docs/migrations.md)
+ * [Type Casting support](tree/master/docs/type_casting.md)
+ * [Querying PostgreSQL datatypes](tree/master/docs/querying.md)
+ * [Indexes](tree/master/docs/indexes.md)
 
-### Usage Notes
+## Usage Notes
 Avoid the use of in place operators (ie `Array#<<`). These changes are
 *not* tracked by Rails ([this issue](https://github.com/rails/rails/issues/6954))
 explains why). In place modifications also modify the default object.
@@ -82,252 +78,8 @@ puts b.names
 As a result, in place operators are discouraged and will not be
 supported in postgres\_ext at this time. 
 
-## Migration/Schema.rb support
 
-### INET
 
-```ruby
-create_table :testing do |t|
-  t.inet :inet_column
-  # or
-  t.inet :inet_column_1, :inet_column_2
-  # or
-  t.column :inet_column, :inet
-end
-```
-
-### CIDR
-
-```ruby
-create_table :testing do |t|
-  t.cidr :cidr_column
-  # or
-  t.cidr :cidr_column_1, :cidr_column_2
-  # or
-  t.column :cidr_column, :cidr
-end
-```
-
-### MACADDR
-
-```ruby
-create_table :testing do |t|
-  t.macaddr :macaddr_column
-  # or
-  t.macaddr :macaddr_column_1, :macaddr_column_2
-  # or
-  t.column :macaddr_column, :macaddr
-end
-```
-
-### UUID
-
-```ruby
-create_table :testing do |t|
-  t.uuid :uuid_column
-  # or
-  t.uuid :uuid_column_1, :uuid_column_2
-  # or
-  t.column :uuid_column, :uuid
-end
-```
-
-### CITEXT
-
-```ruby
-create_table :testing do |t|
-  t.citext :citext_column
-  # or
-  t.citext :citext_column_1, :citext_column_2
-  # or
-  t.column :citext_column, :citext
-end
-```
-
-### Arrays
-Arrays are created from any ActiveRecord supported datatype (including
-ones added by postgres\_ext), and respect length constraints
-
-```ruby
-create_table :testing do |t|
-  t.integer :int_array, :array => true
-  # integer[]
-  t.integer :int_array, :array => true, :limit => 2
-  # smallint[]
-  t.string :macaddr_column_1, :array => true, :limit => 30
-  # char varying(30)[]
-end
-```
-
-## Type Casting support
-
-### INET and CIDR
-INET and CIDR values are converted to
-[IPAddr](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/ipaddr/rdoc/IPAddr.html)
-objects when retrieved from the database, or set as a string.
-
-```ruby
-create_table :inet_examples do |t|
-  t.inet :ip_address
-end
-
-class InetExample < ActiveRecord::Base
-end
-
-inetExample = InetExample.new
-inetExample.ip_address = '127.0.0.0/24'
-inetExample.ip_address
-# => #<IPAddr: IPv4:127.0.0.0/255.255.255.0> 
-inetExample.save
-
-inet_2 = InetExample.first
-inet_2.ip_address
-# => #<IPAddr: IPv4:127.0.0.0/255.255.255.0> 
-```
-
-### Arrays
-Array values can be set with Array objects. Any array stored in the
-database will be converted to a properly casted array of values on the
-way out.
-
-```ruby
-create_table :people do |t|
-  t.integer :favorite_numbers, :array => true
-end
-
-class Person < ActiveRecord::Base
-end
-
-person = Person.new
-person.favorite_numbers = [1,2,3]
-person.favorite_numbers
-# => [1,2,3]
-person.save
-
-person_2 = Person.first
-person_2.favorite_numbers
-# => [1,2,3]
-person_2.favorite_numbers.first.class
-# => Fixnum
-```
-
-## Querying PostgreSQL datatypes
-
-  * [Arrays](#arrays-2)
-  * [INET/CIDR](#inetcidr)
-
-### Arrays
-
-  * [&& - Array Overlap operator](#---array-overlap-operator)
-  * [ANY or ALL functions](#any-or-all-functions)
-
-#### && - Array Overlap operator
-
-PostgreSQL implements the `&&` operator, known as the overlap operator,
-for arrays. The overlap operator returns `t` (true) when two arrays have
-one or more elements in common.
-
-```sql
-ARRAY[1,2,3] && ARRAY[4,5,6]
--- f
-
-ARRAY[1,2,3] && ARRAY[3,5,6]
--- t
-```
-
-Postgres\_ext defines `array_overlap`, an [Arel](https://github.com/rails/arel)
-predicate for the `&&` operator.
-
-```ruby
-user_arel = User.arel_table
-
-# Execute the query
-User.where(user_arel[:tags].array_overlap(['one','two']))
-# => SELECT \"users\".* FROM \"users\" WHERE \"users\".\"tags\" && '{one,two}'
-```
-
-#### ANY or ALL functions
-
-When querying array columns, you have the ability to see if a predicate
-apply's to either *any* element in the array, or *all* elements of the
-array. The syntax for these predicates are slightly different then the
-normal `where` syntax in PostgreSQL. To see if an array contains the
-string `'test'` in any location, you would write the following in SQL
-
-```sql
-SELECT *
-FROM users
-WHERE 'test' = ANY(users.tags)
-```
-
-Notice that the column is on the right hand side of the predicate,
-instead of the left, because we have to call the `ANY` function on that
-column.
-
-We can generate the above query using [Arel](https://github.com/rails/arel)
-and generating the Node manually. We would use the following to
-accompish this:
-
-```ruby
-user_arel = User.arel_table
-
-any_tags_function = Arel::Nodes::NamedFunction.new('ANY', [user_arel[:tags]])
-predicate = Arel::Nodes::Equality.new('test', any_tags_function)
-
-# Execute the query
-User.where(predicate)
-#=> SELECT \"users\".* FROM \"users\" WHERE 'test' = ANY(\"users\".\"tags\")
-```
-
-The ALL version of this same predicate can be generated by swap `'ANY'`
-for `'ALL'` in the named function.
-
-### INET/CIDR
-
-#### `<<` -- Contained within operator
-
-PostgreSQL defines the `<<`, or contained within operator for INET and
-CIDR datatypes. The `<<` operator returns `t` (true) if a INET or CIDR
-address is contained within the given subnet. 
-
-```sql
-inet '192.168.1.6' << inet '10.0.0.0/24'
--- f
-
-inet '192.168.1.6' << inet '192.168.1.0/24'
--- t
-```
-
-Postgres\_ext defines `contained_within`, an [Arel](https://github.com/rails/arel)
-predicate for the `<<` operator.
-
-```ruby
-user_arel = User.arel_table
-
-# Execute the query
-User.where(user_arel[:ip_address].contained_witin('127.0.0.1/24'))
-# => SELECT \"users\".* FROM \"users\" WHERE \"users\".\"ip_address\" << '127.0.0.1/24'
-```
-
-## Indexes
-
-### Index types
-
-Postgres\_ext allows you to specify index type and index operator
-class at index creation.
-
-```ruby
-add_index :table_name, :column, :index_type => :gin
-add_index :table_name, :column, :index_type => :gin, :index_opclass => :gin_trgm_ops
-```
-
-### Where clauses
-
-Postgres\_ext allows you to specify a where clause at index creation.
-
-```ruby
-add_index :table_name, :column, :where => 'column < 50'
-```
 
 ## Authors
 
