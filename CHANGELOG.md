@@ -1,3 +1,25 @@
+## 0.2.0
+
+ * Introduces extensions to `ActiveRecord::Relation.where` to simplify
+Array and INET/CIDR queries - Dan McClain (@danmcclain)
+ * Fixes `where(:array => [1,2])` to use equailty instead of IN clauses
+- Dan McClain (@danmcclain)
+ * Adds Arel predicates for more network comparisons - Patrick Muldoon
+(@doon)
+ * Adds support for citext in migrations/schema.rb - Jonathan Younger
+(@daikini)
+ * Fixes text character encoding for text columns - Andy Monat (@amonat)
+ * Cleans up alias_method_chains for better interoperability - Raido
+Paaslepp (@legendetm)
+ * Doc updates - Dan McClain, Caleb Woods (@danmcclain @calebwoods)
+
+## 0.1.0
+
+ * Performs PostgreSQL version check before attempting to dumpe
+extensions - Dan McClain (@danmcclain)
+ * Fixes issues with schema dumper when indexes have no index_opclass -
+Mario Visic (@mariovisic)
+
 ## 0.0.10
 
  * Fixes parsing of number arrays when they are set from a string array - Alexey Noskov (@alno)
