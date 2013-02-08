@@ -32,10 +32,10 @@ Or install it yourself as:
 Just `require 'postgres_ext'` and use ActiveRecord as you normally would! postgres\_ext extends
 ActiveRecord's data type handling.
 
- * [Migration/Schema.rb support](tree/master/docs/migrations.md)
- * [Type Casting support](tree/master/docs/type_casting.md)
- * [Querying PostgreSQL datatypes](tree/master/docs/querying.md)
- * [Indexes](tree/master/docs/indexes.md)
+ * [Migration/Schema.rb support](docs/migrations.md)
+ * [Type Casting support](docs/type_casting.md)
+ * [Querying PostgreSQL datatypes](docs/querying.md)
+ * [Indexes](docs/indexes.md)
 
 ## Usage Notes
 Avoid the use of in place operators (ie `Array#<<`). These changes are
