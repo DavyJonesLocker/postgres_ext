@@ -8,6 +8,7 @@ rvm:
 before_script:
   - psql -c 'create database postgres_ext_test;' -U postgres
   - cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
+  - RAILS_ENV=test rake db:migrate
 
 notifications:
   email: 

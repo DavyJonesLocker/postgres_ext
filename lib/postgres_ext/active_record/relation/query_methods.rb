@@ -8,10 +8,41 @@ module ActiveRecord
       end
 
       def overlap(opts)
-        arel_table = @scope.engine.arel_table
         opts.each do |key, value|
           @scope = @scope.where(arel_table[key].array_overlap(value))
         end
+        @scope
+      end
+
+      def contained_within(opts)
+        opts.each do |key, value|
+          @scope = @scope.where(arel_table[key].contained_within(value))
+        end
+
+        @scope
+      end
+
+      def contained_within_or_equals(opts)
+        opts.each do |key, value|
+          @scope = @scope.where(arel_table[key].contained_within_or_equals(value))
+        end
+
+        @scope
+      end
+
+      def contains(opts)
+        opts.each do |key, value|
+          @scope = @scope.where(arel_table[key].contains(value))
+        end
+
+        @scope
+      end
+
+      def contains_or_equals(opts)
+        opts.each do |key, value|
+          @scope = @scope.where(arel_table[key].contains_or_equals(value))
+        end
+
         @scope
       end
 
@@ -25,9 +56,11 @@ module ActiveRecord
 
       private
 
-      def equality_to_function(function_name, opts)
-        arel_table = @scope.engine.arel_table
+      def arel_table
+        @arel_table ||= @scope.engine.arel_table
+      end
 
+      def equality_to_function(function_name, opts)
         opts.each do |key, value|
           any_function = Arel::Nodes::NamedFunction.new(function_name, [arel_table[key]])
           predicate = Arel::Nodes::Equality.new(value, any_function)

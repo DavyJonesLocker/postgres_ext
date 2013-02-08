@@ -2,11 +2,9 @@ class CreatePeople < ActiveRecord::Migration
   def change
     create_table :people do |t|
       t.inet :ip
-      t.cidr :subnet, :subnet2
-      t.integer :arrayzerd, :array => true
-      t.inet :inet_arrayzerd, :array => true
-      t.string :str_arrayzerd, :array => true, :limit => 5
-      t.string :test
+      t.cidr :subnet
+      t.inet :tag_ids, :array => true
+      t.string :tags, :array => true
 
       t.timestamps
     end
