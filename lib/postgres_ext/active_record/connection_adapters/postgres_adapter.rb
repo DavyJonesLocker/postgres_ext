@@ -127,7 +127,8 @@ module ActiveRecord
     class PostgreSQLAdapter
       class UnsupportedFeature < Exception; end
 
-      EXTENDED_TYPES = {:inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'}, :uuid => {:name => 'uuid'}, :citext => {:citext => 'citext'}}
+      EXTENDED_TYPES = { :inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'},
+                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'} }
 
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
