@@ -1,3 +1,8 @@
+## 0.2.1
+
+ * Fixes issue with citext change column calls - Dan McClain
+(@danmcclain)
+
 ## 0.2.0
 
  * Introduces extensions to `ActiveRecord::Relation.where` to simplify
