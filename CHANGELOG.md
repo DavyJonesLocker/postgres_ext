@@ -1,3 +1,7 @@
+## 0.2.2
+
+ * Fixes issue with visit_Array monkey patch - Dan McClain (@danmcclain)
+
 ## 0.2.1
 
  * Fixes issue with citext change column calls - Dan McClain
