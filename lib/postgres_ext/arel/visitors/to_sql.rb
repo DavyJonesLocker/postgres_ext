@@ -7,7 +7,7 @@ module Arel
         if last_column.respond_to?(:array) && last_column.array
           quoted o
         else
-          o.map { |x| visit x }.join(', ')
+          o.empty? ? 'NULL' : o.map { |x| visit x }.join(', ')
         end
       end
     end
