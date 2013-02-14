@@ -10,7 +10,8 @@ module ActiveRecord
     def dump(stream)
       header(stream)
       # added
-      extensions(stream) if @connection.supports_extensions?
+      extensions(stream) if @connection.respond_to?(:supports_extensions?) && 
+                            @connection.supports_extensions?
       # /added
       tables(stream)
       trailer(stream)
