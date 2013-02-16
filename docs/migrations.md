@@ -74,3 +74,19 @@ create_table :testing do |t|
   # char varying(30)[]
 end
 ```
+
+### Converting to Arrays
+
+If you have an existing column with a string-delimited array (e.g. 'val1 val2 val3') convert that data using SQL in your migration.
+
+```ruby
+class AddLinkedArticleIdsToLinkSet < ActiveRecord::Migration
+  def change
+    add_column :link_sets, :linked_article_ids, :integer, :array => true, :default => []
+    execute <<-eos
+    UPDATE link_sets
+    SET linked_article_ids = cast (string_to_array(linked_articles_string, ' ') as integer[])
+    eos
+  end
+end
+````
