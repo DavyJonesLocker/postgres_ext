@@ -42,6 +42,38 @@ User.where(user_arel[:tags].array_overlap(['one','two']))
 # => SELECT \"users\".* FROM \"users\" WHERE \"users\".\"tags\" && '{one,two}'
 ```
 
+### @> - Array Contains operator
+
+PostgreSQL has a contains (`@>`) operator for querying whether all the
+elements of an array are within another.
+
+```sql
+ARRAY[1,2,3] @> ARRAY[3,4]
+-- f
+
+ARRAY[1,2,3] @> ARRAY[2,3]
+-- t
+```
+
+Postgres\_ext extends the `ActiveRecord::Relation.where` method by
+adding a `contains` method. To make a contains query, you can do:
+
+```ruby
+User.where.contains(:nick_names => ['Bob', 'Fred'])
+```
+
+Postgres\_ext defines `array_contains`, an [Arel](https://github.com/rails/arel)
+predicate for the `@>` operator. This is utilized by the
+`where.array_contains` call above.
+
+```ruby
+user_arel = User.arel_table
+
+# Execute the query
+User.where(user_arel[:tags].array_contains(['one','two']))
+# => SELECT "users".* FROM "users" WHERE "users"."tags" @> '{"one","two"}'
+```
+
 ### ANY or ALL functions
 
 When querying array columns, you have the ability to see if a predicate
