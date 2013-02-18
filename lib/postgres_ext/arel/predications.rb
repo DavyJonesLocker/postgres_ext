@@ -21,5 +21,9 @@ module Arel
     def array_overlap(other)
       Nodes::ArrayOverlap.new self, other
     end
+
+    def array_contains(other)
+      Nodes::ArrayContains.new self, other
+    end
   end
 end

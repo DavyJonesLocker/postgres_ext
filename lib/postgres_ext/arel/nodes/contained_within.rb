@@ -16,9 +16,5 @@ module Arel
     class ContainsEquals < Arel::Nodes::Binary
       def operator; '>>='.symbolize end
     end
-
-    class ArrayOverlap < Arel::Nodes::Binary
-      def operator; '&&' end
-    end
   end
 end
