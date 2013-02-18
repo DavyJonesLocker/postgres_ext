@@ -28,14 +28,14 @@ describe 'Array queries' do
     end
   end
 
-  describe '.where.array_contains(:column => value)' do
+  describe '.where.contains(:column => value)' do
     it 'generates the appropriate where clause' do
-      query = Person.where.array_contains(:tag_ids => [1,2])
+      query = Person.where.contains(:tag_ids => [1,2])
       query.to_sql.should match contains_regex
     end
 
     it 'allows chaining' do
-      query = Person.where.array_contains(:tag_ids => [1,2]).where(:tags => ['working']).to_sql
+      query = Person.where.contains(:tag_ids => [1,2]).where(:tags => ['working']).to_sql
 
       query.should match contains_regex
       query.should match equality_regex

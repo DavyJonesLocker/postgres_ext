@@ -14,13 +14,6 @@ module ActiveRecord
         @scope
       end
 
-      def array_contains(opts)
-        opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].array_contains(value))
-        end
-        @scope
-      end
-
       def contained_within(opts)
         opts.each do |key, value|
           @scope = @scope.where(arel_table[key].contained_within(value))
@@ -39,7 +32,13 @@ module ActiveRecord
 
       def contains(opts)
         opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].contains(value))
+          column_definition = @scope.engine.columns.find { |col| col.name == key.to_s }
+
+          if column_definition.respond_to?(:array) && column_definition.array
+            @scope = @scope.where(arel_table[key].array_contains(value))
+          else
+            @scope = @scope.where(arel_table[key].contains(value))
+          end
         end
 
         @scope

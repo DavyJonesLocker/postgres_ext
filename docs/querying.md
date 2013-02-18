@@ -55,15 +55,14 @@ ARRAY[1,2,3] @> ARRAY[2,3]
 -- t
 ```
 
-Postgres_ext extends the `ActiveRecord::Relation.where` method by
-adding an `array_contains` method. To make a contains query, you
-can do:
+Postgres\_ext extends the `ActiveRecord::Relation.where` method by
+adding a `contains` method. To make a contains query, you can do:
 
 ```ruby
-User.where.array_contains(:nick_names => ['Bob', 'Fred'])
+User.where.contains(:nick_names => ['Bob', 'Fred'])
 ```
 
-Postgres_ext defines `array_contains`, an [Arel](https://github.com/rails/arel)
+Postgres\_ext defines `array_contains`, an [Arel](https://github.com/rails/arel)
 predicate for the `@>` operator. This is utilized by the
 `where.array_contains` call above.
 
