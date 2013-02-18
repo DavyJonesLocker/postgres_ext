@@ -14,6 +14,13 @@ module ActiveRecord
         @scope
       end
 
+      def array_contains(opts)
+        opts.each do |key, value|
+          @scope = @scope.where(arel_table[key].array_contains(value))
+        end
+        @scope
+      end
+
       def contained_within(opts)
         opts.each do |key, value|
           @scope = @scope.where(arel_table[key].contained_within(value))
