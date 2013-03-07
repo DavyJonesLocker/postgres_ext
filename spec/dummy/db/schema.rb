@@ -13,10 +13,6 @@
 
 ActiveRecord::Schema.define(:version => 20120501163758) do
 
-  add_extension "hstore"
-  add_extension "pg_trgm"
-  add_extension "citext"
-
   create_table "people", :force => true do |t|
     t.inet     "ip"
     t.cidr     "subnet"
@@ -24,11 +20,6 @@ ActiveRecord::Schema.define(:version => 20120501163758) do
     t.string   "tags",                       :array => true
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
-  end
-
-  create_table "sanity_tests", :force => true do |t|
-    t.string  "tags",    :array => true
-    t.integer "tag_ids", :array => true
   end
 
 end

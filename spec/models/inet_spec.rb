@@ -50,6 +50,15 @@ describe 'Models with inet columns' do
           address.ip_address.should eq IPAddr.new('192.168.1.2')
         end
 
+        it 'converts empty strings to nil' do
+          address = Address.create
+          address.ip_address = ''
+          address.save
+
+          address.reload
+          address.ip_address.should eq nil
+        end
+
         it 'updates an address with an IPAddr' do
           ip_addr_1 = IPAddr.new('192.168.0.1')
           ip_addr_2 = IPAddr.new('192.168.1.2')

@@ -92,7 +92,10 @@ module ActiveRecord
       class << self
         def string_to_cidr_address(string)
           return string unless String === string
-          return IPAddr.new(string)
+
+          if string.present?
+            IPAddr.new(string)
+          end
         end
       end
 
