@@ -1,3 +1,3 @@
 class Person < ActiveRecord::Base
-  attr_accessible :ip
+  attr_accessible :ip, :tags
 end

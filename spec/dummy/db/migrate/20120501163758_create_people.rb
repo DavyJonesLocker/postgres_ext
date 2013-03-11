@@ -3,7 +3,7 @@ class CreatePeople < ActiveRecord::Migration
     create_table :people do |t|
       t.inet :ip
       t.cidr :subnet
-      t.inet :tag_ids, :array => true
+      t.integer :tag_ids, :array => true
       t.string :tags, :array => true
 
       t.timestamps

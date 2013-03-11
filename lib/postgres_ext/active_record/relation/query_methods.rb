@@ -9,7 +9,7 @@ module ActiveRecord
 
       def overlap(opts)
         opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].array_overlap(value))
+          @scope = @scope.where(arel_table[key].overlap(value))
         end
         @scope
       end

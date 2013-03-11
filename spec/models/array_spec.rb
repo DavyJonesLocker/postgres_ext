@@ -222,14 +222,14 @@ describe 'Models with array columns' do
       end
     end
 
-    describe 'array_overlap' do
+    describe 'overlap' do
       it "works" do
         arel = User.arel_table
         User.create(:nick_names => ['this'])
         x = User.create
         x.nick_names = ["s'o{m}e", 'thing']
         x.save
-        u = User.where(arel[:nick_names].array_overlap(["s'o{m}e"]))
+        u = User.where(arel[:nick_names].overlap(["s'o{m}e"]))
         u.first.should_not be_nil
         u.first.nick_names.should eq ["s'o{m}e", 'thing']
       end

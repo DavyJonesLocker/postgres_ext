@@ -20,12 +20,8 @@ module Arel
         "#{visit o.left} >>= #{visit o.right}"
       end
 
-      def visit_Arel_Nodes_ArrayOverlap o
-        if Array === o.right
-          "#{visit o.left} && #{visit o.right}"
-        else
-          "#{visit o.left} && #{visit o.right}"
-        end
+      def visit_Arel_Nodes_Overlap o
+        "#{visit o.left} && #{visit o.right}"
       end
 
       def visit_Arel_Nodes_ArrayContains o

@@ -18,8 +18,8 @@ module Arel
       Nodes::ContainsEquals.new self, other
     end
 
-    def array_overlap(other)
-      Nodes::ArrayOverlap.new self, other
+    def overlap(other)
+      Nodes::Overlap.new self, other
     end
 
     def array_contains(other)
