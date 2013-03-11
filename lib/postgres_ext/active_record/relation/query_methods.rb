@@ -32,13 +32,7 @@ module ActiveRecord
 
       def contains(opts)
         opts.each do |key, value|
-          column_definition = @scope.engine.columns.find { |col| col.name == key.to_s }
-
-          if column_definition.respond_to?(:array) && column_definition.array
-            @scope = @scope.where(arel_table[key].array_contains(value))
-          else
-            @scope = @scope.where(arel_table[key].contains(value))
-          end
+          @scope = @scope.where(arel_table[key].contains(value))
         end
 
         @scope

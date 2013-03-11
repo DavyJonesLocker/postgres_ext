@@ -38,22 +38,22 @@ describe 'Array Column Predicates' do
   end
 
   describe 'Array Contains' do
-    it 'converts Arel array_contains statement and escapes strings' do
+    it 'converts Arel contains statement and escapes strings' do
       arel_table = Person.arel_table
 
-      arel_table.where(arel_table[:tags].array_contains(['tag','tag 2'])).to_sql.should match /@> '\{"tag","tag 2"\}'/
+      arel_table.where(arel_table[:tags].contains(['tag','tag 2'])).to_sql.should match /@> '\{"tag","tag 2"\}'/
     end
 
-    it 'converts Arel array_contains statement with numbers' do
+    it 'converts Arel contains statement with numbers' do
       arel_table = Person.arel_table
 
-      arel_table.where(arel_table[:tag_ids].array_contains([1,2])).to_sql.should match /@> '\{1,2\}'/
+      arel_table.where(arel_table[:tag_ids].contains([1,2])).to_sql.should match /@> '\{1,2\}'/
     end
 
     it 'works with count (and other predicates)' do
       arel_table = Person.arel_table
 
-      Person.where(arel_table[:tag_ids].array_contains([1,2])).count.should eq 0
+      Person.where(arel_table[:tag_ids].contains([1,2])).count.should eq 0
     end
 
     it 'returns matched records' do
@@ -61,15 +61,15 @@ describe 'Array Column Predicates' do
       two = Person.create!(:tags => ['one', 'three'])
       arel_table = Person.arel_table
 
-      query = arel_table.where(arel_table[:tags].array_contains(['one', 'two'])).project(Arel.sql('*'))
+      query = arel_table.where(arel_table[:tags].contains(['one', 'two'])).project(Arel.sql('*'))
       Person.find_by_sql(query.to_sql).should include one
       Person.find_by_sql(query.to_sql).should_not include two
 
-      query = arel_table.where(arel_table[:tags].array_contains(['one', 'three'])).project(Arel.sql('*'))
+      query = arel_table.where(arel_table[:tags].contains(['one', 'three'])).project(Arel.sql('*'))
       Person.find_by_sql(query.to_sql).should include one
       Person.find_by_sql(query.to_sql).should include two
 
-      query = arel_table.where(arel_table[:tags].array_contains(['two'])).project(Arel.sql('*'))
+      query = arel_table.where(arel_table[:tags].contains(['two'])).project(Arel.sql('*'))
       Person.find_by_sql(query.to_sql).should include one
       Person.find_by_sql(query.to_sql).should_not include two
     end

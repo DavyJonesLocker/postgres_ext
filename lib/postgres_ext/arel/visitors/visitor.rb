@@ -13,7 +13,13 @@ module Arel
       end
 
       def visit_Arel_Nodes_Contains o
-        "#{visit o.left} >> #{visit o.right}"
+        left_column = o.left.relation.engine.columns.find { |col| col.name == o.left.name.to_s }
+
+        if left_column && left_column.respond_to?(:array) && left_column.array
+          "#{visit o.left} @> #{visit o.right}"
+        else
+          "#{visit o.left} >> #{visit o.right}"
+        end
       end
 
       def visit_Arel_Nodes_ContainsEquals o
@@ -22,10 +28,6 @@ module Arel
 
       def visit_Arel_Nodes_Overlap o
         "#{visit o.left} && #{visit o.right}"
-      end
-
-      def visit_Arel_Nodes_ArrayContains o
-        "#{visit o.left} @> #{visit o.right}"
       end
 
       def visit_IPAddr value
