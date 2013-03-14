@@ -17,6 +17,21 @@ describe 'INET related AREL functions' do
     Object.send(:remove_const, :IpAddress)
   end
 
+  describe "arel node operators",:wip => true do
+    it "ContainedWithin" do
+      Arel::Nodes::ContainedWithin.new(nil,nil).operator.should == :<<
+    end
+    it "ContainedWithinEquals" do
+      Arel::Nodes::ContainedWithinEquals.new(nil,nil).operator.should == '<<='.to_sym
+    end
+    it "ContainedWithinEquals" do
+      Arel::Nodes::Contains.new(nil,nil).operator.should == :>>
+    end
+    it "ContainedWithinEquals" do
+      Arel::Nodes::ContainsEquals.new(nil,nil).operator.should == '>>='.to_sym
+    end
+  end
+
   describe 'quoting IPAddr in sql statement' do
     it 'properly converts IPAddr to quoted strings when passed as an argument to a where clause' do
       IpAddress.where(:address => IPAddr.new('127.0.0.1')).to_sql.should include("'127.0.0.1/32'")

@@ -6,7 +6,7 @@ module Arel
     end
 
     class ContainedWithinEquals < Arel::Nodes::Binary
-      def operator; '<<='.symbolize end
+      def operator; '<<='.to_sym end
     end
 
     class Contains < Arel::Nodes::Binary
@@ -14,7 +14,7 @@ module Arel
     end
 
     class ContainsEquals < Arel::Nodes::Binary
-      def operator; '>>='.symbolize end
+      def operator; '>>='.to_sym end
     end
   end
 end
