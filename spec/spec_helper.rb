@@ -5,7 +5,7 @@ require File.expand_path('../dummy/config/environment.rb',  __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
 require 'bourne'
-require 'debugger' unless ENV['CI'] || (RUBY_PLATFORM =~ /java/)
+#require 'debugger' unless ENV['CI'] || (RUBY_PLATFORM =~ /java/)
 
 ENGINE_RAILS_ROOT=File.join(File.dirname(__FILE__), '../')
 
