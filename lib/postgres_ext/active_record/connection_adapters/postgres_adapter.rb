@@ -223,8 +223,13 @@ module ActiveRecord
           index_type = options[:using] ? " USING #{options[:using]} " : ""
           index_options = options[:where] ? " WHERE #{options[:where]}" : ""
           index_opclass = options[:index_opclass]
+          index_algorithm = options[:algorithm] == :concurrently ? ' CONCURRENTLY' : ''
+
+          if options[:algorithm].present? && options[:algorithm] != :concurrently
+            raise ArgumentError.new 'Algorithm must be one of the following: :concurrently'
+          end
         end
-        execute "CREATE #{unique} INDEX #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{index_type}(#{index_columns} #{index_opclass})#{index_options}"
+        execute "CREATE #{unique} INDEX#{index_algorithm} #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{index_type}(#{index_columns} #{index_opclass})#{index_options}"
       end
 
       def add_extension(extension_name, options={})
