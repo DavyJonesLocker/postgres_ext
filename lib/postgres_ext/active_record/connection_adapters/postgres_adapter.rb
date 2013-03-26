@@ -5,7 +5,7 @@ require 'pg_array_parser'
 module ActiveRecord
   module ConnectionAdapters
     class IndexDefinition
-      attr_accessor :index_type, :where, :index_opclass
+      attr_accessor :using, :where, :index_opclass
     end
 
     class PostgreSQLColumn
@@ -220,7 +220,7 @@ module ActiveRecord
       def add_index(table_name, column_name, options = {})
         index_name, unique, index_columns, _ = add_index_options(table_name, column_name, options)
         if options.is_a? Hash
-          index_type = options[:index_type] ? " USING #{options[:index_type]} " : ""
+          index_type = options[:using] ? " USING #{options[:using]} " : ""
           index_options = options[:where] ? " WHERE #{options[:where]}" : ""
           index_opclass = options[:index_opclass]
         end
@@ -342,16 +342,16 @@ module ActiveRecord
           orders = desc_order_columns.any? ? Hash[desc_order_columns.map {|order_column| [order_column, :desc]}] : {}
           #changed from rails 3.2
           where = inddef.scan(/WHERE (.+)$/).flatten[0]
-          index_type = inddef.scan(/USING (.+?) /).flatten[0].to_sym
-          if index_type
+          using = inddef.scan(/USING (.+?) /).flatten[0].to_sym
+          if using
             index_op = inddef.scan(/USING .+? \(.+? (#{opclasses.join('|')})\)/).flatten
             index_op = index_op[0].to_sym if index_op.present?
           end
           if column_names.present?
             index_def = IndexDefinition.new(table_name, index_name, unique, column_names, [], orders)
             index_def.where = where
-            index_def.index_type = index_type if index_type && index_type != :btree
-            index_def.index_opclass = index_op if index_type && index_type != :btree && index_op
+            index_def.using = using if using && using != :btree
+            index_def.index_opclass = index_op if using && using != :btree && index_op
             index_def
           # else nil
           end
