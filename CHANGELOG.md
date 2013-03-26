@@ -1,3 +1,17 @@
+## 0.3.0
+
+ * Adds support to create indexes concurrently  -  Dan McClain
+ * Changes using syntax, updates specs  -  Dan McClain
+ * Empty strings are converted to nil by string_to_cidr_address -  Dan McClain
+ * Replaced .symbolize with .to_sym in arel nodes.  -  OMCnet Development Team
+ * Removes array_contains in favor of a column aware contains  -  Dan McClain
+ * Renames Arel array_overlap to overlap  -  Dan McClain
+ * Merge pull request #67 from jagregory/array_contains Array contains operator support -  Dan McClain
+ * Update querying doc to include array_contains  -  James Gregory
+ * Array contains operator ( @> ) support -  James Gregory
+ * how to use SQL to convert string-delimited arrays in docs -  Turadg Aleahmad
+ * Check if connection responds to #support_extensions? before invoking it  -  Dirk von Grünigen
+
 ## 0.2.2
 
  * Fixes issue with visit_Array monkey patch - Dan McClain (@danmcclain)
