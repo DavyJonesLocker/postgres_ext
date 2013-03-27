@@ -133,7 +133,7 @@ module ActiveRecord
       class UnsupportedFeature < Exception; end
 
       EXTENDED_TYPES = { :inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'},
-                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'}, :ean13 => {:name => 'ean13'} }
+                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'}, :ean13 => {:name => 'ean13'}, :integer_range => { :name => 'int4range', :limit => 4 } }
 
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
@@ -298,6 +298,21 @@ module ActiveRecord
         type_cast_extended(value, column)
       end
       alias_method_chain :type_cast, :extended_types
+
+      def type_to_sql_with_extended_types(type, limit = nil, precision = nil, scale = nil)
+        case type.to_s
+        when 'integer_range'
+          case limit
+          when 1..4; 'int4range'
+          when 5..8; 'int8range'
+          else raise(ActiveRecordError, "integer_range only supports int4range (limits 1..4) and int8range (limits 5..8)")
+          end
+        else
+          type_to_sql_without_extended_types(type, limit, precision, scale)
+        end
+      end
+      alias_method_chain :type_to_sql, :extended_types
+
 
       def quote_with_extended_types(value, column = nil)
         if value.is_a? IPAddr
