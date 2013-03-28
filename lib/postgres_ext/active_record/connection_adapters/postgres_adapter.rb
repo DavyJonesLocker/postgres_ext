@@ -89,6 +89,16 @@ module ActiveRecord
       end
       alias_method_chain :type_cast_code, :extended_types
 
+      def extract_limit_with_extended_types(sql_type)
+        case sql_type
+        when /^int4range/i; 4
+        when /^int8range/i; 8
+        else
+          extract_limit_without_extended_types(sql_type)
+        end
+      end
+      alias_method_chain :extract_limit, :extended_types
+
       class << self
         def string_to_cidr_address(string)
           return string unless String === string
@@ -121,6 +131,10 @@ module ActiveRecord
           :macaddr
         when 'ean13'
           :ean13
+        when 'int4range'
+          :integer_range
+        when 'int8range'
+          :integer_range
         else
           simplified_type_without_extended_types field_type
         end

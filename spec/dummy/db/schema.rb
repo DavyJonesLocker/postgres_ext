@@ -13,6 +13,10 @@
 
 ActiveRecord::Schema.define(:version => 20120501163758) do
 
+  add_extension "pg_trgm"
+  add_extension "citext"
+  add_extension "hstore"
+
   create_table "people", :force => true do |t|
     t.inet     "ip"
     t.cidr     "subnet"

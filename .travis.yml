@@ -1,12 +1,19 @@
 rvm:
-  - 1.8.7
-  - 1.9.2
   - 1.9.3
-  - jruby-18mode
-  - jruby-19mode
 
 before_script:
-  - psql -c 'create database postgres_ext_test;' -U postgres
+  - sudo /etc/init.d/postgresql stop
+  - sudo apt-get remove postgresql -qq --purge
+  - source /etc/lsb-release
+  - echo "deb http://apt.postgresql.org/pub/repos/apt/ $DISTRIB_CODENAME-pgdg main" > pgdg.list
+  - sudo mv pgdg.list /etc/apt/sources.list.d/
+  - wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
+  - sudo apt-get update
+  - sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" install postgresql-9.2 -qq
+  - sudo mv /etc/init.d/postgresql.dpkg-dist /etc/init.d/postgresql
+  - sudo /etc/init.d/postgresql start
+  - psql -c 'create database postgres_ext_test;' -U postgres -h localhost
+  - psql -U postgres -c 'SELECT version();'
   - cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
   - RAILS_ENV=test rake db:migrate
 

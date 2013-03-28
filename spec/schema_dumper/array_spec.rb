@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'array schema dump' do
   let!(:connection) { ActiveRecord::Base.connection }
   after { connection.drop_table :testings }
-  it 'correctly generates cidr column statements' do
+  it 'correctly generates cidr array column statements' do
     stream = StringIO.new
     connection.create_table :testings do |t|
       t.cidr :network_column, :array => true
