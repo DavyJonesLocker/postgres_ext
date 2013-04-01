@@ -43,13 +43,29 @@ module ActiveRecord
           value
         else
           case type
-          when :inet, :cidr   then klass.string_to_cidr_address(value)
+          when :inet, :cidr   then string_to_cidr_address(value)
+          when :integer_range then string_to_integer_range(value)
           else
             type_cast_without_extended_types(value)
           end
         end
       end
       alias_method_chain :type_cast, :extended_types
+
+      def string_to_integer_range(value)
+        if Range === value
+          value
+        else
+          range_regex = /\A(?<open>\[|\()(?<start>.*?),(?<end>.*?)(?<close>\]|\))\z/
+          if match = value.match(range_regex)
+            start_value = match[:start].empty? ? -Float::INFINITY : match[:start].to_i
+            end_value   = match[:end].empty? ? Float::INFINITY : match[:end].to_i
+            end_exclusive = end_value != Float::INFINITY && match[:close] == ')'
+            Range.new start_value, end_value, end_exclusive
+          end
+
+        end
+      end
 
       def string_to_array(value)
         if Array === value
@@ -99,13 +115,11 @@ module ActiveRecord
       end
       alias_method_chain :extract_limit, :extended_types
 
-      class << self
-        def string_to_cidr_address(string)
-          return string unless String === string
+      def string_to_cidr_address(string)
+        return string unless String === string
 
-          if string.present?
-            IPAddr.new(string)
-          end
+        if string.present?
+          IPAddr.new(string)
         end
       end
 
