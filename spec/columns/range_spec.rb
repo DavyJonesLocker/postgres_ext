@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'Array column' do
+describe 'Range column' do
   let!(:integer_range_column) { ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new 'field', nil, 'int4range'}
   let!(:adapter) { ActiveRecord::Base.connection }
 
@@ -17,8 +17,8 @@ describe 'Array column' do
       end
 
       it 'converts an infinite PostgreSQL integer range to a Ruby range' do
-        integer_range_column.type_cast('(,4)').should eq -Float::INFINITY...4
-        integer_range_column.type_cast('[0,)').should eq 0..Float::INFINITY
+        integer_range_column.type_cast('(,4)').should eq -(1.0/0.0)...4
+        integer_range_column.type_cast('[0,)').should eq 0..(1.0/0.0)
       end
     end
 

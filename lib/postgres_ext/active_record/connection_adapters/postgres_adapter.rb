@@ -118,9 +118,9 @@ module ActiveRecord
             #range_regex = /\A(?<open>\[|\()(?<start>.*?),(?<end>.*?)(?<close>\]|\))\z/
             range_regex = /\A(\[|\()(.*?),(.*?)(\]|\))\z/
             if match = value.match(range_regex)
-              start_value = match[2].empty? ? -Float::INFINITY : match[2].to_i
-              end_value   = match[3].empty? ? Float::INFINITY : match[3].to_i
-              end_exclusive = end_value != Float::INFINITY && match[4] == ')'
+              start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_i
+              end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_i
+              end_exclusive = end_value != (1.0/0.0) && match[4] == ')'
               Range.new start_value, end_value, end_exclusive
             end
           end
