@@ -9,7 +9,7 @@ describe 'Array column' do
   let!(:adapter) { ActiveRecord::Base.connection }
 
   context 'string array' do
-    describe '#type_class' do
+    describe '#type_cast' do
       context 'has null value' do
         it 'converts the PostgreSQL value to an array with a nil value' do
           string_array_column.type_cast('{1,NULL,"NULL"}').should eq ['1',nil,'NULL']
@@ -47,7 +47,7 @@ describe 'Array column' do
   end
 
   context 'text array' do
-    describe '#type_class' do
+    describe '#type_cast' do
       context 'has null value' do
         it 'converts the PostgreSQL value to an array with a nil value' do
           text_array_column.type_cast('{1,NULL,"NULL"}').should eq ['1',nil,'NULL']
@@ -88,7 +88,7 @@ describe 'Array column' do
   end
 
   context 'integer array' do
-    describe '#type_class' do
+    describe '#type_cast' do
       context 'has null value' do
         it 'converts a Postgres Array with nulls in it' do
           integer_array_column.type_cast('{1,NULL,2}').should eq [1,nil,2]
@@ -116,5 +116,4 @@ describe 'Array column' do
       end
     end
   end
-
 end

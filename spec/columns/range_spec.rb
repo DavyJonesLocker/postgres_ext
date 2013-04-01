@@ -23,7 +23,20 @@ describe 'Range column' do
     end
 
     describe 'integer range to SQL statment conversion' do
-      pending
+      it 'returns an end-inclusive PostgreSQL range' do
+        value = integer_range_column.type_cast('[0,4]')
+        adapter.type_cast(value, integer_range_column).should eq '[0,4]'
+      end
+      it 'returns an end-exclusive PostgreSQL range' do
+        value = integer_range_column.type_cast('[0,4)')
+        adapter.type_cast(value, integer_range_column).should eq '[0,4)'
+      end
+      it 'converts an infinite PostgreSQL integer range to a Ruby range' do
+        value = integer_range_column.type_cast('(,4)')
+        adapter.type_cast(value, integer_range_column).should eq '(,4)'
+        value = integer_range_column.type_cast('[0,)')
+        adapter.type_cast(value, integer_range_column).should eq '[0,)'
+      end
     end
   end
 end

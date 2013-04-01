@@ -313,6 +313,14 @@ module ActiveRecord
           else
             type_cast_without_extended_types(value, column)
           end
+        when Float
+          if column.type == :integer_range && value.abs == (1.0/0.0)
+            ''
+          else
+            type_cast_without_extended_types(value, column)
+          end
+        when Range
+          range_to_string(value, column)
         when Array
           if column.array
             array_to_string(value, column)
@@ -324,6 +332,9 @@ module ActiveRecord
         else
           type_cast_without_extended_types(value, column)
         end
+      end
+
+      def cast_infinity(value, column)
       end
 
       def type_cast_with_extended_types(value, column)
@@ -427,6 +438,27 @@ module ActiveRecord
 
       def array_to_string(value, column, encode_single_quotes = false)
         "{#{value.map { |val| item_to_string(val, column, encode_single_quotes) }.join(',')}}"
+      end
+
+      def range_to_string(value, column)
+        "#{range_lower_bound_character value}#{type_cast value.begin, column},#{type_cast value.end, column}#{range_upper_bound_character value}"
+      end
+
+      def range_lower_bound_character(value)
+        if value.begin == -(1.0/0.0)
+          '('
+        else
+          '['
+        end
+      end
+
+      def range_upper_bound_character(value)
+        if value.end == (1.0/0.0) || value.exclude_end?
+          ')'
+        else
+          ']'
+        end
+
       end
 
       def item_to_string(value, column, encode_single_quotes = false)
