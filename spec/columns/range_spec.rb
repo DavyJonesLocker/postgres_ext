@@ -13,11 +13,11 @@ describe 'Range column' do
       end
 
       it 'converts an end-exclusive PostgreSQL integer range to a Ruby range' do
-        integer_range_column.type_cast('[0,4)').should eq 0...4
+        integer_range_column.type_cast('[0,4)').should eq 0..3
       end
 
       it 'converts an infinite PostgreSQL integer range to a Ruby range' do
-        integer_range_column.type_cast('(,4)').should eq -(1.0/0.0)...4
+        integer_range_column.type_cast('(,4)').should eq -(1.0/0.0)..3
         integer_range_column.type_cast('[0,)').should eq 0..(1.0/0.0)
       end
     end
@@ -29,11 +29,11 @@ describe 'Range column' do
       end
       it 'returns an end-exclusive PostgreSQL range' do
         value = integer_range_column.type_cast('[0,4)')
-        adapter.type_cast(value, integer_range_column).should eq '[0,4)'
+        adapter.type_cast(value, integer_range_column).should eq '[0,3]'
       end
       it 'converts an infinite PostgreSQL integer range to a Ruby range' do
         value = integer_range_column.type_cast('(,4)')
-        adapter.type_cast(value, integer_range_column).should eq '(,4)'
+        adapter.type_cast(value, integer_range_column).should eq '(,3]'
         value = integer_range_column.type_cast('[0,)')
         adapter.type_cast(value, integer_range_column).should eq '[0,)'
       end

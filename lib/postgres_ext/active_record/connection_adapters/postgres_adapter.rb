@@ -84,6 +84,7 @@ module ActiveRecord
         else
           case type
           when :inet, :cidr   then "#{klass}.string_to_cidr_address(#{var_name})"
+          when :integer_range then "#{klass}.string_to_integer_range(#{var_name})"
           else
             type_cast_code_without_extended_types(var_name)
           end
@@ -101,7 +102,18 @@ module ActiveRecord
       end
       alias_method_chain :extract_limit, :extended_types
 
+
       class << self
+        def extract_value_from_default_with_extended_types(default)
+          case default
+          when /\A'(.*)'::(?:int[48]range)\z/
+            $1
+          else
+            extract_value_from_default_without_extended_types(default)
+          end
+
+        end
+        alias_method_chain :extract_value_from_default, :extended_types
         def string_to_cidr_address(string)
           return string unless String === string
 
@@ -121,7 +133,8 @@ module ActiveRecord
               start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_i
               end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_i
               end_exclusive = end_value != (1.0/0.0) && match[4] == ')'
-              Range.new start_value, end_value, end_exclusive
+              end_value = end_value.pred if end_exclusive
+              Range.new start_value, end_value
             end
           end
         end
@@ -334,9 +347,6 @@ module ActiveRecord
         end
       end
 
-      def cast_infinity(value, column)
-      end
-
       def type_cast_with_extended_types(value, column)
         type_cast_extended(value, column)
       end
@@ -364,6 +374,8 @@ module ActiveRecord
           "'#{array_to_string(value, column, true)}'"
         elsif column.respond_to?(:array) && column.array && value =~ /^\{.*\}$/
           "'#{value}'"
+        elsif value.is_a? Range
+          "'#{type_cast(value, column)}'"
         else
           quote_without_extended_types(value, column)
         end
@@ -458,7 +470,6 @@ module ActiveRecord
         else
           ']'
         end
-
       end
 
       def item_to_string(value, column, encode_single_quotes = false)

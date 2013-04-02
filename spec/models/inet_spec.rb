@@ -1,82 +1,87 @@
 require 'spec_helper'
 
-describe 'Models with integer range columns' do
+describe 'Models with inet columns' do
   let!(:adapter) { ActiveRecord::Base.connection }
 
-  context 'no default value, range' do
+  context 'no default value, inet' do
     before do
-      adapter.create_table :rangers, :force => true do |t|
-        t.integer_range :best_estimate
+      adapter.create_table :addresses, :force => true do |t|
+        t.inet :ip_address
       end
-      class Ranger < ActiveRecord::Base
-        attr_accessible :best_estimate
+      class Address < ActiveRecord::Base
+        attr_accessible :ip_address
       end
     end
 
     after do
-      adapter.drop_table :rangers
-      Object.send(:remove_const, :Ranger)
+      adapter.drop_table :addresses
+      Object.send(:remove_const, :Address)
     end
 
-    describe '#create' do
-      it 'creates an record when there is no assignment' do
-        range = Ranger.create()
-        range.reload
-        range.best_estimate.should eq nil
+    context 'no default value, inet' do
+      describe '#create' do
+        it 'creates an address when there is no assignment' do
+          address = Address.create()
+          address.reload
+          address.ip_address.should eq nil
+        end
+
+        it 'creates an address with an address string' do
+          address = Address.create( :ip_address => '192.168.0.1')
+          address.reload
+          address.ip_address.should eq IPAddr.new('192.168.0.1')
+        end
+
+        it 'creates an address with an IPAddr' do
+          ip_addr = IPAddr.new('192.168.0.1')
+          address = Address.create( :ip_address => ip_addr)
+          address.reload
+          address.ip_address.should eq ip_addr
+        end
       end
 
-      it 'creates an record with a range' do
-        range = Ranger.create( :best_estimate => 0..4)
-        range.reload
-        range.best_estimate.should eq 0..4
-      end
-    end
+      describe 'inet assignment' do
+        it 'updates an address with an address string' do
+          address = Address.create( :ip_address => '192.168.0.1')
+          address.ip_address = '192.168.1.2'
+          address.save
 
-    describe 'range assignment' do
-      it 'updates an record with an range string' do
-        range = Ranger.create( :best_estimate => 0..4)
-        range.best_estimate = 0...9
-        range.save
+          address.reload
+          address.ip_address.should eq IPAddr.new('192.168.1.2')
+        end
 
-        range.reload
-        range.best_estimate.should eq 0...9
-      end
+        it 'converts empty strings to nil' do
+          address = Address.create
+          address.ip_address = ''
+          address.save
 
-      it 'converts empty strings to nil' do
-        range = Ranger.create
-        range.best_estimate = ''
-        range.save
+          address.reload
+          address.ip_address.should eq nil
+        end
 
-        range.reload
-        range.best_estimate.should eq nil
-      end
-    end
-  end
-  context 'default value, integer range' do
-    before do
-      adapter.create_table :default_rangers, :force => true do |t|
-        t.integer_range :best_estimate, :default => 0..5
-      end
-      class DefaultRanger < ActiveRecord::Base
-        attr_accessible :best_estimate
-      end
-    end
+        it 'updates an address with an IPAddr' do
+          ip_addr_1 = IPAddr.new('192.168.0.1')
+          ip_addr_2 = IPAddr.new('192.168.1.2')
+          address = Address.create( :ip_address => ip_addr_1)
+          address.ip_address = ip_addr_2
+          address.save
 
-    after do
-      adapter.drop_table :default_rangers
-      Object.send(:remove_const, :DefaultRanger)
-    end
-    describe '#create' do
-      it 'creates an record when there is no assignment' do
-        range = DefaultRanger.create()
-        range.reload
-        range.best_estimate.should eq 0..5
+          address.reload
+          address.ip_address.should eq ip_addr_2
+        end
       end
 
-      it 'creates an record with a range' do
-        range = DefaultRanger.create( :best_estimate => 0..4)
-        range.reload
-        range.best_estimate.should eq 0..4
+      describe 'find_by_inet' do
+        let!(:address) { Address.create(:ip_address => '192.168.0.1') }
+
+        it 'finds address using string value' do
+          Address.find_by_ip_address('192.168.0.1').should eq address
+        end
+
+        it 'finds address using IPAddr' do
+          ip_addr = IPAddr.new '192.168.0.1'
+          Address.find_by_ip_address(ip_addr).should eq address
+        end
       end
     end
   end
