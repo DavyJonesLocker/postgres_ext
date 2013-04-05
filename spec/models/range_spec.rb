@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe 'Models with integer range columns' do
+describe 'Models with numeric range columns' do
   let!(:adapter) { ActiveRecord::Base.connection }
 
   context 'no default value, range' do
     before do
       adapter.create_table :rangers, :force => true do |t|
-        t.integer_range :best_estimate
+        t.numeric_range :best_estimate
       end
       class Ranger < ActiveRecord::Base
         attr_accessible :best_estimate
@@ -39,7 +39,7 @@ describe 'Models with integer range columns' do
         range.save
 
         range.reload
-        range.best_estimate.should eq 0..8
+        range.best_estimate.should eq 0...9
       end
 
       it 'converts empty strings to nil' do
@@ -53,10 +53,10 @@ describe 'Models with integer range columns' do
     end
   end
 
-  context 'default value, integer range' do
+  context 'default value, numeric range' do
     before do
       adapter.create_table :default_rangers, :force => true do |t|
-        t.integer_range :best_estimate, :default => 0..5
+        t.numeric_range :best_estimate, :default => 0..5
       end
       class DefaultRanger < ActiveRecord::Base
         attr_accessible :best_estimate

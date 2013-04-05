@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(:version => 20120501163758) do
     t.string        "tags",                         :array => true
     t.text          "biography"
     t.integer       "lucky_number"
-    t.integer_range "int_range"
+    t.numeric_range "int_range"
     t.datetime      "created_at",   :null => false
     t.datetime      "updated_at",   :null => false
   end
