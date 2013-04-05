@@ -92,17 +92,32 @@ module ActiveRecord
       end
       alias_method_chain :type_cast_code, :extended_types
 
-      class << self
-        def extract_value_from_default_with_extended_types(default)
+      if RUBY_PLATFORM =~ /java/
+        def default_value_with_extended_types(default)
           case default
           when /\A'(.*)'::(?:numrange)\z/
             $1
           else
-            extract_value_from_default_without_extended_types(default)
+            default_value_without_extended_types(default)
           end
 
         end
-        alias_method_chain :extract_value_from_default, :extended_types
+        alias_method_chain :default_value, :extended_types
+      end
+
+      class << self
+        unless RUBY_PLATFORM =~ /java/
+          def extract_value_from_default_with_extended_types(default)
+            case default
+            when /\A'(.*)'::(?:numrange)\z/
+              $1
+            else
+              extract_value_from_default_without_extended_types(default)
+            end
+
+          end
+          alias_method_chain :extract_value_from_default, :extended_types
+        end
         def string_to_cidr_address(string)
           return string unless String === string
 
