@@ -119,6 +119,8 @@ module ActiveRecord
           :cidr
         when 'macaddr'
           :macaddr
+        when 'ean13'
+          :ean13
         else
           simplified_type_without_extended_types field_type
         end
@@ -131,7 +133,7 @@ module ActiveRecord
       class UnsupportedFeature < Exception; end
 
       EXTENDED_TYPES = { :inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'},
-                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'} }
+                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'}, :ean13 => {:name => 'ean13'} }
 
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
