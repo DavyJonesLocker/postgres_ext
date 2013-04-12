@@ -7,13 +7,13 @@ describe 'range schema dump' do
     it 'correctly generates numrange column statements' do
       stream = StringIO.new
       connection.create_table :testings do |t|
-        t.numeric_range :range
+        t.numrange :range
       end
 
       ActiveRecord::SchemaDumper.dump(connection, stream)
       output = stream.string
 
-      output.should match /t\.numeric_range "range"/
+      output.should match /t\.numrange "range"/
     end
   end
 end

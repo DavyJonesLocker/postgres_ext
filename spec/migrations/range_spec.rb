@@ -7,9 +7,9 @@ describe 'Range migrations' do
     it 'creates an numrange column' do
       lambda do
         connection.create_table :data_types do |t|
-          t.numeric_range :num_range_1
-          t.numeric_range :num_range_2, :num_range_3
-          t.column :num_range_4, :numeric_range
+          t.numrange :num_range_1
+          t.numrange :num_range_2, :num_range_3
+          t.column :num_range_4, :numrange
         end
       end.should_not raise_exception
 

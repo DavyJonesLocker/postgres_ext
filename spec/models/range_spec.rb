@@ -6,7 +6,7 @@ describe 'Models with numeric range columns' do
   context 'no default value, range' do
     before do
       adapter.create_table :rangers, :force => true do |t|
-        t.numeric_range :best_estimate
+        t.numrange :best_estimate
       end
       class Ranger < ActiveRecord::Base
         attr_accessible :best_estimate
@@ -56,7 +56,7 @@ describe 'Models with numeric range columns' do
   context 'default value, numeric range' do
     before do
       adapter.create_table :default_rangers, :force => true do |t|
-        t.numeric_range :best_estimate, :default => 0..5
+        t.numrange :best_estimate, :default => 0..5
       end
       class DefaultRanger < ActiveRecord::Base
         attr_accessible :best_estimate
