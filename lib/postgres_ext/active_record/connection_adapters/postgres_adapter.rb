@@ -94,7 +94,7 @@ module ActiveRecord
       if RUBY_PLATFORM =~ /java/
         def default_value_with_extended_types(default)
           case default
-          when /\A'(.*)'::(?:numrange)\z/
+          when /\A'(.*)'::(?:(num|int4)range)\z/
             $1
           else
             default_value_without_extended_types(default)
@@ -108,7 +108,7 @@ module ActiveRecord
         unless RUBY_PLATFORM =~ /java/
           def extract_value_from_default_with_extended_types(default)
             case default
-            when /\A'(.*)'::(?:numrange)\z/
+            when /\A'(.*)'::(?:(num|int4)range)\z/
               $1
             else
               extract_value_from_default_without_extended_types(default)
