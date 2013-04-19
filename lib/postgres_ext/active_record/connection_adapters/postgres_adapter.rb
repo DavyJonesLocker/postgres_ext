@@ -43,8 +43,8 @@ module ActiveRecord
           value
         else
           case type
-          when :inet, :cidr         then klass.string_to_cidr_address(value)
-          when :numrange,:int4range then klass.string_to_numeric_range(value,type)
+          when :inet, :cidr                    then klass.string_to_cidr_address(value)
+          when :numrange,:int4range,:int8range then klass.string_to_numeric_range(value,type)
           else
             type_cast_without_extended_types(value)
           end
@@ -82,8 +82,8 @@ module ActiveRecord
           "#{klass}.new('#{self.name}', #{self.default.nil? ? 'nil' : "'#{self.default}'"}, '#{self.sql_type}').string_to_array(#{var_name})"
         else
           case type
-          when :inet, :cidr         then "#{klass}.string_to_cidr_address(#{var_name})"
-          when :numrange,:int4range then "#{klass}.string_to_numeric_range(#{var_name},#{type.inspect})"
+          when :inet, :cidr                    then "#{klass}.string_to_cidr_address(#{var_name})"
+          when :numrange,:int4range,:int8range then "#{klass}.string_to_numeric_range(#{var_name},#{type.inspect})"
           else
             type_cast_code_without_extended_types(var_name)
           end
@@ -340,7 +340,7 @@ module ActiveRecord
             type_cast_without_extended_types(value, column)
           end
         when Float
-          if [:numrange,:int4range].include?(column.type)&& value.abs == (1.0/0.0)
+          if [:numrange,:int4range,:int8range].include?(column.type)&& value.abs == (1.0/0.0)
             ''
           else
             type_cast_without_extended_types(value, column)
