@@ -45,6 +45,7 @@ module ActiveRecord
           case type
           when :inet, :cidr                    then klass.string_to_cidr_address(value)
           when :numrange,:int4range,:int8range then klass.string_to_numeric_range(value,type)
+          when :daterange                      then klass.string_to_date_range(value)
           else
             type_cast_without_extended_types(value)
           end
@@ -84,6 +85,7 @@ module ActiveRecord
           case type
           when :inet, :cidr                    then "#{klass}.string_to_cidr_address(#{var_name})"
           when :numrange,:int4range,:int8range then "#{klass}.string_to_numeric_range(#{var_name},#{type.inspect})"
+          when :daterange                      then "#{klass}.string_to_date_range(#{var_name})"
           else
             type_cast_code_without_extended_types(var_name)
           end
@@ -94,7 +96,7 @@ module ActiveRecord
       if RUBY_PLATFORM =~ /java/
         def default_value_with_extended_types(default)
           case default
-          when /\A'(.*)'::(?:(num|int[48])range)\z/
+          when /\A'(.*)'::(?:(num|int[48]|date)range)\z/
             $1
           else
             default_value_without_extended_types(default)
@@ -117,6 +119,7 @@ module ActiveRecord
           end
           alias_method_chain :extract_value_from_default, :extended_types
         end
+
         def string_to_cidr_address(string)
           return string unless String === string
 
@@ -125,7 +128,27 @@ module ActiveRecord
           end
         end
 
-        def string_to_numeric_range(value, type = :numeric)
+        def string_to_numeric_range(value, type)
+          if type == :numrange
+            extract_range(value) do |end_value|
+              end_value.to_f
+            end
+          else
+            extract_range(value) do |end_value|
+              end_value.to_i
+            end
+          end
+        end
+
+        def string_to_date_range(value)
+          extract_range(value) do |end_value|
+            Date.parse(end_value)
+          end
+        end
+
+        private
+
+        def extract_range(value, &conversion)
           if Range === value
             value
           else
@@ -133,16 +156,13 @@ module ActiveRecord
             #range_regex = /\A(?<open>\[|\()(?<start>.*?),(?<end>.*?)(?<close>\]|\))\z/
             range_regex = /\A(\[|\()(.*?),(.*?)(\]|\))\z/
             if match = value.match(range_regex)
-              if type == :numrange
-                start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_f
-                end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_f
-              else
-                start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_i
-                end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_i
-              end
+              if match = value.match(range_regex)
+                start_value = match[2].empty? ? -(1.0/0.0) : conversion.call(match[2])
+                end_value   = match[3].empty? ? (1.0/0.0)  : conversion.call(match[3])
 
-              end_exclusive = end_value != (1.0/0.0) && match[4] == ')'
-              Range.new start_value, end_value, end_exclusive
+                end_exclusive = end_value != (1.0/0.0) && match[4] == ')'
+                Range.new start_value, end_value, end_exclusive
+              end
             end
           end
         end
@@ -340,7 +360,7 @@ module ActiveRecord
             type_cast_without_extended_types(value, column)
           end
         when Float
-          if [:numrange,:int4range,:int8range].include?(column.type)&& value.abs == (1.0/0.0)
+          if [:numrange,:int4range,:int8range,:daterange].include?(column.type)&& value.abs == (1.0/0.0)
             ''
           else
             type_cast_without_extended_types(value, column)

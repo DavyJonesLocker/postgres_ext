@@ -17,7 +17,7 @@ describe 'range schema dump' do
     end
   end
 
-  context 'Dae ranges' do
+  context 'Date ranges' do
     it 'correctly generates daterange column statements' do
       stream = StringIO.new
       connection.create_table :testings do |t|
