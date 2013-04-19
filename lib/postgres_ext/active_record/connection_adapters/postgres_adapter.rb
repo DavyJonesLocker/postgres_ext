@@ -43,8 +43,8 @@ module ActiveRecord
           value
         else
           case type
-          when :inet, :cidr   then klass.string_to_cidr_address(value)
-          when :numrange then klass.string_to_numeric_range(value)
+          when :inet, :cidr         then klass.string_to_cidr_address(value)
+          when :numrange,:int4range then klass.string_to_numeric_range(value,type)
           else
             type_cast_without_extended_types(value)
           end
@@ -82,8 +82,8 @@ module ActiveRecord
           "#{klass}.new('#{self.name}', #{self.default.nil? ? 'nil' : "'#{self.default}'"}, '#{self.sql_type}').string_to_array(#{var_name})"
         else
           case type
-          when :inet, :cidr   then "#{klass}.string_to_cidr_address(#{var_name})"
-          when :numrange then "#{klass}.string_to_numeric_range(#{var_name})"
+          when :inet, :cidr         then "#{klass}.string_to_cidr_address(#{var_name})"
+          when :numrange,:int4range then "#{klass}.string_to_numeric_range(#{var_name},#{type.inspect})"
           else
             type_cast_code_without_extended_types(var_name)
           end
@@ -125,7 +125,7 @@ module ActiveRecord
           end
         end
 
-        def string_to_numeric_range(value)
+        def string_to_numeric_range(value, type = :numeric)
           if Range === value
             value
           else
@@ -133,8 +133,14 @@ module ActiveRecord
             #range_regex = /\A(?<open>\[|\()(?<start>.*?),(?<end>.*?)(?<close>\]|\))\z/
             range_regex = /\A(\[|\()(.*?),(.*?)(\]|\))\z/
             if match = value.match(range_regex)
-              start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_i
-              end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_i
+              if type == :numrange
+                start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_f
+                end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_f
+              else
+                start_value = match[2].empty? ? -(1.0/0.0) : match[2].to_i
+                end_value   = match[3].empty? ? (1.0/0.0) : match[3].to_i
+              end
+
               end_exclusive = end_value != (1.0/0.0) && match[4] == ')'
               Range.new start_value, end_value, end_exclusive
             end
@@ -334,7 +340,7 @@ module ActiveRecord
             type_cast_without_extended_types(value, column)
           end
         when Float
-          if column.type == :numrange && value.abs == (1.0/0.0)
+          if [:numrange,:int4range].include?(column.type)&& value.abs == (1.0/0.0)
             ''
           else
             type_cast_without_extended_types(value, column)
