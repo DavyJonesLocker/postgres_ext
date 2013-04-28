@@ -385,7 +385,7 @@ module ActiveRecord
 
         casted_value = type_cast_extended(value, column, true)
 
-        if casted_value.is_a? String
+        if casted_value.is_a?(String) && value.is_a?(String)
           casted_value = casted_value.dup
           # Encode backslashes.  One backslash becomes 4 in the resulting SQL.
           # (why 4, and not 2?  Trial and error shows 4 works, 2 fails to parse.)

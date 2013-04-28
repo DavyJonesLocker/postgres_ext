@@ -61,6 +61,9 @@ describe 'Array column' do
       end
 
       context 'corner cases, strings with commas and quotations' do
+        it 'converts one element, 2 dimensional arrays' do
+          adapter.type_cast([['one','two']], text_array_column).should eq '{{"one","two"}}'
+        end
         it 'converts the PostgreSQL value containing escaped " to an array' do
           text_array_column.type_cast('{"has \" quote",another value}').should eq ['has " quote', 'another value']
         end
