@@ -57,17 +57,26 @@ describe 'Models with array columns' do
     end
 
     context 'Setting values' do
-      describe 'setting a new value' do
-        it 'returns the value set when the record is retrieved' do
-          u = User.create(:nick_names => ['some', 'things'])
-          u.reload
+      it 'returns the value set when the record is retrieved' do
+        u = User.create(:nick_names => ['some', 'things'])
+        u.reload
 
-          u.nick_names = ['different', 'values']
-          u.save
+        u.nick_names = ['different', 'values']
+        u.save
 
-          u.reload
-          u.nick_names.should eq ['different', 'values']
-        end
+        u.reload
+        u.nick_names.should eq ['different', 'values']
+      end
+
+      it 'creates a user with an int array of some values' do
+        u = User.create(:favorite_numbers => [2,3,5])
+        u.reload
+
+        u.favorite_numbers = [1,2,3]
+        u.save
+
+        u.reload
+        u.favorite_numbers.should eq [1,2,3]
       end
     end
 
