@@ -71,11 +71,11 @@ module ActiveRecord
       end
     end
 
-    def where_with_chaining(opts = :chaining, *rest)
-      if opts == :chaining
+    def where_with_chaining(*opts, &block)
+      if opts.empty? && !block_given?
         WhereChain.new(self)
       else
-        where_without_chaining(opts, *rest)
+        where_without_chaining(*opts, &block)
       end
     end
 
