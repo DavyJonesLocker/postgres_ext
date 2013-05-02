@@ -1,9 +1,11 @@
+language: ruby
 rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
   - jruby-18mode
   - jruby-19mode
+  - 2.0.0
 
 before_script:
   - psql -c 'create database postgres_ext_test;' -U postgres
@@ -16,3 +18,18 @@ notifications:
   campfire:
     rooms:
       - secure: "yVESPleawl+fzvnzXw/W7rULyCjMEq3gPc3cEqcqM2SBBtEIDNXto2zoTAoR\nC5yqhijr+UtmVMsI7CxVK3XvfkmCJZN9P4DP0uas8XYx5DsSabCdPN0h3pka\nbaDCMCInU5QF4WswL2iuyLsOJeKDRwxh09adsHi1HpMgf0nTKPA="
+
+env:
+  - "RAILS_VERSION=3.2"
+  - "RAILS_VERSION=master"
+
+matrix:
+  allow_failures:
+    - env: "RAILS_VERSION=master"
+  exclude:
+    - rvm: 1.8.7
+      env: "RAILS_VERSION=master"
+    - rvm: 1.9.2
+      env: "RAILS_VERSION=master"
+    - rvm: jruby-18mode
+      env: "RAILS_VERSION=master"
