@@ -210,8 +210,8 @@ module ActiveRecord
       class UnsupportedFeature < Exception; end
 
       EXTENDED_TYPES = { :inet => {:name => 'inet'}, :cidr => {:name => 'cidr'}, :macaddr => {:name => 'macaddr'},
-                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'}, :ean13 => {:name => 'ean13'}, :numrange => { :name => 'numrange' },
-                         :daterange => {:name => 'daterange'}, :int4range => {:name => 'int4range'}, :int8range => {:name => 'int8range'} }
+                         :uuid => {:name => 'uuid'}, :citext => {:name => 'citext'}, :ean13 => {:name => 'ean13'}, :numrange => {:name => 'numrange'},
+                         :daterange => {:name => 'daterange'}, :int4range => {:name => 'int4range'}, :int8range => {:name => 'int8range'}, :tsrange => {:name => 'tsrange'}, :tstzrange => {:name => 'tstzrange'} }
 
       class ColumnDefinition < ActiveRecord::ConnectionAdapters::ColumnDefinition
         attr_accessor :array
