@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = PostgresExt::VERSION
 
-  gem.add_dependency 'activerecord', '~> 3.2.0'
+  gem.add_dependency 'activerecord', '>= 3.2.0'
   gem.add_dependency 'pg_array_parser', '~> 0.0.8'
 
   gem.add_development_dependency 'rails', '~> 3.2.0'
