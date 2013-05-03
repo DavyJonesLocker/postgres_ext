@@ -110,7 +110,7 @@ module ActiveRecord
         unless RUBY_PLATFORM =~ /java/
           def extract_value_from_default_with_extended_types(default)
             case default
-            when /\A'(.*)'::(?:(num|int[48])range)\z/
+            when /\A'(.*)'::(?:(num|int[48]|date)range)\z/
               $1
             else
               extract_value_from_default_without_extended_types(default)
