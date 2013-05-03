@@ -58,4 +58,32 @@ describe 'range schema dump' do
       output.should match /t\.int8range "range"/
     end
   end
+
+  context 'Timestamp (without time zone) ranges' do
+    it 'correctly generates tsrange column statements' do
+      stream = StringIO.new
+      connection.create_table :testings do |t|
+        t.tsrange :range
+      end
+
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+      output = stream.string
+
+      output.should match /t\.tsrange "range"/
+    end
+  end
+
+  context 'Timestamp (with time zone) ranges' do
+    it 'correctly generates tstzrange column statements' do
+      stream = StringIO.new
+      connection.create_table :testings do |t|
+        t.tstzrange :range
+      end
+
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+      output = stream.string
+
+      output.should match /t\.tstzrange "range"/
+    end
+  end
 end

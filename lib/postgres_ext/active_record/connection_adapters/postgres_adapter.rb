@@ -198,6 +198,10 @@ module ActiveRecord
           :numrange
         when 'daterange'
           :daterange
+        when 'tsrange'
+          :tsrange
+        when 'tstzrange'
+          :tstzrange
         else
           simplified_type_without_extended_types field_type
         end
