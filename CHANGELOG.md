@@ -1,3 +1,9 @@
+## 0.3.1
+
+ * Fixes issue with array -> string code - Dan McClain
+ * Adds support for ISN types - Ezekiel Templin
+ * Fix for Squeel compatibility - Alexander Borovsky
+
 ## 0.3.0
 
  * Adds support to create indexes concurrently  -  Dan McClain
