@@ -203,6 +203,8 @@ module ActiveRecord
         @database_encoding ||= case ActiveRecord::Base.connection.encoding
                                when 'UTF8'
                                  'UTF-8'
+                               when 'SQL_ASCII'
+                                 'ASCII'
                                else
                                  ActiveRecord::Base.connection.encoding
                                end
