@@ -46,6 +46,7 @@ module ActiveRecord
           when :inet, :cidr                    then klass.string_to_cidr_address(value)
           when :numrange,:int4range,:int8range then klass.string_to_numeric_range(value,type)
           when :daterange                      then klass.string_to_date_range(value)
+          when :tsrange                        then klass.string_to_datetime_range(value)
           else
             type_cast_without_extended_types(value)
           end
@@ -86,6 +87,7 @@ module ActiveRecord
           when :inet, :cidr                    then "#{klass}.string_to_cidr_address(#{var_name})"
           when :numrange,:int4range,:int8range then "#{klass}.string_to_numeric_range(#{var_name},#{type.inspect})"
           when :daterange                      then "#{klass}.string_to_date_range(#{var_name})"
+          when :tsrange                        then "#{klass}.string_to_datetime_range(#{var_name})"
           else
             type_cast_code_without_extended_types(var_name)
           end
@@ -96,7 +98,7 @@ module ActiveRecord
       if RUBY_PLATFORM =~ /java/
         def default_value_with_extended_types(default)
           case default
-          when /\A'(.*)'::(?:(num|int[48]|date)range)\z/
+          when /\A'(.*)'::(?:(num|int[48]|date|ts)range)\z/
             $1
           else
             default_value_without_extended_types(default)
@@ -110,7 +112,7 @@ module ActiveRecord
         unless RUBY_PLATFORM =~ /java/
           def extract_value_from_default_with_extended_types(default)
             case default
-            when /\A'(.*)'::(?:(num|int[48]|date)range)\z/
+            when /\A'(.*)'::(?:(num|int[48]|date|ts)range)\z/
               $1
             else
               extract_value_from_default_without_extended_types(default)
@@ -143,6 +145,12 @@ module ActiveRecord
         def string_to_date_range(value)
           extract_range(value) do |end_value|
             Date.parse(end_value)
+          end
+        end
+
+        def string_to_datetime_range(value)
+          extract_range(value) do |end_value|
+            Time.parse(end_value)
           end
         end
 
@@ -366,6 +374,12 @@ module ActiveRecord
         when Float
           if [:numrange,:int4range,:int8range,:daterange].include?(column.type)&& value.abs == (1.0/0.0)
             ''
+          else
+            type_cast_without_extended_types(value, column)
+          end
+        when Date, DateTime, Time
+          if [:tsrange].include?(column.type)
+            value.to_s(:db)
           else
             type_cast_without_extended_types(value, column)
           end
