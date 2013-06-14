@@ -13,6 +13,10 @@ the gem please ask the question on
 [Stack Overflow](http://stackoverflow.com). Be sure to tag the
 question with `DockYard` so we can find it.
 
+## Note ##
+PostgresExt is dropping support for Ruby 1.8.7 with the next minor
+release.
+
 ## Installation
 
 Add this line to your application's Gemfile:
