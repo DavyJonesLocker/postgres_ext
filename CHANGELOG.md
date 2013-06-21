@@ -1,3 +1,6 @@
+## 0.4.0
+ * Adds support for (limited) support for PostgreSQL ranges - Dan McClain
+
 ## 0.3.1
 
  * Fixes issue with array -> string code - Dan McClain
