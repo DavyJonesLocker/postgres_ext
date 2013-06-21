@@ -5,8 +5,8 @@ gemspec
 unless ENV['CI']
   if RUBY_PLATFORM =~ /java/
     gem 'ruby-debug'
-  elsif RUBY_VERSION == '1.9.3' || RUBY_VERSION == '2.0.0'
-    gem 'debugger'
+  elsif RUBY_VERSION == '2.0.0'
+    gem 'byebug'
   end
 end
 gem 'fivemat'

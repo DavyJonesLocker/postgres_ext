@@ -480,6 +480,22 @@ module ActiveRecord
         select_rows('select extname from pg_extension', 'extensions').map { |row| row[0] }.delete_if {|name| name == 'plpgsql'}
       end
 
+      def change_column_with_extended_types(table_name, column_name, type, options = {})
+        if options[:array]
+          clear_cache!
+          quoted_table_name = quote_table_name(table_name)
+
+          execute "ALTER TABLE #{quoted_table_name} ALTER COLUMN #{quote_column_name(column_name)} TYPE #{type_to_sql(type, options[:limit], options[:precision], options[:scale])}[]"
+
+          change_column_default(table_name, column_name, options[:default]) if options_include_default?(options)
+          change_column_null(table_name, column_name, options[:null], options[:default]) if options.key?(:null)
+        else
+          change_column_without_extended_types(table_name, column_name, type, options)
+        end
+      end
+
+      alias_method_chain :change_column, :extended_types
+
       private
 
       def ipaddr_to_string(value)

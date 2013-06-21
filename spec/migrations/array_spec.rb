@@ -82,6 +82,26 @@ describe 'Array migrations' do
     end
   end
 
+  context 'Change Column' do
+    after { connection.drop_table :data_types }
+    it 'updates the column definitions' do
+      lambda do
+        connection.create_table :data_types do |t|
+          t.integer :array_1, :array => true, :default => []
+        end
+
+        connection.change_column :data_types, :array_1, :integer, :array => true, :default => [], :null => false
+      end.should_not raise_exception
+
+      columns = connection.columns(:data_types)
+
+      array_1 = columns.detect { |c| c.name == 'array_1'}
+      array_1.sql_type.should eq 'integer[]'
+      array_1.default.should  eq []
+      array_1.null.should     be_false
+    end
+  end
+
   context 'Default Values' do
     describe 'String defaults' do
       after { connection.drop_table :default_strings }
