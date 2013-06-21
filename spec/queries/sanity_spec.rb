@@ -7,6 +7,7 @@ describe 'Ensure that we don\'t stomp on Active Record\'s queries' do
 
       query.should match /IN \(1, 2, 3\)/
     end
+
     it 'generates IN clauses for non array columns' do
       query = Person.where(:id => []).to_sql
 
