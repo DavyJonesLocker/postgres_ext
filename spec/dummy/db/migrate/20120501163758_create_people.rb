@@ -7,7 +7,7 @@ class CreatePeople < ActiveRecord::Migration
       t.string  :tags, :array => true
       t.text    :biography
       t.integer :lucky_number
-      t.numrange :num_range
+      t.column  :num_range, :numrange
 
       t.timestamps
     end
