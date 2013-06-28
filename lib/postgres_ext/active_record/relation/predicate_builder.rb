@@ -2,70 +2,51 @@ require 'active_record/relation/predicate_builder'
 
 module ActiveRecord
   class PredicateBuilder # :nodoc:
-    def self.build_from_hash(engine, attributes, default_table, allow_table_name = true)
-      predicates = attributes.map do |column, value|
-        table = default_table
+    private
 
-        if allow_table_name && value.is_a?(Hash)
-          table = Arel::Table.new(column, engine)
-
-          if value.empty?
-            '1 = 2'
-          else
-            build_from_hash(engine, value, table, false)
-          end
+    def self.build(attribute, value)
+      case value
+      when Array
+        engine = attribute.relation.engine
+        column = engine.columns.detect{ |col| col.name == attribute.name }
+        if column.array
+          attribute.eq(value)
         else
-          column = column.to_s
+          values = value.to_a.map {|x| x.is_a?(Base) ? x.id : x}
+          ranges, values = values.partition {|v| v.is_a?(Range)}
 
-          if allow_table_name && column.include?('.')
-            table_name, column = column.split('.', 2)
-            table = Arel::Table.new(table_name, engine)
-          end
+          values_predicate = if values.include?(nil)
+            values = values.compact
 
-          attribute = table[column.to_sym]
-
-          case value
-          when ActiveRecord::Relation
-            value = value.select(value.klass.arel_table[value.klass.primary_key]) if value.select_values.empty?
-            attribute.in(value.arel.ast)
-          when Array, ActiveRecord::Associations::CollectionProxy
-            column_definition = engine.connection.columns(table.name).find { |col| col.name == column }
-
-            if column_definition.respond_to?(:array) && column_definition.array
-              attribute.eq(value)
+            case values.length
+            when 0
+              attribute.eq(nil)
+            when 1
+              attribute.eq(values.first).or(attribute.eq(nil))
             else
-              values = value.to_a.map {|x| x.is_a?(ActiveRecord::Base) ? x.id : x}
-              ranges, values = values.partition {|v| v.is_a?(Range) || v.is_a?(Arel::Relation)}
-
-              array_predicates = ranges.map {|range| attribute.in(range)}
-
-              if values.include?(nil)
-                values = values.compact
-                if values.empty?
-                  array_predicates << attribute.eq(nil)
-                else
-                  array_predicates << attribute.in(values.compact).or(attribute.eq(nil))
-                end
-              else
-                array_predicates << attribute.in(values)
-              end
-
-              array_predicates.inject {|composite, predicate| composite.or(predicate)}
+              attribute.in(values).or(attribute.eq(nil))
             end
-          when Range, Arel::Relation
-            attribute.in(value)
-          when ActiveRecord::Base
-            attribute.eq(value.id)
-          when Class
-            # FIXME: I think we need to deprecate this behavior
-            attribute.eq(value.name)
           else
-            attribute.eq(value)
+            attribute.in(values)
           end
-        end
-      end
 
-      predicates.flatten
+          array_predicates = ranges.map { |range| attribute.in(range) }
+          array_predicates << values_predicate
+          array_predicates.inject { |composite, predicate| composite.or(predicate) }
+        end
+      when ActiveRecord::Relation
+        value = value.select(value.klass.arel_table[value.klass.primary_key]) if value.select_values.empty?
+        attribute.in(value.arel.ast)
+      when Range
+        attribute.in(value)
+      when ActiveRecord::Base
+        attribute.eq(value.id)
+      when Class
+        # FIXME: I think we need to deprecate this behavior
+        attribute.eq(value.name)
+      else
+        attribute.eq(value)
+      end
     end
   end
 end

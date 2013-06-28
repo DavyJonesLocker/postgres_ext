@@ -11,7 +11,6 @@ describe 'Don\'t stomp all over the default ActiveRecord queries' do
     end
 
     class Car < ActiveRecord::Base
-      attr_accessible :make, :model
     end
   end
 

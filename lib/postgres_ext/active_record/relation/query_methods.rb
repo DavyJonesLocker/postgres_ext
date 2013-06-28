@@ -3,10 +3,6 @@ require 'active_record/relation/query_methods'
 module ActiveRecord
   module QueryMethods
     class WhereChain
-      def initialize(scope)
-        @scope = scope
-      end
-
       def overlap(opts)
         opts.each do |key, value|
           @scope = @scope.where(arel_table[key].overlap(value))
@@ -70,15 +66,5 @@ module ActiveRecord
         @scope
       end
     end
-
-    def where_with_chaining(*opts, &block)
-      if opts.empty? && !block_given?
-        WhereChain.new(self)
-      else
-        where_without_chaining(*opts, &block)
-      end
-    end
-
-    alias_method_chain :where, :chaining
   end
 end

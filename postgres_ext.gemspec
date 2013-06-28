@@ -15,15 +15,11 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = PostgresExt::VERSION
 
-  gem.add_dependency 'activerecord', '~> 3.2.0'
+  gem.add_dependency 'activerecord', '~> 4.0.0'
   gem.add_dependency 'pg_array_parser', '~> 0.0.9'
 
-  gem.add_development_dependency 'rails', '~> 3.2.0'
+  gem.add_development_dependency 'rails', '~> 4.0.0'
   gem.add_development_dependency 'rspec-rails', '~> 2.12.0'
   gem.add_development_dependency 'bourne', '~> 1.3.0'
-  if RUBY_PLATFORM =~ /java/
-    gem.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
-  else
-    gem.add_development_dependency 'pg', '~> 0.13.2'
-  end
+  gem.add_development_dependency 'pg', '~> 0.13.2'
 end
