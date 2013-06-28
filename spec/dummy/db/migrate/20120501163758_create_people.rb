@@ -1,8 +1,8 @@
 class CreatePeople < ActiveRecord::Migration
   def change
     create_table :people do |t|
-      t.inet    :ip
-      t.cidr    :subnet
+      t.column    :ip, :inet
+      t.column    :subnet, :cidr
       t.integer :tag_ids, :array => true
       t.string  :tags, :array => true
       t.text    :biography
