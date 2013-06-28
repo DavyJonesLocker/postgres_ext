@@ -4,8 +4,8 @@ require File.expand_path('../lib/postgres_ext/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Dan McClain"]
   gem.email         = ["git@danmcclain.net"]
-  gem.description   = %q{Adds missing native PostgreSQL data types to ActiveRecord}
-  gem.summary       = %q{Extends ActiveRecord to handle native PostgreSQL data types}
+  gem.description   = %q{Provides a helpful querying API for Rails 4 + PostgreSQL}
+  gem.summary       = %q{Provides a helpful querying API for Rails 4 + PostgreSQL}
   gem.homepage      = ""
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
