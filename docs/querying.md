@@ -30,7 +30,7 @@ would be:
 User.where.overlap(:nick_names => ['Bob', 'Fred'])
 ``` 
 
-Postgres\_ext defines `array_overlap`, an [Arel](https://github.com/rails/arel)
+Postgres\_ext defines `overlap`, an [Arel](https://github.com/rails/arel)
 predicate for the `&&` operator. This is utilized by the `where.overlap`
 call above.
 
@@ -38,7 +38,7 @@ call above.
 user_arel = User.arel_table
 
 # Execute the query
-User.where(user_arel[:tags].array_overlap(['one','two']))
+User.where(user_arel[:tags].overlap(['one','two']))
 # => SELECT \"users\".* FROM \"users\" WHERE \"users\".\"tags\" && '{one,two}'
 ```
 
@@ -62,15 +62,15 @@ adding a `contains` method. To make a contains query, you can do:
 User.where.contains(:nick_names => ['Bob', 'Fred'])
 ```
 
-Postgres\_ext defines `array_contains`, an [Arel](https://github.com/rails/arel)
-predicate for the `@>` operator. This is utilized by the
-`where.array_contains` call above.
+Postgres\_ext overrides `contains`, an [Arel](https://github.com/rails/arel)
+predicate, to use the `@>` operator for arrays. This is utilized by the
+`where.contains` call above.
 
 ```ruby
 user_arel = User.arel_table
 
 # Execute the query
-User.where(user_arel[:tags].array_contains(['one','two']))
+User.where(user_arel[:tags].contains(['one','two']))
 # => SELECT "users".* FROM "users" WHERE "users"."tags" @> '{"one","two"}'
 ```
 
