@@ -59,11 +59,7 @@ module ActiveRecord
           value
         else
           string_array = parse_pg_array value
-          if type == :string || type == :text
-            force_character_encoding(string_array)
-          else
-            type_cast_array(string_array)
-          end
+          type_cast_array(string_array)
         end
       end
 
@@ -178,12 +174,6 @@ module ActiveRecord
 
       private
 
-      def force_character_encoding(string_array)
-        string_array.map do |item|
-          item.respond_to?(:force_encoding) ? item.force_encoding(ActiveRecord::Base.connection.encoding_for_ruby) : item
-        end
-      end
-
       def simplified_type_with_extended_types(field_type)
         case field_type
         when 'uuid'
@@ -286,19 +276,6 @@ module ActiveRecord
       end
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
-
-      # Translate from the current database encoding to the encoding we
-      # will force string array components into on retrievial.
-      def encoding_for_ruby
-        @database_encoding ||= case ActiveRecord::Base.connection.encoding
-                               when 'UTF8'
-                                 'UTF-8'
-                               when 'SQL_ASCII'
-                                 'ASCII'
-                               else
-                                 ActiveRecord::Base.connection.encoding
-                               end
-      end
 
       def supports_extensions?
         postgresql_version > 90100
