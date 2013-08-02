@@ -123,7 +123,11 @@ describe 'Array migrations' do
         string_1.null.should     be_false
 
         new_string_value = connection.exec_query "SELECT array_length(string_1, 1) FROM data_types LIMIT 1"
-        new_string_value.rows.first.should == ['3']
+        if RUBY_PLATFORM =~ /java/
+          new_string_value.first['array_length'].should eq 3
+        else
+          new_string_value.rows.first.should == ['3']
+        end
       end
     end
 
@@ -147,7 +151,11 @@ describe 'Array migrations' do
         text_1.null.should     be_false
 
         new_text_value = connection.exec_query "SELECT array_length(text_1, 1) FROM data_types LIMIT 1"
-        new_text_value.rows.first.should == ['3']
+        if RUBY_PLATFORM =~ /java/
+          new_text_value.first['array_length'].should eq 3
+        else
+          new_text_value.rows.first.should eq ['3']
+        end
       end
     end
   end
