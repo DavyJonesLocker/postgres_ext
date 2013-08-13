@@ -277,6 +277,73 @@ module ActiveRecord
 
       NATIVE_DATABASE_TYPES.merge!(EXTENDED_TYPES)
 
+      STRING_ARRAY_COLUMN_OID  = 1015
+      INTEGER_ARRAY_COLUMN_OID = 1007
+
+      ARRAY_TYPE_COLUMN_OIDS   = [ STRING_ARRAY_COLUMN_OID, INTEGER_ARRAY_COLUMN_OID ]
+
+      ARRAY_DEFINITIONS = {
+        STRING_ARRAY_COLUMN_OID => "character varying(255)[]",
+        INTEGER_ARRAY_COLUMN_OID => "integer[]"
+      }
+
+      # extracted from activerecord
+      # create a 2D array representing the result set
+      def result_as_array(res) #:nodoc:
+        # check if we have any binary column and if they need escaping
+        ftypes = Array.new(res.nfields) do |i|
+          [i, res.ftype(i), res.fmod(i), res.fname(i)]
+        end
+
+        rows = res.values
+
+        return rows unless ftypes.any? { |_, x|
+          [
+            BYTEA_COLUMN_TYPE_OID,
+            MONEY_COLUMN_TYPE_OID,
+          ].concat(ARRAY_TYPE_COLUMN_OIDS).include?(x)
+        }
+
+        typehash  = ftypes.group_by { |_, type| type }
+        binaries  = typehash[BYTEA_COLUMN_TYPE_OID] || []
+        monies    = typehash[MONEY_COLUMN_TYPE_OID] || []
+        arrays    = typehash.select { |type, _| ARRAY_TYPE_COLUMN_OIDS.include?(type) }
+
+        rows.each do |row|
+          # unescape string passed BYTEA field (OID == 17)
+          binaries.each do |index, _|
+            row[index] = unescape_bytea(row[index])
+          end
+
+          # If this is a money type column and there are any currency symbols,
+          # then strip them off. Indeed it would be prettier to do this in
+          # PostgreSQLColumn.string_to_decimal but would break form input
+          # fields that call value_before_type_cast.
+          monies.each do |index, _|
+            data = row[index]
+            # Because money output is formatted according to the locale, there are two
+            # cases to consider (note the decimal separators):
+            #  (1) $12,345,678.12
+            #  (2) $12.345.678,12
+            case data
+            when /^-?\D+[\d,]+\.\d{2}$/  # (1)
+              data.gsub!(/[^-\d.]/, '')
+            when /^-?\D+[\d.]+,\d{2}$/  # (2)
+              data.gsub!(/[^-\d,]/, '').sub!(/,/, '.')
+            end
+          end
+
+          arrays.each do |_, values|
+            values.each do |index, ftype, fmod, fname|
+              # execute("SELECT format_type(#{res.ftype(i)}, #{res.fmod(i)})").first["format_type"] would return the
+              # ARRAY_DEFINITION but would also fire another query
+              column     = PostgreSQLColumn.new(fname, fmod, ARRAY_DEFINITIONS[ftype])
+              row[index] = column.type_cast_with_extended_types(row[index])
+            end
+          end
+        end
+      end
+
       def supports_extensions?
         postgresql_version > 90100
       end
