@@ -282,4 +282,21 @@ describe 'Models with array columns' do
       end
     end
   end
+
+  describe '#select_one' do
+    before do
+      Person.create(
+        tags: ["cfabianski", "cedric"],
+        tag_ids: [4, 8, 9]
+      )
+    end
+
+    it 'returns a real array' do
+      query = Person.where(["? = ANY (tags)", "cfabianski"])
+      row   = Person.connection.select_one(query)
+
+      row["tags"].should eq ["cfabianski", "cedric"]
+      row["tag_ids"].should eq [4, 8, 9]
+    end
+  end
 end
