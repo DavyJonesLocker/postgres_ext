@@ -13,10 +13,6 @@ the gem please ask the question on
 [Stack Overflow](http://stackoverflow.com). Be sure to tag the
 question with `DockYard` so we can find it.
 
-## Note ##
-PostgresExt is dropping support for Ruby 1.8.7 with the next minor
-release.
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -81,7 +77,6 @@ puts b.names
 
 As a result, in place operators are discouraged and will not be
 supported in postgres\_ext at this time. 
-
 
 
 
