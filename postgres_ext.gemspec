@@ -4,9 +4,10 @@ require File.expand_path('../lib/postgres_ext/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Dan McClain"]
   gem.email         = ["git@danmcclain.net"]
-  gem.description   = %q{Provides a helpful querying API for Rails 4 + PostgreSQL}
-  gem.summary       = %q{Provides a helpful querying API for Rails 4 + PostgreSQL}
+  gem.description   = %q{Adds missing native PostgreSQL data types to ActiveRecord and convenient querying extensions for ActiveRecord and Arel}
+  gem.summary       = %q{Extends ActiveRecord to handle native PostgreSQL data types}
   gem.homepage      = ""
+  gem.license       = ['MIT']
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
@@ -16,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.version       = PostgresExt::VERSION
 
   gem.add_dependency 'activerecord', '~> 4.0.0'
+  gem.add_dependency 'arel', '~> 4.0.0'
   gem.add_dependency 'pg_array_parser', '~> 0.0.9'
 
   gem.add_development_dependency 'rails', '~> 4.0.0'
