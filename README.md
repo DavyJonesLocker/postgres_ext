@@ -1,6 +1,6 @@
 # PostgresExt
 
-Adds missing native PostgreSQL data types to ActiveRecord and convenient querying extensions for ActiveRecord and Arel
+Adds missing native PostgreSQL data types to ActiveRecord and convenient querying extensions for ActiveRecord and Arel for Rails 4.x
 
 [![Build Status](https://secure.travis-ci.org/dockyard/postgres_ext.png?branch=master)](http://travis-ci.org/dockyard/postgres_ext)
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/dockyard/postgres_ext)
@@ -12,10 +12,6 @@ Github](https://github.com/dockyard/postgres_ext/issues). If you need help using
 the gem please ask the question on
 [Stack Overflow](http://stackoverflow.com). Be sure to tag the
 question with `DockYard` so we can find it.
-
-## Note ##
-PostgresExt is dropping support for Ruby 1.8.7 with the next minor
-release.
 
 ## Installation
 
