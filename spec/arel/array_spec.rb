@@ -74,4 +74,15 @@ describe 'Array Column Predicates' do
       Person.find_by_sql(query.to_sql).should_not include two
     end
   end
+
+  describe '.select_one' do
+    it 'typecasts the array' do
+      one    = Person.create!(:tags => ['one', 'two', 'three'], :tag_ids => [ 9, 8 ])
+      query  = Person.where(:tags => ['one', 'two', 'three']).where(:tag_ids => [ 9, 8 ])
+      result = Person.connection.select_one(query.to_sql)
+
+      result["tags"].should == ['one', 'two', 'three']
+      result["tag_ids"].should == [9, 8]
+    end
+  end
 end
