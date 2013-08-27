@@ -21,7 +21,7 @@ describe 'Don\'t stomp all over the default ActiveRecord queries' do
 
   describe 'Where Queries' do
     describe 'Set query' do
-      it '' do
+      it 'generates expected set query' do
         Car.where('id in (?)', [1,2]).to_sql.should eq "SELECT \"cars\".* FROM \"cars\"  WHERE (id in (1,2))"
       end
     end

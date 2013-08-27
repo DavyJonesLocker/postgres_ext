@@ -66,5 +66,55 @@ module ActiveRecord
         @scope
       end
     end
+
+    [:with].each do |name|
+      class_eval <<-CODE, __FILE__, __LINE__ + 1
+       def #{name}_values                   # def select_values
+         @values[:#{name}] || []            #   @values[:select] || []
+       end                                  # end
+                                            #
+       def #{name}_values=(values)          # def select_values=(values)
+         raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
+         @values[:#{name}] = values         #   @values[:select] = values
+       end                                  # end
+      CODE
+    end 
+
+    def with(*args)
+      check_if_method_has_arguments!('with', args)
+      spawn.with!(*args.compact.flatten)
+    end
+
+    def with!(*args)
+      self.with_values += args
+      self
+    end
+
+    def build_arel_with_extensions
+      arel = build_arel_without_extensions
+
+      self.with_values.each do |with_value|
+        case with_value
+        when String
+          arel.with with_value
+        when Hash
+          with_value.each  do |name, expression|
+            case expression
+            when String
+              select = Arel::SqlLiteral.new "(#{expression})"
+            when ActiveRecord::Relation
+              select = Arel::SqlLiteral.new "(#{expression.to_sql})"
+            end
+            as = Arel::Nodes::As.new Arel::SqlLiteral.new(name.to_s), select
+            arel.with as
+          end
+        end
+      end
+
+
+      arel
+    end
+
+    alias_method_chain :build_arel, :extensions
   end
 end
