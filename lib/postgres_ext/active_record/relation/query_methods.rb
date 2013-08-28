@@ -111,7 +111,6 @@ module ActiveRecord
         end
       end
 
-
       arel
     end
 
