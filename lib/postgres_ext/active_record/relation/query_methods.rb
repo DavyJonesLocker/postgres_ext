@@ -134,8 +134,12 @@ module ActiveRecord
         case value
         when :order
           arel.orders
+        when Symbol
+          table[value].asc
         when Hash
           value.map { |field, dir| table[field].send(dir) }
+        else
+          Arel::Nodes::SqlLiteral.new value
         end
       end
 
