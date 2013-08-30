@@ -99,7 +99,6 @@ module ActiveRecord
       self
     end
 
-    require 'byebug'
     def build_arel_with_extensions
       arel = build_arel_without_extensions
 
