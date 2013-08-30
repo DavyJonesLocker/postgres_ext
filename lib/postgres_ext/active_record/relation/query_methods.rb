@@ -67,7 +67,7 @@ module ActiveRecord
       end
     end
 
-    [:with].each do |name|
+    [:with, :rank].each do |name|
       class_eval <<-CODE, __FILE__, __LINE__ + 1
        def #{name}_values                   # def select_values
          @values[:#{name}] || []            #   @values[:select] || []
@@ -78,7 +78,7 @@ module ActiveRecord
          @values[:#{name}] = values         #   @values[:select] = values
        end                                  # end
       CODE
-    end 
+    end
 
     def with(*args)
       check_if_method_has_arguments!('with', args)
@@ -90,10 +90,28 @@ module ActiveRecord
       self
     end
 
+    def ranked(options = :order)
+      spawn.ranked! options
+    end
+
+    def ranked!(*args)
+      self.rank_values += args
+      self
+    end
+
+    require 'byebug'
     def build_arel_with_extensions
       arel = build_arel_without_extensions
 
-      self.with_values.each do |with_value|
+      build_with(arel, with_values)
+
+      build_rank(arel, rank_values)
+
+      arel
+    end
+
+    def build_with(arel, withs)
+      withs.each do |with_value|
         case with_value
         when String
           arel.with with_value
@@ -110,8 +128,25 @@ module ActiveRecord
           end
         end
       end
+    end
 
-      arel
+    def build_rank(arel, ranks)
+      rank_orders = ranks.uniq.reject(&:blank?).flat_map do |value|
+        case value
+        when :order
+          arel.orders
+        when Hash
+          value.map { |field, dir| table[field].send(dir) }
+        end
+      end
+
+      unless rank_orders.blank?
+        rank_node = Arel::Nodes::SqlLiteral.new 'rank()'
+        window = Arel::Nodes::Window.new.order(rank_orders)
+        over_node = Arel::Nodes::Over.new rank_node, window
+
+        arel.project(over_node)
+      end
     end
 
     alias_method_chain :build_arel, :extensions

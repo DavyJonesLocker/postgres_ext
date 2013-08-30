@@ -4,8 +4,10 @@ class CTEProxy
   include ActiveRecord::Querying
   include ActiveRecord::Sanitization::ClassMethods
   include ActiveRecord::Reflection::ClassMethods
+
   attr_accessor :reflections
   attr_reader :connection, :arel_table
+
   def initialize(name, connection)
     @name = name
     @arel_table = Arel::Table.new(name)
@@ -19,7 +21,7 @@ class CTEProxy
 end
 
 module ActiveRecord::Querying
-  delegate :with, to: :all
+  delegate :with, :ranked, to: :all
 
   def from_cte(name, expression)
     table = Arel::Table.new(name)
