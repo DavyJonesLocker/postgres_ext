@@ -13,5 +13,13 @@ describe 'Common Table Expression queries' do
       query = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7)).where(id: 5)
       query.to_sql.should eq 'WITH lucky_number_seven AS (SELECT "people".* FROM "people"  WHERE "people"."lucky_number" = 7) SELECT "lucky_number_seven".* FROM "lucky_number_seven"  WHERE "lucky_number_seven"."id" = 5'
     end
+
+    it 'returns instances of the model' do
+      3.times { Person.create! lucky_number: 7 }
+      3.times { Person.create! lucky_number: 3 }
+      people = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7))
+
+      people.count.should eq 3
+    end
   end
 end
