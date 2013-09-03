@@ -3,7 +3,7 @@ class CTEProxy
   include ActiveRecord::Sanitization::ClassMethods
   include ActiveRecord::Reflection::ClassMethods
 
-  attr_accessor :reflections
+  attr_accessor :reflections, :current_scope
   attr_reader :connection, :arel_table
 
   def initialize(name, model)
@@ -29,5 +29,12 @@ class CTEProxy
   def columns_hash
     @model.columns_hash
   end
-end
 
+  def primary_key
+    @model.primary_key
+  end
+
+  def instantiate(record, column_types = {})
+    @model.instantiate(record, column_types)
+  end
+end

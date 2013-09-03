@@ -30,6 +30,7 @@ describe 'Common Table Expression queries' do
       people = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7))
 
       people.count.should eq 3
+      people.first.lucky_number.should eq 7
     end
   end
 end
