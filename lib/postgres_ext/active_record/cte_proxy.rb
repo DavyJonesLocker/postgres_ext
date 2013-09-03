@@ -18,6 +18,10 @@ class CTEProxy
     @name
   end
 
+  def table_name
+    name
+  end
+
   def column_names
     @model.column_names
   end

@@ -110,12 +110,12 @@ module ActiveRecord
     end
 
     def build_with(arel, withs)
-      withs.each do |with_value|
+      with_statements = withs.flat_map do |with_value|
         case with_value
         when String
-          arel.with with_value
+          with_value
         when Hash
-          with_value.each  do |name, expression|
+          with_value.map  do |name, expression|
             case expression
             when String
               select = Arel::SqlLiteral.new "(#{expression})"
@@ -123,10 +123,10 @@ module ActiveRecord
               select = Arel::SqlLiteral.new "(#{expression.to_sql})"
             end
             as = Arel::Nodes::As.new Arel::SqlLiteral.new(name.to_s), select
-            arel.with as
           end
         end
       end
+      arel.with with_statements unless with_statements.empty?
     end
 
     def build_rank(arel, ranks)
