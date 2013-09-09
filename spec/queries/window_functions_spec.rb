@@ -40,5 +40,10 @@ describe 'Window functions' do
       ranked_people[0].rank.should eq 1
       ranked_people[1].rank.should eq 2
     end
+
+    it 'does not apply the rank when performing a count' do
+      query = Person.ranked(lucky_number: :desc).count
+      query.should eq 0
+    end
   end
 end

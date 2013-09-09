@@ -130,25 +130,27 @@ module ActiveRecord
     end
 
     def build_rank(arel, ranks)
-      rank_orders = ranks.uniq.reject(&:blank?).flat_map do |value|
-        case value
-        when :order
-          arel.orders
-        when Symbol
-          table[value].asc
-        when Hash
-          value.map { |field, dir| table[field].send(dir) }
-        else
-          Arel::Nodes::SqlLiteral.new value
+      unless arel.projections.count == 1 && Arel::Nodes::Count === arel.projections.first
+        rank_orders = ranks.uniq.reject(&:blank?).flat_map do |value|
+          case value
+          when :order
+            arel.orders
+          when Symbol
+            table[value].asc
+          when Hash
+            value.map { |field, dir| table[field].send(dir) }
+          else
+            Arel::Nodes::SqlLiteral.new value
+          end
         end
-      end
 
-      unless rank_orders.blank?
-        rank_node = Arel::Nodes::SqlLiteral.new 'rank()'
-        window = Arel::Nodes::Window.new.order(rank_orders)
-        over_node = Arel::Nodes::Over.new rank_node, window
+        unless rank_orders.blank?
+          rank_node = Arel::Nodes::SqlLiteral.new 'rank()'
+          window = Arel::Nodes::Window.new.order(rank_orders)
+          over_node = Arel::Nodes::Over.new rank_node, window
 
-        arel.project(over_node)
+          arel.project(over_node)
+        end
       end
     end
 
