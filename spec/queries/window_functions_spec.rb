@@ -23,8 +23,8 @@ describe 'Window functions' do
     end
 
     it 'uses the rank value when a string passed to it' do
-      query = Person.ranked('lucky_number desc')
-      query.to_sql.should eq 'SELECT "people".*, rank() OVER (ORDER BY lucky_number desc) FROM "people"'
+      query = Person.ranked('ORDER BY lucky_number DESC')
+      query.to_sql.should eq 'SELECT "people".*, rank() OVER (ORDER BY lucky_number DESC) FROM "people"'
     end
 
     it 'combines the order and rank' do
@@ -44,6 +44,11 @@ describe 'Window functions' do
     it 'does not apply the rank when performing a count' do
       query = Person.ranked(lucky_number: :desc).count
       query.should eq 0
+
+      Person.create!
+
+      query = Person.ranked(lucky_number: :desc).count
+      query.should eq 1
     end
   end
 end

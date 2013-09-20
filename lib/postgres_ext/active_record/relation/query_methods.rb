@@ -67,7 +67,7 @@ module ActiveRecord
       end
     end
 
-    [:with, :rank].each do |name|
+    [:with].each do |name|
       class_eval <<-CODE, __FILE__, __LINE__ + 1
        def #{name}_values                   # def select_values
          @values[:#{name}] || []            #   @values[:select] || []
@@ -77,6 +77,19 @@ module ActiveRecord
          raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
          @values[:#{name}] = values         #   @values[:select] = values
        end                                  # end
+      CODE
+    end
+
+    [:rank].each do |name|
+      class_eval <<-CODE, __FILE__, __LINE__ + 1
+        def #{name}_value=(value)            # def readonly_value=(value)
+          raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
+          @values[:#{name}] = value          #   @values[:readonly] = value
+        end                                  # end
+
+        def #{name}_value                    # def readonly_value
+          @values[:#{name}]                  #   @values[:readonly]
+        end                                  # end
       CODE
     end
 
@@ -94,8 +107,8 @@ module ActiveRecord
       spawn.ranked! options
     end
 
-    def ranked!(*args)
-      self.rank_values += args
+    def ranked!(value)
+      self.rank_value = value
       self
     end
 
@@ -104,7 +117,7 @@ module ActiveRecord
 
       build_with(arel, with_values)
 
-      build_rank(arel, rank_values)
+      build_rank(arel, rank_value) if rank_value
 
       arel
     end
@@ -129,24 +142,27 @@ module ActiveRecord
       arel.with with_statements unless with_statements.empty?
     end
 
-    def build_rank(arel, ranks)
+    def build_rank(arel, rank_window_options)
       unless arel.projections.count == 1 && Arel::Nodes::Count === arel.projections.first
-        rank_orders = ranks.uniq.reject(&:blank?).flat_map do |value|
-          case value
+        rank_window = case rank_window_options
           when :order
             arel.orders
           when Symbol
-            table[value].asc
+            table[rank_window_options].asc
           when Hash
-            value.map { |field, dir| table[field].send(dir) }
+            rank_window_options.map { |field, dir| table[field].send(dir) }
           else
-            Arel::Nodes::SqlLiteral.new value
+            Arel::Nodes::SqlLiteral.new "(#{rank_window_options})"
           end
-        end
 
-        unless rank_orders.blank?
+        unless rank_window.blank?
           rank_node = Arel::Nodes::SqlLiteral.new 'rank()'
-          window = Arel::Nodes::Window.new.order(rank_orders)
+          window = Arel::Nodes::Window.new
+          if String === rank_window
+            window = window.frame rank_window
+          else
+            window = window.order(rank_window)
+          end
           over_node = Arel::Nodes::Over.new rank_node, window
 
           arel.project(over_node)
