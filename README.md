@@ -4,6 +4,7 @@ Adds missing native PostgreSQL data types to ActiveRecord and convenient queryin
 
 [![Build Status](https://secure.travis-ci.org/dockyard/postgres_ext.png?branch=master)](http://travis-ci.org/dockyard/postgres_ext)
 [![Code Climate](https://codeclimate.com/github/dockyard/postgres_ext.png)](https://codeclimate.com/github/dockyard/postgres_ext)
+[![Gem Version](https://badge.fury.io/rb/postgres_ext.png)](http://badge.fury.io/rb/postgres_ext)
 
 ## Looking for help? ##
 
