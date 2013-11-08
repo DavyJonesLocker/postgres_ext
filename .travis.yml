@@ -1,33 +1,39 @@
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - jruby-19mode
+- 1.9.3
+- 2.0.0
+- jruby-19mode
 env:
-  - POSTGRES=9.2
-  - POSTGRES=9.3
-
+- POSTGRES=9.2
+- POSTGRES=9.3
 before_install:
-  - sudo /etc/init.d/postgresql stop
-  - sudo cp /etc/postgresql/9.1/main/pg_hba.conf ./
-  - sudo apt-get remove postgresql postgresql-9.1 -qq --purge
-  - source /etc/lsb-release
-  - echo "deb http://apt.postgresql.org/pub/repos/apt/ $DISTRIB_CODENAME-pgdg main" > pgdg.list
-  - sudo mv pgdg.list /etc/apt/sources.list.d/
-  - wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
-  - sudo apt-get update -qq
-  - sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" install postgresql-$POSTGRES postgresql-contrib-$POSTGRES -qq
-  - sudo /etc/init.d/postgresql stop
-  - sudo cp ./pg_hba.conf /etc/postgresql/$POSTGRES/main
-  - sudo /etc/init.d/postgresql start
-
+- sudo /etc/init.d/postgresql stop
+- sudo cp /etc/postgresql/9.1/main/pg_hba.conf ./
+- sudo apt-get remove postgresql postgresql-9.1 -qq --purge
+- source /etc/lsb-release
+- echo "deb http://apt.postgresql.org/pub/repos/apt/ $DISTRIB_CODENAME-pgdg main"
+  > pgdg.list
+- sudo mv pgdg.list /etc/apt/sources.list.d/
+- wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key
+  add -
+- sudo apt-get update -qq
+- sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew"
+  install postgresql-$POSTGRES postgresql-contrib-$POSTGRES -qq
+- sudo /etc/init.d/postgresql stop
+- sudo cp ./pg_hba.conf /etc/postgresql/$POSTGRES/main
+- sudo /etc/init.d/postgresql start
 before_script:
-  - psql -c 'create database postgres_ext_test;' -U postgres -h localhost
-  - cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
-  - RAILS_ENV=test rake db:migrate
-
+- psql -c 'create database postgres_ext_test;' -U postgres -h localhost
+- cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
+- RAILS_ENV=test rake db:migrate
 notifications:
-  email: 
-    - git@danmcclain.net
+  email:
+  - git@danmcclain.net
   campfire:
     rooms:
-      - secure: "dNVxAfeOqRuA7k4Wu3H63deqV8Z1mmpVBdPEtkK2ry+mp+51RFHcO0cUJ/fI\nN4PXZu2wNWQlvz5LCMRPe+hxio/w8hTvgQxzBVvi0kuOh/22wXumdy7LR/RJ\nvyrrbP3+1hSxhzufyvIe/fOU11v31d3WRA1/q80ls9EkwzoDTNI="
+    - secure: |-
+        dNVxAfeOqRuA7k4Wu3H63deqV8Z1mmpVBdPEtkK2ry+mp+51RFHcO0cUJ/fI
+        N4PXZu2wNWQlvz5LCMRPe+hxio/w8hTvgQxzBVvi0kuOh/22wXumdy7LR/RJ
+        vyrrbP3+1hSxhzufyvIe/fOU11v31d3WRA1/q80ls9EkwzoDTNI=
+  hipchat:
+    rooms:
+      secure: YvUeHFFnUFnO81zm3sOH6R7xTMGg/9E5BTuW9HW3XIwoF72DMzAqvXU2mJ81050VX6aVdGxOUP/4IgaDW1V030sWneybFo7shHPwk2LhX4zr5SNoqwjBo8XTUUD7Jl+uKomWFSI5M2eKSLL8gSkR1D5a5iClmVsIyaa/0ZqFmfY=

@@ -15,10 +15,6 @@ ActiveRecord::Schema.define(version: 20131030103303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "citext"
-  enable_extension "hstore"
-  enable_extension "isn"
-  enable_extension "pg_trgm"
 
   create_table "people", force: true do |t|
     t.inet     "ip"
@@ -38,5 +34,7 @@ ActiveRecord::Schema.define(version: 20131030103303) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "things", ["name"], name: "index_things_on_name", unique: true, using: :btree
 
 end
