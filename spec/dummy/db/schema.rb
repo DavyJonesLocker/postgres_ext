@@ -11,10 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20120501163758) do
+ActiveRecord::Schema.define(version: 20131030103303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "citext"
+  enable_extension "hstore"
+  enable_extension "isn"
+  enable_extension "pg_trgm"
 
   create_table "people", force: true do |t|
     t.inet     "ip"
@@ -24,6 +28,13 @@ ActiveRecord::Schema.define(version: 20120501163758) do
     t.text     "biography"
     t.integer  "lucky_number"
     t.numrange "num_range"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "things", force: true do |t|
+    t.string   "name"
+    t.string   "title",      null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
