@@ -1,3 +1,41 @@
+## 2.1.3
+ 
+ * Fixes Arel 4.0.1 issues - Dan McClain
+ * Prevents coversion of string to order statement - Dan McClain
+  
+## 2.1.2
+
+ * Fixes calls to count when ranking a relation - Dan McClain
+ 
+## 2.1.1
+ 
+ * Fixes cte proxy so that it can create records - Dan McClain
+ 
+## 2.1.0
+ 
+ * Support added for common table expressions - Dan McClain
+ * Support added for rank windowing function - Dan McClain
+ * Insert Code Climate badge into README - Doug Yun
+  
+# 2.0.0
+ 
+ * JRuby fixes - Dan McClain
+ * Updates docs and description - Dan McClain
+ * Rails 4 support - Dan McClain
+ 
+# 1.0.0
+ 
+1.0.0 is the last major and minor release for Rails 3.2.x. Postgres\_ext
+will only receive bug fixes in the future. Also, bug fixes for 1.0.x
+will come from PRs only, future development efforts are concentrated on
+2.x.
+ 
+ * Fixing array tests in jruby - Dan McClain
+ * Removes encoding patches from PostgreSQLAdapter - Dan McClain
+ * Update documentation to reflect changes in 0.3.0 - Fabian Schwahn
+ * Allow conversion of string/text columns to array - Valentino
+ * Fix link to github issues in readme - Carlos Antonio da Silva
+
 ## 0.4.0
  * Adds support for (limited) support for PostgreSQL ranges - Dan McClain
 
