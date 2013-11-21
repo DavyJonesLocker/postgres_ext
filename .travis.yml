@@ -4,18 +4,6 @@ rvm:
   - jruby-19mode
 
 before_script:
-  - sudo /etc/init.d/postgresql stop
-  - sudo cp /etc/postgresql/9.1/main/pg_hba.conf ./
-  - sudo apt-get remove postgresql postgresql-9.1 -qq --purge
-  - source /etc/lsb-release
-  - echo "deb http://apt.postgresql.org/pub/repos/apt/ $DISTRIB_CODENAME-pgdg main" > pgdg.list
-  - sudo mv pgdg.list /etc/apt/sources.list.d/
-  - wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
-  - sudo apt-get update -qq
-  - sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" install postgresql-9.2 postgresql-contrib-9.2 -qq
-  - sudo /etc/init.d/postgresql stop
-  - sudo cp ./pg_hba.conf /etc/postgresql/9.2/main
-  - sudo /etc/init.d/postgresql start
   - psql -c 'create database postgres_ext_test;' -U postgres -h localhost
   - cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
   - RAILS_ENV=test rake db:migrate
@@ -26,3 +14,6 @@ notifications:
   campfire:
     rooms:
       - secure: "dNVxAfeOqRuA7k4Wu3H63deqV8Z1mmpVBdPEtkK2ry+mp+51RFHcO0cUJ/fI\nN4PXZu2wNWQlvz5LCMRPe+hxio/w8hTvgQxzBVvi0kuOh/22wXumdy7LR/RJ\nvyrrbP3+1hSxhzufyvIe/fOU11v31d3WRA1/q80ls9EkwzoDTNI="
+
+addons:
+  postgresql: '9.3'
