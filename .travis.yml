@@ -1,20 +1,17 @@
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - jruby-19mode
-
+- 1.9.3
+- 2.0.0
+- jruby-19mode
 before_script:
-  - psql -c 'create database postgres_ext_test;' -U postgres -h localhost
-  - cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
-  - RAILS_ENV=test rake db:migrate
-
+- psql -c 'create database postgres_ext_test;' -U postgres -h localhost
+- cp spec/dummy/config/database.yml.example spec/dummy/config/database.yml
+- RAILS_ENV=test rake db:migrate
 notifications:
-  email: 
-    - git@danmcclain.net
-  campfire:
+  email:
+  - git@danmcclain.net
+  hipchat:
     rooms:
-      - secure: "dNVxAfeOqRuA7k4Wu3H63deqV8Z1mmpVBdPEtkK2ry+mp+51RFHcO0cUJ/fI\nN4PXZu2wNWQlvz5LCMRPe+hxio/w8hTvgQxzBVvi0kuOh/22wXumdy7LR/RJ\nvyrrbP3+1hSxhzufyvIe/fOU11v31d3WRA1/q80ls9EkwzoDTNI="
-
+      secure: gebjx8Q/jmnNmf6l+SyQHHJjGn9RfA6s4e8sIoRBVt9pomkOCBvHq7++AjpVlqkXcvV6rK2L90rAEPKMP0QUS04vRtRY6LvwmjiQHFo99/gktG6LO+5/QGvy9zbK4PxWe35Yr1F98Gs0mQ+y/ZbU6u8rJsI7DM1iPq2ULzo/QUw=
 addons:
   postgresql:
   - '9.2'
