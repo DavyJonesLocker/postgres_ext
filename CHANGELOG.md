@@ -1,3 +1,7 @@
+## 2.2.0 (unreleased)
+
+ * Adds Arel predications for `ANY` and `ALL` - Dan McClain
+
 ## 2.1.3
  
  * Fixes Arel 4.0.1 issues - Dan McClain
