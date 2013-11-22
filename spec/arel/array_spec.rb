@@ -1,29 +1,51 @@
 require 'spec_helper'
 
 describe 'Array Column Predicates' do
-  describe 'Array Overlap' do
-    it 'converts Arel overlap statment' do
-      arel_table = Person.arel_table
+  let(:arel_table) { Person.arel_table }
+  describe 'Array Any' do
+    context 'string value' do
+      it 'creates any predicates' do
+        arel_table.where(arel_table[:tags].any('tag')).to_sql.should match /'tag' = ANY\("people"\."tags"\)/
+      end
+    end
 
+    context 'integer value' do
+      it 'creates any predicates' do
+        arel_table.where(arel_table[:tag_ids].any(1)).to_sql.should match /1 = ANY\("people"\."tag_ids"\)/
+      end
+    end
+  end
+
+  describe 'Array All' do
+    context 'string value' do
+      it 'creates all predicates' do
+        arel_table.where(arel_table[:tags].all('tag')).to_sql.should match /'tag' = ALL\("people"\."tags"\)/
+      end
+    end
+
+    context 'integer value' do
+      it 'creates all predicates' do
+        arel_table.where(arel_table[:tag_ids].all(1)).to_sql.should match /1 = ALL\("people"\."tag_ids"\)/
+      end
+    end
+  end
+
+  describe 'Array Overlap' do
+    it 'converts Arel overlap statement' do
       arel_table.where(arel_table[:tags].overlap(['tag','tag 2'])).to_sql.should match /&& '\{"tag","tag 2"\}'/
     end
 
-    it 'converts Arel overlap statment' do
-      arel_table = Person.arel_table
-
+    it 'converts Arel overlap statement' do
       arel_table.where(arel_table[:tag_ids].overlap([1,2])).to_sql.should match /&& '\{1,2\}'/
     end
 
     it 'works with count (and other predicates)' do
-      arel_table = Person.arel_table
-
       Person.where(arel_table[:tag_ids].overlap([1,2])).count.should eq 0
     end
 
     it 'returns matched records' do
       one = Person.create!(:tags => ['one'])
       two = Person.create!(:tags => ['two'])
-      arel_table = Person.arel_table
 
       query = arel_table.where(arel_table[:tags].overlap(['one'])).project(Arel.sql('*'))
       Person.find_by_sql(query.to_sql).should include(one)
@@ -39,27 +61,20 @@ describe 'Array Column Predicates' do
 
   describe 'Array Contains' do
     it 'converts Arel contains statement and escapes strings' do
-      arel_table = Person.arel_table
-
       arel_table.where(arel_table[:tags].contains(['tag','tag 2'])).to_sql.should match /@> '\{"tag","tag 2"\}'/
     end
 
     it 'converts Arel contains statement with numbers' do
-      arel_table = Person.arel_table
-
       arel_table.where(arel_table[:tag_ids].contains([1,2])).to_sql.should match /@> '\{1,2\}'/
     end
 
     it 'works with count (and other predicates)' do
-      arel_table = Person.arel_table
-
       Person.where(arel_table[:tag_ids].contains([1,2])).count.should eq 0
     end
 
     it 'returns matched records' do
       one = Person.create!(:tags => ['one', 'two', 'three'])
       two = Person.create!(:tags => ['one', 'three'])
-      arel_table = Person.arel_table
 
       query = arel_table.where(arel_table[:tags].contains(['one', 'two'])).project(Arel.sql('*'))
       Person.find_by_sql(query.to_sql).should include one

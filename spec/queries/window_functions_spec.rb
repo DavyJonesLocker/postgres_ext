@@ -50,5 +50,15 @@ describe 'Window functions' do
       query = Person.ranked(lucky_number: :desc).count
       query.should eq 1
     end
+
+    it 'does not apply the rank when checking presence' do
+      query = Person.ranked(lucky_number: :desc).present?
+      query.should be_false
+
+      Person.create!
+
+      query = Person.ranked(lucky_number: :desc).present?
+      query.should be_true
+    end
   end
 end

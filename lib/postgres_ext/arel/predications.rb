@@ -21,5 +21,15 @@ module Arel
     def overlap(other)
       Nodes::Overlap.new self, other
     end
+
+    def any(other)
+      any_tags_function = Arel::Nodes::NamedFunction.new('ANY', [self])
+      Arel::Nodes::Equality.new(other, any_tags_function)
+    end
+
+    def all(other)
+      any_tags_function = Arel::Nodes::NamedFunction.new('ALL', [self])
+      Arel::Nodes::Equality.new(other, any_tags_function)
+    end
   end
 end
