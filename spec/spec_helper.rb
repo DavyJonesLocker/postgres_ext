@@ -1,16 +1,16 @@
-# Configure Rails Envinronment
-ENV['RAILS_ENV'] = 'test'
-require File.expand_path('../dummy/config/environment.rb',  __FILE__)
-
-require 'rspec/rails'
+require 'active_record'
 require 'rspec/autorun'
 require 'bourne'
 
-ENGINE_RAILS_ROOT=File.join(File.dirname(__FILE__), '../')
+require 'dotenv'
+Dotenv.load
 
-# Requires supporting ruby files with custom matchers and macros, etc,
-# in spec/support/ and its subdirectories.
-Dir[File.join(ENGINE_RAILS_ROOT, 'spec/support/**/*.rb')].each { |f| require f }
+ActiveRecord::Base.establish_connection
+
+class Person < ActiveRecord::Base
+end
+
+
 require 'postgres_ext'
 require 'database_cleaner'
 
@@ -23,7 +23,7 @@ RSpec.configure do |config|
   config.before(:each) do
     DatabaseCleaner.clean
   end
-  config.use_transactional_fixtures = false
+
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.mock_with :mocha
   config.backtrace_clean_patterns = [

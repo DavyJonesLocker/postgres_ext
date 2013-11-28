@@ -35,7 +35,7 @@ task :setup do
   end
   print 'Enter your database name: [postgres_ext_test] '
   db_name = STDIN.gets.chomp
-  print 'Enter your database user: [postgres] '
+  print 'Enter your database user: [] '
   db_user = STDIN.gets.chomp
   print 'Enter your database password: [] '
   db_password = STDIN.gets.chomp
@@ -43,14 +43,15 @@ task :setup do
   db_server = STDIN.gets.chomp
 
   db_name = 'postgres_ext_test' if db_name.empty?
-  db_user = 'postgres' if db_user.empty?
   db_password = ":#{db_password}" unless db_password.empty?
   db_server = 'localhost' if db_server.empty?
+
+  db_server = "@#{db_server}" unless db_user.empty?
 
   env_path = File.expand_path('./.env')
   File.open(env_path, 'w') do |file|
     file.puts "DATABASE_NAME=#{db_name}"
-    file.puts "DATABASE_URL=\"postgres://#{db_user}#{db_password}@#{db_server}/#{db_name}\""
+    file.puts "DATABASE_URL=\"postgres://#{db_user}#{db_password}#{db_server}/#{db_name}\""
   end
 
   puts '.env file saved'
@@ -73,11 +74,21 @@ namespace :db do
     %x{ createdb #{ENV['DATABASE_NAME']} }
   end
 
-  task :setup => :establish_connection do
-    require 'byebug'
-
+  task :migrate => :load_db_settings do
     ActiveRecord::Base.establish_connection
 
-    puts 'setup'
+    ActiveRecord::Base.connection.create_table :people, force: true do |t|
+      t.inet     "ip"
+      t.cidr     "subnet"
+      t.integer  "tag_ids",      array: true
+      t.string   "tags",         array: true
+      t.text     "biography"
+      t.integer  "lucky_number"
+      t.numrange "num_range"
+      t.datetime "created_at"
+      t.datetime "updated_at"
+    end
+
+    puts 'Database migrated'
   end
 end
