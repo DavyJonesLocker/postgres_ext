@@ -21,8 +21,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'pg_array_parser', '~> 0.0.9'
 
   gem.add_development_dependency 'rake', '~> 10.1.0'
-  gem.add_development_dependency 'rspec-core', '~> 2.12.2'
-  gem.add_development_dependency 'rspec-expectations', '~> 2.12.1'
+  gem.add_development_dependency 'minitest'
+  gem.add_development_dependency 'm'
   gem.add_development_dependency 'bourne', '~> 1.3.0'
   gem.add_development_dependency 'database_cleaner'
   gem.add_development_dependency 'dotenv'
