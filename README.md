@@ -40,6 +40,18 @@ Where are the datatypes from PostgresExt 1.x? ActiveRecord 4.x includes
 all the data types that PostgresExt added to ActiveRecord 3.2.x. We'll
 be adding more datatypes as we come across them.
 
+## Developing
+
+To work on postgres\_ext locally, follow these steps:
+
+ 1. Run `bundle install`, this will install all the development
+    dependencies
+ 2. Run `rake setup`, this will set up the `.env` file necessary to run
+    the tests and set up the database
+ 3. Run `rake db:create`, this will create the test database
+ 4. Run `rake db:migrate`, this will set up the database tables required
+    by the test
+
 ## Authors
 
 Dan McClain [twitter](http://twitter.com/_danmcclain) [github](http://github.com/danmcclain)

@@ -20,10 +20,12 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'arel', '~> 4.0.1'
   gem.add_dependency 'pg_array_parser', '~> 0.0.9'
 
-  gem.add_development_dependency 'rails', '~> 4.0.0'
-  gem.add_development_dependency 'rspec-rails', '~> 2.12.0'
+  gem.add_development_dependency 'rake', '~> 10.1.0'
+  gem.add_development_dependency 'minitest'
+  gem.add_development_dependency 'm'
   gem.add_development_dependency 'bourne', '~> 1.3.0'
   gem.add_development_dependency 'database_cleaner'
+  gem.add_development_dependency 'dotenv'
   if RUBY_PLATFORM =~ /java/
       gem.add_development_dependency 'activerecord-jdbcpostgresql-adapter', '1.3.0.beta2'
   else
