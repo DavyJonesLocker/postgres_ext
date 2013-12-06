@@ -3,6 +3,9 @@ require 'minitest/autorun'
 require 'bourne'
 require 'postgres_ext'
 require 'database_cleaner'
+unless ENV['CI'] || RUBY_PLATFORM =~ /java/
+  require 'byebug'
+end
 
 require 'dotenv'
 Dotenv.load
@@ -10,6 +13,11 @@ Dotenv.load
 ActiveRecord::Base.establish_connection
 
 class Person < ActiveRecord::Base
+  has_many :hm_tags, class_name: 'Tag'
+end
+
+class Tag < ActiveRecord::Base
+  belongs_to :person
 end
 
 DatabaseCleaner.strategy = :deletion

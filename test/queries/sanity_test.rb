@@ -14,4 +14,11 @@ describe 'Ensure that we don\'t stomp on Active Record\'s queries' do
       query.must_match /WHERE 1=0/
     end
   end
+
+  describe '.where(joins: { column: [] })' do
+    it 'generates IN clause for non array columns' do
+      query = Person.joins(:hm_tags).where(tags: { id: ['working'] }).to_sql
+      query.must_match /WHERE "tags"\."id" IN \('working'\)/
+    end
+  end
 end

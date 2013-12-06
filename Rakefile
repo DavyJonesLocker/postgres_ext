@@ -94,6 +94,13 @@ namespace :db do
       t.datetime "updated_at"
     end
 
+    ActiveRecord::Base.connection.create_table :tags, force: true do |t|
+      t.integer  "person_id"
+      t.string   "categories",         array: true
+      t.datetime "created_at"
+      t.datetime "updated_at"
+    end
+
     puts 'Database migrated'
   end
 end

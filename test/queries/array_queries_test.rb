@@ -14,6 +14,14 @@ describe 'Array queries' do
     end
   end
 
+  describe '.where(joins: { array_column: [] })' do
+    it 'returns an array string instead of IN ()' do
+      skip
+      query = Person.joins(:hm_tags).where(tags: { categories: ['working'] }).to_sql
+      query.must_match equality_regex
+    end
+  end
+
   describe '.where.overlap(:column => value)' do
     it 'generates the appropriate where clause' do
       query = Person.where.overlap(:tag_ids => [1,2])

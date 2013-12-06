@@ -8,8 +8,8 @@ module ActiveRecord
       case value
       when Array
         engine = attribute.relation.engine
-        column = engine.columns.detect{ |col| col.name == attribute.name }
-        if column.array
+        column = engine.columns.detect{ |col| col.name.to_s == attribute.name.to_s }
+        if column && column.array
           attribute.eq(value)
         else
           values = value.to_a.map {|x| x.is_a?(Base) ? x.id : x}
