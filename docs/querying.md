@@ -32,6 +32,18 @@ JOIN my_games
 ON scores.games_id = my_games.id
 ```
 
+You can also do a recursive with:
+
+```ruby
+Graph.with.recursive(search_graph:
+  "  SELECT g.id, g.link, g.data, 1 AS depth
+     FROM graph g
+   UNION ALL
+     SELECT g.id, g.link, g.data, sg.depth + 1
+     FROM graph g, search_graph sg
+     WHERE g.id = sg.link").from(:search_graph)
+```
+
 ## from\_cte
 
 `Model.from_cte` is similiar to `Model.find_by_sql`, taking the CTE
