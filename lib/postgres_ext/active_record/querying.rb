@@ -1,6 +1,4 @@
-require 'active_record/querying'
-
-module ActiveRecord::Querying
+module PostgresExt::ActiveRecord::Querying
   delegate :with, :ranked, to: :all
 
   def from_cte(name, expression)
