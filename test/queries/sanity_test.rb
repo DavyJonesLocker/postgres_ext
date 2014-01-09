@@ -21,4 +21,12 @@ describe 'Ensure that we don\'t stomp on Active Record\'s queries' do
       query.must_match /WHERE "tags"\."id" IN \('working'\)/
     end
   end
+
+  describe '#habtm_association_ids=' do
+    it 'properly deletes records through HABTM association method' do
+      person = Person.create(habtm_tag_ids: [Tag.create.id])
+      person.update_attributes(habtm_tag_ids: [])
+      person.habtm_tag_ids.must_be_empty
+    end
+  end
 end

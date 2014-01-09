@@ -94,6 +94,11 @@ namespace :db do
       t.datetime "updated_at"
     end
 
+    ActiveRecord::Base.connection.create_table :people_tags, force: true do |t|
+      t.integer  "person_id"
+      t.integer  "tag_id"
+    end
+
     ActiveRecord::Base.connection.create_table :tags, force: true do |t|
       t.integer  "person_id"
       t.string   "categories",         array: true
