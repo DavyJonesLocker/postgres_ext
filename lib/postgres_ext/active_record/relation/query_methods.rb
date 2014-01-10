@@ -67,6 +67,21 @@ module ActiveRecord
       end
     end
 
+    # WithChain objects act as placeholder for queries in which #with does not have any parameter.
+    # In this case, #with must be chained with #recursive to return a new relation.
+    class WithChain
+      def initialize(scope)
+        @scope = scope
+      end
+
+      # Returns a new relation expressing WITH RECURSIVE
+      def recursive(*args)
+        @scope.with_values += args
+        @scope.recursive_value = true
+        @scope
+      end
+    end
+
     [:with].each do |name|
       class_eval <<-CODE, __FILE__, __LINE__ + 1
        def #{name}_values                   # def select_values
@@ -80,7 +95,7 @@ module ActiveRecord
       CODE
     end
 
-    [:rank].each do |name|
+    [:rank, :recursive].each do |name|
       class_eval <<-CODE, __FILE__, __LINE__ + 1
         def #{name}_value=(value)            # def readonly_value=(value)
           raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
@@ -93,14 +108,23 @@ module ActiveRecord
       CODE
     end
 
-    def with(*args)
-      check_if_method_has_arguments!('with', args)
-      spawn.with!(*args.compact.flatten)
+    def with(opts = :chain, *rest)
+      if opts == :chain
+        WithChain.new(spawn)
+      elsif opts.blank?
+        self
+      else
+        spawn.with!(opts, *rest)
+      end
     end
 
-    def with!(*args)
-      self.with_values += args
-      self
+    def with!(opts = :chain, *rest) # :nodoc:
+      if opts == :chain
+        WithChain.new(self)
+      else
+        self.with_values += [opts] + rest
+        self
+      end
     end
 
     def ranked(options = :order)
@@ -115,15 +139,15 @@ module ActiveRecord
     def build_arel_with_extensions
       arel = build_arel_without_extensions
 
-      build_with(arel, with_values)
+      build_with(arel)
 
       build_rank(arel, rank_value) if rank_value
 
       arel
     end
 
-    def build_with(arel, withs)
-      with_statements = withs.flat_map do |with_value|
+    def build_with(arel)
+      with_statements = with_values.flat_map do |with_value|
         case with_value
         when String
           with_value
@@ -139,7 +163,13 @@ module ActiveRecord
           end
         end
       end
-      arel.with with_statements unless with_statements.empty?
+      unless with_statements.empty?
+        if recursive_value
+          arel.with :recursive, with_statements
+        else
+          arel.with with_statements
+        end
+      end
     end
 
     def build_rank(arel, rank_window_options)
