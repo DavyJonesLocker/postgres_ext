@@ -14,6 +14,7 @@ ActiveRecord::Base.establish_connection
 
 class Person < ActiveRecord::Base
   has_many :hm_tags, class_name: 'Tag'
+  has_and_belongs_to_many :habtm_tags, class_name: 'Tag'
 end
 
 class Tag < ActiveRecord::Base
