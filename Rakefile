@@ -87,9 +87,7 @@ namespace :db do
       t.cidr     "subnet"
       t.integer  "tag_ids",      array: true
       t.string   "tags",         array: true
-      t.text     "biography"
       t.integer  "lucky_number"
-      t.numrange "num_range"
       t.datetime "created_at"
       t.datetime "updated_at"
     end
