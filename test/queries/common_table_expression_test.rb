@@ -21,6 +21,14 @@ describe 'Common Table Expression queries' do
       query = Person.with.recursive(lucky_number_seven: Person.where(lucky_number: 7)).joins('JOIN lucky_number_seven ON lucky_number_seven.id = people.id')
       query.to_sql.must_equal 'WITH RECURSIVE lucky_number_seven AS (SELECT "people".* FROM "people"  WHERE "people"."lucky_number" = 7) SELECT "people".* FROM "people" JOIN lucky_number_seven ON lucky_number_seven.id = people.id'
     end
+
+    it 'accepts Arel::SelectMangers' do
+      arel_table = Arel::Table.new 'test'
+      arel_manager = arel_table.project arel_table[:foo]
+
+      query = Person.with(testing: arel_manager)
+      query.to_sql.must_equal 'WITH testing AS (SELECT "test"."foo" FROM "test") SELECT "people".* FROM "people"'
+    end
   end
 
   describe '.from_cte(common_table_expression_hash)' do

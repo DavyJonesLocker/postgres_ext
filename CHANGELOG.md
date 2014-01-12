@@ -1,8 +1,9 @@
 ## 2.2.0 (unreleased)
 
  * Adds Arel predications for `ANY` and `ALL` - Dan McClain
- * Fixes errors with has_and_belongs_to_many associations - Jacob Swanner
+ * Fixes errors with has\_and\_belongs\_to\_many associations - Jacob Swanner
  * Adds with.recursive for recursive CTEs - Cody Cutrer
+ * Relation.with now accepts Arel::SelectMangers - Dan McClain
 
 ## 2.1.3
  
