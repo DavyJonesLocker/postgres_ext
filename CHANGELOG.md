@@ -1,4 +1,4 @@
-## 2.2.0 (unreleased)
+## 2.2.0
 
  * Adds Arel predications for `ANY` and `ALL` - Dan McClain
  * Fixes errors with has\_and\_belongs\_to\_many associations - Jacob Swanner
