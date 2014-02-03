@@ -32,7 +32,7 @@ describe 'Ensure that we don\'t stomp on Active Record\'s queries' do
 
   describe 'Associated record array query' do
     it 'correctly identifies the column on associations with different class names' do
-      person = Person.create(:habtm_tag_ids => [Tag.create(categories: ['wicked']).id])
+      person = Person.create(:habtm_tag_ids => [Tag.create(categories: ['wicked', 'awesome']).id])
       wicked_people = Person.wicked_people
       wicked_people.must_include(person)
     end
