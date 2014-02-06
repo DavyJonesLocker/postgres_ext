@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["git@danmcclain.net"]
   gem.description   = %q{Adds missing native PostgreSQL data types to ActiveRecord and convenient querying extensions for ActiveRecord and Arel}
   gem.summary       = %q{Extends ActiveRecord to handle native PostgreSQL data types}
-  gem.homepage      = ""
+  gem.homepage      = 'https://github.com/dockyard/postgres_ext'
   gem.licenses      = ['MIT']
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
