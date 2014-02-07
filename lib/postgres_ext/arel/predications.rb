@@ -31,5 +31,13 @@ module Arel
       any_tags_function = Arel::Nodes::NamedFunction.new('ALL', [self])
       Arel::Nodes::Equality.new(other, any_tags_function)
     end
+
+    def pg_matches other
+      Nodes::PGMatches.new self, other
+    end
+
+    def pg_does_not_match other
+      Ndminodes::PGDoesNotMatch.new self, other
+    end
   end
 end
