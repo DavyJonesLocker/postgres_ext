@@ -15,11 +15,7 @@ module Arel
       def visit_Arel_Nodes_Contains o, a = nil
         left_column = o.left.relation.engine.columns.find { |col| col.name == o.left.name.to_s }
 
-        if left_column && left_column.respond_to?(:array) && left_column.array
-          "#{visit o.left, a} @> #{visit o.right, o.left}"
-        else
-          "#{visit o.left, a} >> #{visit o.right, o.left}"
-        end
+        "#{visit o.left, a} @> #{visit o.right, o.left}"
       end
 
       def visit_Arel_Nodes_ContainsEquals o, a = nil

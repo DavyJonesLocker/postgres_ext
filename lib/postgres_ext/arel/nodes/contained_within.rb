@@ -10,7 +10,7 @@ module Arel
     end
 
     class Contains < Arel::Nodes::Binary
-      def operator; :>> end
+      def operator; :'@>' end
     end
 
     class ContainsEquals < Arel::Nodes::Binary
