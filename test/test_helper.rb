@@ -11,7 +11,7 @@ Dotenv.load
 
 require 'postgres_ext'
 
-ActiveRecord::Base.establish_connection
+ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'])
 
 class Person < ActiveRecord::Base
   has_many :hm_tags, class_name: 'Tag'

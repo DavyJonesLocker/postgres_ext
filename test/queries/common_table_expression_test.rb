@@ -45,5 +45,11 @@ describe 'Common Table Expression queries' do
       people.count.must_equal 3
       people.first.lucky_number.must_equal 7
     end
+
+    it 'responds to table_name' do
+      people = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7))
+
+      people.model_name.must_equal 'Person'
+    end
   end
 end
