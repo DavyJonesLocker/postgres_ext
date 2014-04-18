@@ -12,8 +12,7 @@ before_script:
 notifications:
   email:
   - git@danmcclain.net
-  hipchat:
-    rooms:
-      secure: gebjx8Q/jmnNmf6l+SyQHHJjGn9RfA6s4e8sIoRBVt9pomkOCBvHq7++AjpVlqkXcvV6rK2L90rAEPKMP0QUS04vRtRY6LvwmjiQHFo99/gktG6LO+5/QGvy9zbK4PxWe35Yr1F98Gs0mQ+y/ZbU6u8rJsI7DM1iPq2ULzo/QUw=
+  slack:
+    secure: Gk6UyzsTeb5Sn4hMjiIzUWdN6V18O0s69by2ZNJLic+vOA5igNdqFOj5CfRPeklJR5D+m43Ngx2kquOYUhyH9D4+UZpHGnXOZkJiIU9dFJoUxEhkECE8KVjMQstqCoz/OGtQHQegHupNX5mVHQZOwL4WgzP66+xevKwbVtotc1U=
 addons:
   postgresql: '9.3'
