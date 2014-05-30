@@ -1,7 +1,6 @@
 require 'active_record'
 require 'minitest/autorun'
 require 'bourne'
-require 'postgres_ext'
 require 'database_cleaner'
 unless ENV['CI'] || RUBY_PLATFORM =~ /java/
   require 'byebug'
@@ -9,6 +8,14 @@ end
 
 require 'dotenv'
 Dotenv.load
+
+# For code coverage, must be required before all application / gem / library code.
+unless ENV['NOCOVER']
+  require 'coveralls'
+  Coveralls.wear!
+end
+
+require 'postgres_ext'
 
 ActiveRecord::Base.establish_connection
 
