@@ -34,6 +34,17 @@ end
 
 task :default => :test
 
+namespace :test do
+  desc 'Test against all supported ActiveRecord versions'
+  task :all do
+    # Currently only supports Active Record v4.0
+    %w(4.0.x).each do |version|
+      sh "BUNDLE_GEMFILE='gemfiles/Gemfile.activerecord-#{version}' bundle install --quiet"
+      sh "BUNDLE_GEMFILE='gemfiles/Gemfile.activerecord-#{version}' bundle exec rake test"
+    end
+  end
+end
+
 task :setup do
   if File.exist?('.env')
     puts 'This will overwrite your existing .env file'
