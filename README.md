@@ -44,12 +44,13 @@ be adding more datatypes as we come across them.
 
 To work on postgres\_ext locally, follow these steps:
 
- 1. Run `bundle install`, this will install all the development
+ 1. Run `bundle install`, this will install (almost) all the development
     dependencies
- 2. Run `rake setup`, this will set up the `.env` file necessary to run
+ 2. `gem install byebug` (not a declared dependency to not break CI)
+ 3. Run `rake setup`, this will set up the `.env` file necessary to run
     the tests and set up the database
- 3. Run `rake db:create`, this will create the test database
- 4. Run `rake db:migrate`, this will set up the database tables required
+ 4. Run `rake db:create`, this will create the test database
+ 5. Run `rake db:migrate`, this will set up the database tables required
     by the test
 
 ## Authors
