@@ -1,13 +1,18 @@
 rvm:
 - 1.9.3
 - 2.0.0
+- 2.1.2
 - jruby-19mode
+
+gemfile:
+  - gemfiles/Gemfile.activerecord-4.0.x
+  - gemfiles/Gemfile.activerecord-4.1.x
 
 env: DATABASE_URL=postgres://postgres@localhost/postgres_ext_test
 
 before_script:
 - psql -c 'create database postgres_ext_test;' -U postgres -h localhost
-- rake db:migrate
+- bundle exec rake db:migrate
 
 notifications:
   email:
