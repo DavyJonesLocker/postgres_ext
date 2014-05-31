@@ -11,7 +11,7 @@ env: DATABASE_URL=postgres://postgres@localhost/postgres_ext_test
 
 before_script:
 - psql -c 'create database postgres_ext_test;' -U postgres -h localhost
-- rake db:migrate
+- bundle exec rake db:migrate
 
 notifications:
   email:
