@@ -26,7 +26,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'bourne', '~> 1.3.0'
   gem.add_development_dependency 'database_cleaner'
   gem.add_development_dependency 'dotenv'
-  gem.add_development_dependency 'coveralls'
   if RUBY_PLATFORM =~ /java/
       gem.add_development_dependency 'activerecord-jdbcpostgresql-adapter', '1.3.0.beta2'
   else

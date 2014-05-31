@@ -9,12 +9,6 @@ end
 require 'dotenv'
 Dotenv.load
 
-# For code coverage, must be required before all application / gem / library code.
-unless ENV['NOCOVER']
-  require 'coveralls'
-  Coveralls.wear!
-end
-
 require 'postgres_ext'
 
 ActiveRecord::Base.establish_connection
