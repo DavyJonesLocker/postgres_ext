@@ -12,7 +12,7 @@ We can add CTEs to queries by chaining `#with` off a relation.
 `Relation#with` accepts a hash, and will convert `Relation`s to the
 proper SQL in the CTE.
 
-Let's expand a `#with` call to it's resulting SQL code:
+Let's expand a `#with` call to its resulting SQL code:
 
 ```ruby
 Score.with(my_games: Game.where(id: 1)).joins('JOIN my_games ON scores.game_id = my_games.id')
