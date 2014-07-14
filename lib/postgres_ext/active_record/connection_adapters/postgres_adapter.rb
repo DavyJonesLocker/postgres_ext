@@ -282,7 +282,7 @@ module ActiveRecord
       end
 
       def add_column_options!(sql, options)
-        if options[:array] || options[:column].try(:array)
+        if options[:array] || (options[:column].respond_to?(:array) && options[:column].try(:array))
           sql << '[]'
         end
         super
