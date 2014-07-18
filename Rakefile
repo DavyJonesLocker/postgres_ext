@@ -93,11 +93,14 @@ namespace :db do
   task :migrate => :load_db_settings do
     ActiveRecord::Base.establish_connection
 
+    ActiveRecord::Base.connection.enable_extension 'hstore'
+
     ActiveRecord::Base.connection.create_table :people, force: true do |t|
       t.inet     "ip"
       t.cidr     "subnet"
       t.integer  "tag_ids",      array: true
       t.string   "tags",         array: true
+      t.hstore   "data"
       t.integer  "lucky_number"
       t.datetime "created_at"
       t.datetime "updated_at"

@@ -1,8 +1,11 @@
-## 2.2.1 (unreleased)
+## 2.3.0 (unreleased)
 
  * Fixes an issue with `where(table: { column: [] })` was not properly
    converting the where clause to an equality instead of an `IN`
    predicate (#111) - Dan McClain
+ * Adds support for Rails 4.1 - Dan McClain
+ * Adds support for hstore columns when using `contains` (#120) - Dan McClain
+
 ## 2.2.0
 
  * Adds Arel predications for `ANY` and `ALL` - Dan McClain

@@ -15,7 +15,7 @@ module Arel
       def visit_Arel_Nodes_Contains o, a = nil
         left_column = o.left.relation.engine.columns.find { |col| col.name == o.left.name.to_s }
 
-        if left_column && left_column.respond_to?(:array) && left_column.array
+        if left_column && (left_column.type == :hstore || (left_column.respond_to?(:array) && left_column.array))
           "#{visit o.left, a} @> #{visit o.right, o.left}"
         else
           "#{visit o.left, a} >> #{visit o.right, o.left}"
