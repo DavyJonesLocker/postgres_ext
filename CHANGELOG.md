@@ -1,4 +1,4 @@
-## 2.3.0 (unreleased)
+## 2.3.0
 
  * Fixes an issue with `where(table: { column: [] })` was not properly
    converting the where clause to an equality instead of an `IN`
