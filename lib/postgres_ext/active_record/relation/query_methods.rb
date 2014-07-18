@@ -162,7 +162,7 @@ module ActiveRecord
             when Arel::SelectManager
               select = Arel::SqlLiteral.new visitor.accept(expression)
             end
-            as = Arel::Nodes::As.new Arel::SqlLiteral.new(name.to_s), select
+            as = Arel::Nodes::As.new Arel::SqlLiteral.new("\"#{name.to_s}\""), select
           end
         end
       end
