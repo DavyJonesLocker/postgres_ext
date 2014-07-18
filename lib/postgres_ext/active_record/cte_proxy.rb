@@ -11,7 +11,7 @@ class CTEProxy
     @arel_table = Arel::Table.new(name)
     @model = model
     @connection = model.connection
-    @reflections = {}
+    @_reflections = {}
   end
 
   def name
@@ -30,11 +30,31 @@ class CTEProxy
     @model.columns_hash
   end
 
+  def model_name
+    @model.model_name
+  end
+
   def primary_key
     @model.primary_key
+  end
+
+  def attribute_alias?(*args)
+    @model.attribute_alias?(*args)
+  end
+
+  def aggregate_reflections(*args)
+    @model.aggregate_reflections(*args)
   end
 
   def instantiate(record, column_types = {})
     @model.instantiate(record, column_types)
   end
+
+  private
+
+  def reflections
+    @_reflections
+  end
+
+  alias _reflections reflections
 end
