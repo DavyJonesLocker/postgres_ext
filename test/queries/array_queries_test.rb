@@ -3,7 +3,6 @@ require 'test_helper'
 describe 'Array queries' do
   let(:equality_regex) { %r{\"people\"\.\"tags\" = '\{\"working\"\}'} }
   let(:overlap_regex)  { %r{\"people\"\.\"tag_ids\" && '\{1,2\}'} }
-  let(:contains_regex) { %r{\"people\"\.\"tag_ids\" @> '\{1,2\}'} }
   let(:any_regex)      { %r{2 = ANY\(\"people\"\.\"tag_ids\"\)} }
   let(:all_regex)      { %r{2 = ALL\(\"people\"\.\"tag_ids\"\)} }
 
@@ -36,19 +35,6 @@ describe 'Array queries' do
     end
   end
 
-  describe '.where.contains(:column => value)' do
-    it 'generates the appropriate where clause' do
-      query = Person.where.contains(:tag_ids => [1,2])
-      query.to_sql.must_match contains_regex
-    end
-
-    it 'allows chaining' do
-      query = Person.where.contains(:tag_ids => [1,2]).where(:tags => ['working']).to_sql
-
-      query.must_match contains_regex
-      query.must_match equality_regex
-    end
-  end
 
   describe '.where.any(:column => value)' do
     it 'generates the appropriate where clause' do
