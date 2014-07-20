@@ -1,4 +1,5 @@
 require 'arel/visitors/visitor'
+
 module Arel
   module Visitors
     class Visitor
