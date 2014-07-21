@@ -8,7 +8,7 @@ module ActiveRecord
       case value
       when Array
         engine = attribute.relation.engine
-        column = engine.connection.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s }
+        column = engine.connection.schema_cache.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s }
         if column && column.array
           attribute.eq(value)
         else

@@ -4,7 +4,7 @@ module Arel
   module Visitors
     class ToSql
       def visit_Array o, a
-        column = a.relation.engine.connection.columns(a.relation.name).find { |col| col.name == a.name.to_s } if a
+        column = a.relation.engine.connection.schema_cache.columns(a.relation.name).find { |col| col.name == a.name.to_s } if a
         if column && column.respond_to?(:array) && column.array
           quoted o, a
         else
