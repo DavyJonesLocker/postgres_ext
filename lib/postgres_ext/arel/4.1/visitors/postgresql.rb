@@ -1,10 +1,19 @@
-require 'arel/visitors/visitor'
+require 'arel/visitors/postgresql'
 
 module Arel
   module Visitors
-    class Visitor
-      # We are adding our visitors to the main visitor for the time being until the right spot is found to monkey patch
+    class PostgreSQL
       private
+      
+      def visit_Array o, a
+        column = a.relation.engine.connection.schema_cache.columns(a.relation.name).find { |col| col.name == a.name.to_s } if a
+        if column && column.respond_to?(:array) && column.array
+          quoted o, a
+        else
+          o.empty? ? 'NULL' : o.map { |x| visit x }.join(', ')
+        end
+      end
+      
       def visit_Arel_Nodes_ContainedWithin o, a = nil
         "#{visit o.left, a} << #{visit o.right, o.left}"
       end

@@ -7,7 +7,7 @@ describe 'Contains queries' do
   let(:contains_array_regex)          { %r{\"people\"\.\"tag_ids\" @> '\{1,2\}'} }
   let(:contains_hstore_regex)         { %r{\"people\"\.\"data\" @> '\"nickname\"=>"Dan"'} }
   let(:contains_equals_regex)         { %r{\"people\"\.\"ip\" >>= '127.0.0.1'} }
-  let(:equality_regex) { %r{\"people\"\.\"tags\" = '\{\"working\"\}'} }
+  let(:equality_regex) { %r{\"people\"\.\"tags\" = '\{"?working"?\}'} }
 
   describe '.where.contained_within(:column, value)' do
     it 'generates the appropriate where clause' do

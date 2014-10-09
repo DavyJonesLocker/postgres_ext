@@ -22,34 +22,9 @@ class CTEProxy
     name
   end
 
-  def column_names
-    @model.column_names
-  end
-
-  def columns_hash
-    @model.columns_hash
-  end
-
-  def model_name
-    @model.model_name
-  end
-
-  def primary_key
-    @model.primary_key
-  end
-
-  def attribute_alias?(*args)
-    @model.attribute_alias?(*args)
-  end
-
-  def aggregate_reflections(*args)
-    @model.aggregate_reflections(*args)
-  end
-
-  def instantiate(record, column_types = {})
-    @model.instantiate(record, column_types)
-  end
-
+  delegate :column_names, :columns_hash, :model_name, :primary_key, :attribute_alias?,
+    :aggregate_reflections, :instantiate, :type_for_attribute, to: :@model
+  
   private
 
   def reflections

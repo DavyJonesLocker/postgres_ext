@@ -32,7 +32,7 @@ describe 'Array Column Predicates' do
 
   describe 'Array Overlap' do
     it 'converts Arel overlap statement' do
-      arel_table.where(arel_table[:tags].overlap(['tag','tag 2'])).to_sql.must_match /&& '\{"tag","tag 2"\}'/
+      arel_table.where(arel_table[:tags].overlap(['tag','tag 2'])).to_sql.must_match /&& '\{"?tag"?,"tag 2"\}'/
     end
 
     it 'converts Arel overlap statement' do
@@ -61,7 +61,7 @@ describe 'Array Column Predicates' do
 
   describe 'Array Contains' do
     it 'converts Arel contains statement and escapes strings' do
-      arel_table.where(arel_table[:tags].contains(['tag','tag 2'])).to_sql.must_match /@> '\{"tag","tag 2"\}'/
+      arel_table.where(arel_table[:tags].contains(['tag','tag 2'])).to_sql.must_match /@> '\{"?tag"?,"tag 2"\}'/
     end
 
     it 'converts Arel contains statement with numbers' do

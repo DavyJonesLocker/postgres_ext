@@ -147,7 +147,6 @@ module ActiveRecord
     end
 
     def build_with(arel)
-      visitor = arel.engine.connection.visitor
       with_statements = with_values.flat_map do |with_value|
         case with_value
         when String
@@ -156,13 +155,11 @@ module ActiveRecord
           with_value.map  do |name, expression|
             case expression
             when String
-              select = Arel::SqlLiteral.new "(#{expression})"
-            when ActiveRecord::Relation
-              select = Arel::SqlLiteral.new "(#{expression.to_sql})"
-            when Arel::SelectManager
-              select = Arel::SqlLiteral.new visitor.accept(expression)
+              select = Arel::Nodes::SqlLiteral.new "(#{expression})"
+            when ActiveRecord::Relation, Arel::SelectManager
+              select = Arel::Nodes::SqlLiteral.new "(#{expression.to_sql})"
             end
-            as = Arel::Nodes::As.new Arel::SqlLiteral.new("\"#{name.to_s}\""), select
+            Arel::Nodes::As.new Arel::Nodes::SqlLiteral.new("\"#{name.to_s}\""), select
           end
         end
       end

@@ -1,7 +1,7 @@
 require 'test_helper'
 
 describe 'Array queries' do
-  let(:equality_regex) { %r{\"people\"\.\"tags\" = '\{\"working\"\}'} }
+  let(:equality_regex) { %r{\"people\"\.\"tags\" = '\{"?working"?\}'} }
   let(:overlap_regex)  { %r{\"people\"\.\"tag_ids\" && '\{1,2\}'} }
   let(:any_regex)      { %r{2 = ANY\(\"people\"\.\"tag_ids\"\)} }
   let(:all_regex)      { %r{2 = ALL\(\"people\"\.\"tag_ids\"\)} }
