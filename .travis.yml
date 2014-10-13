@@ -5,6 +5,7 @@ rvm:
 gemfile:
   - gemfiles/Gemfile.activerecord-4.0.x
   - gemfiles/Gemfile.activerecord-4.1.x
+  - gemfiles/Gemfile.activerecord-4.2.x
 
 env: DATABASE_URL=postgres://postgres@localhost/postgres_ext_test
 
