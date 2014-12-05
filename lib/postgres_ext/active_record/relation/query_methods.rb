@@ -1,5 +1,3 @@
-require 'active_record/relation/query_methods'
-
 module ActiveRecord
   module QueryMethods
     class WhereChain
