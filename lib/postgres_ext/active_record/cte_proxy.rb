@@ -22,9 +22,13 @@ class CTEProxy
     name
   end
 
+  def relation_delegate_class(*args)
+    @model.relation_delegate_class(*args)
+  end
+
   delegate :column_names, :columns_hash, :model_name, :primary_key, :attribute_alias?,
     :aggregate_reflections, :instantiate, :type_for_attribute, to: :@model
-  
+
   private
 
   def reflections
