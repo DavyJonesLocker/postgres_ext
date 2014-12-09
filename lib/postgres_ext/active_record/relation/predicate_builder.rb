@@ -1,5 +1,3 @@
-require 'active_record/relation/predicate_builder'
-
 module ActiveRecord
   class PredicateBuilder # :nodoc:
     private

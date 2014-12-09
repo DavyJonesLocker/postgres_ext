@@ -1,5 +1,3 @@
-require 'active_record/querying'
-
 module ActiveRecord::Querying
   delegate :with, :ranked, to: :all
 
