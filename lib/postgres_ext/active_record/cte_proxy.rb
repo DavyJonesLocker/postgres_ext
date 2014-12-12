@@ -23,8 +23,8 @@ class CTEProxy
   end
 
   delegate :column_names, :columns_hash, :model_name, :primary_key, :attribute_alias?,
-    :aggregate_reflections, :instantiate, :type_for_attribute, to: :@model
-  
+    :aggregate_reflections, :instantiate, :type_for_attribute, :relation_delegate_class, to: :@model
+
   private
 
   def reflections
