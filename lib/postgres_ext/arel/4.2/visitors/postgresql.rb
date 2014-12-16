@@ -4,7 +4,7 @@ module Arel
   module Visitors
     class PostgreSQL
       private
-     
+      
       def visit_Arel_Nodes_ContainedWithin o, collector
         infix_value o, collector, " << " 
       end
@@ -14,15 +14,29 @@ module Arel
       end
 
       def visit_Arel_Nodes_Contains o, collector
-        left_column = o.left.relation.engine.columns.find { |col| col.name == o.left.name.to_s }
+        left_column = o.left.relation.engine.columns.find do |col|
+          col.name == o.left.name.to_s || col.name == o.left.relation.name.to_s
+        end
 
         if left_column && (left_column.type == :hstore || (left_column.respond_to?(:array) && left_column.array))
-          infix_value o, collector, " @> " 
+          infix_value o, collector, " @> "
         else
           infix_value o, collector, " >> " 
         end
       end
 
+      def visit_Arel_Nodes_ContainsINet o, collector
+        infix_value o, collector, " >> " 
+      end
+
+      def visit_Arel_Nodes_ContainsHStore o, collector
+        infix_value o, collector, " @> "
+      end
+      
+      def visit_Arel_Nodes_ContainsArray o, collector
+        infix_value o, collector, " @> "
+      end
+      
       def visit_Arel_Nodes_ContainsEquals o, collector
         infix_value o, collector, " >>= " 
       end

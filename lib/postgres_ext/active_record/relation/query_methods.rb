@@ -1,70 +1,117 @@
 module ActiveRecord
   module QueryMethods
     class WhereChain
-      def overlap(opts)
-        opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].overlap(value))
+      def overlap(opts, *rest)
+        substitute_comparisons(opts, rest, Arel::Nodes::Overlap, 'overlap')
+      end
+
+      def contained_within(opts, *rest)
+        substitute_comparisons(opts, rest, Arel::Nodes::ContainedWithin, 'contained_within')
+      end
+
+      def contained_within_or_equals(opts, *rest)
+        substitute_comparisons(opts, rest, Arel::Nodes::ContainedWithinEquals, 'contained_within_or_equals')
+      end
+
+      def contains(opts, *rest)
+        build_where_chain(opts, rest) do |rel|
+          case rel
+          when Arel::Nodes::In, Arel::Nodes::Equality
+            column = left_column(rel) || column_from_association(rel)
+            equality_for_hstore(rel) if column.type == :hstore
+            
+            if column.type == :hstore
+              Arel::Nodes::ContainsHStore.new(rel.left, rel.right)
+            elsif column.respond_to?(:array) && column.array
+              Arel::Nodes::ContainsArray.new(rel.left, rel.right)
+            else
+              Arel::Nodes::ContainsINet.new(rel.left, rel.right)
+            end
+          else
+            raise ArgumentError, "Invalid argument for .where.overlap(), got #{rel.class}"
+          end
         end
-        @scope
       end
 
-      def contained_within(opts)
-        opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].contained_within(value))
-        end
-
-        @scope
+      def contains_or_equals(opts, *rest)
+        substitute_comparisons(opts, rest, Arel::Nodes::ContainsEquals, 'contains_or_equals')
       end
 
-      def contained_within_or_equals(opts)
-        opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].contained_within_or_equals(value))
-        end
-
-        @scope
+      def any(opts, *rest)
+        equality_to_function('ANY', opts, rest)
       end
 
-      def contains(opts)
-        opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].contains(value))
-        end
-
-        @scope
-      end
-
-      def contains_or_equals(opts)
-        opts.each do |key, value|
-          @scope = @scope.where(arel_table[key].contains_or_equals(value))
-        end
-
-        @scope
-      end
-
-      def any(opts)
-        equality_to_function('ANY', opts)
-      end
-
-      def all(opts)
-        equality_to_function('ALL', opts)
+      def all(opts, *rest)
+        equality_to_function('ALL', opts, rest)
       end
 
       private
 
-      def arel_table
-        @arel_table ||= @scope.engine.arel_table
+      def find_column(col, rel)
+        col.name == rel.left.name.to_s || col.name == rel.left.relation.name.to_s
       end
 
-      def equality_to_function(function_name, opts)
-        opts.each do |key, value|
-          any_function = Arel::Nodes::NamedFunction.new(function_name, [arel_table[key]])
-          predicate = Arel::Nodes::Equality.new(value, any_function)
-          @scope = @scope.where(predicate)
-        end
+      def left_column(rel)
+        rel.left.relation.engine.columns.find { |col| find_column(col, rel) }
+      end
 
+      def column_from_association(rel)
+        if assoc = assoc_from_related_table(rel)
+          column = assoc.klass.columns.find { |col| find_column(col, rel) }
+        end
+      end
+
+      def equality_for_hstore(rel)
+        new_right_name = rel.left.name.to_s
+        if rel.right.respond_to?(:val)
+          return if rel.right.val.is_a?(Hash)
+          rel.right = Arel::Nodes.build_quoted({new_right_name => rel.right.val},
+                                               rel.left)
+        else
+          return if rel.right.is_a?(Hash)
+          rel.right = {new_right_name => rel.right }
+        end
+        
+        rel.left.name = rel.left.relation.name.to_sym
+        rel.left.relation.name = rel.left.relation.engine.table_name
+      end
+
+      def assoc_from_related_table(rel)
+        engine = rel.left.relation.engine
+        engine.reflect_on_association(rel.left.relation.name.to_sym) ||
+          engine.reflect_on_association(rel.left.relation.name.singularize.to_sym)
+      end
+
+      def build_where_chain(opts, rest, &block)
+        where_value = @scope.send(:build_where, opts, rest).map(&block)
+        @scope.references!(PredicateBuilder.references(opts)) if Hash === opts
+        @scope.where_values += where_value
         @scope
       end
-    end
 
+      def substitute_comparisons(opts, rest, arel_node_class, method)
+        build_where_chain(opts, rest) do |rel|
+          case rel
+          when Arel::Nodes::In, Arel::Nodes::Equality
+            arel_node_class.new(rel.left, rel.right)
+          else
+            raise ArgumentError, "Invalid argument for .where.#{method}(), got #{rel.class}"
+          end
+        end
+      end
+
+      def equality_to_function(function_name, opts, rest)
+        build_where_chain(opts, rest) do |rel|
+          case rel
+          when Arel::Nodes::Equality
+            Arel::Nodes::Equality.new(rel.right, Arel::Nodes::NamedFunction.new(function_name, [rel.left]))
+          else
+            raise ArgumentError, "Invalid argument for .where.#{funciton_name.downcase}(), got #{rel.class}"
+          end
+        end
+      end
+    end
+    
     # WithChain objects act as placeholder for queries in which #with does not have any parameter.
     # In this case, #with must be chained with #recursive to return a new relation.
     class WithChain
@@ -173,15 +220,15 @@ module ActiveRecord
     def build_rank(arel, rank_window_options)
       unless arel.projections.count == 1 && Arel::Nodes::Count === arel.projections.first
         rank_window = case rank_window_options
-          when :order
-            arel.orders
-          when Symbol
-            table[rank_window_options].asc
-          when Hash
-            rank_window_options.map { |field, dir| table[field].send(dir) }
-          else
-            Arel::Nodes::SqlLiteral.new "(#{rank_window_options})"
-          end
+                      when :order
+                        arel.orders
+                      when Symbol
+                        table[rank_window_options].asc
+                      when Hash
+                        rank_window_options.map { |field, dir| table[field].send(dir) }
+                      else
+                        Arel::Nodes::SqlLiteral.new "(#{rank_window_options})"
+                      end
 
         unless rank_window.blank?
           rank_node = Arel::Nodes::SqlLiteral.new 'rank()'
