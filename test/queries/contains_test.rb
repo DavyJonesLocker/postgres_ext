@@ -41,16 +41,27 @@ describe 'Contains queries' do
       query.to_sql.must_match contains_array_regex
     end
 
-    it 'generates the appropriate where clause for array columns' do
+    it 'generates the appropriate where clause for hstore columns' do
       query = Person.where.contains(data: { nickname: 'Dan' })
       query.to_sql.must_match contains_hstore_regex
     end
 
+    it 'generates the appropriate where clause for hstore columns on joins' do
+      query = Tag.joins(:person).where.contains(people: { data: { nickname: 'Dan' } })
+      query.to_sql.must_match contains_hstore_regex
+    end
+    
     it 'allows chaining' do
       query = Person.where.contains(:tag_ids => [1,2]).where(:tags => ['working']).to_sql
 
       query.must_match contains_array_regex
       query.must_match equality_regex
+    end
+
+    it 'generates the appropriate where clause for array columns on joins' do
+      query = Tag.joins(:person).where.contains(people: { tag_ids: [1,2] }).to_sql
+
+      query.must_match contains_array_regex
     end
   end
 end

@@ -15,9 +15,8 @@ describe 'Array queries' do
 
   describe '.where(joins: { array_column: [] })' do
     it 'returns an array string instead of IN ()' do
-      skip
       query = Person.joins(:hm_tags).where(tags: { categories: ['working'] }).to_sql
-      query.must_match equality_regex
+      query.must_match %r{\"tags\"\.\"categories\" = '\{"?working"?\}'}
     end
   end
 
@@ -32,6 +31,11 @@ describe 'Array queries' do
 
       query.must_match overlap_regex
       query.must_match equality_regex
+    end
+
+    it 'works on joins' do
+      query = Person.joins(:hm_tags).where.overlap(tags: { categories: ['working'] }).to_sql
+      query.must_match %r{\"tags\"\.\"categories\" && '\{"?working"?\}'}
     end
   end
 
