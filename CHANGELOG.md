@@ -1,3 +1,9 @@
+## 2.4.0
+
+ * Fixes missing CTEProxy delegate - eidge
+ * Fixes where chain on joins - edpaget
+ * ActiveRecord 4.2 support added - edpaget
+
 ## 2.3.0
 
  * Fixes an issue with `where(table: { column: [] })` was not properly
