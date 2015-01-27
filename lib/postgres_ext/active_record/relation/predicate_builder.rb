@@ -7,7 +7,7 @@ module ActiveRecord
       when Array
         engine = attribute.relation.engine
         column = engine.connection.schema_cache.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s }
-        if column && column.array
+        if column && column.respond_to?(:array) && column.array
           attribute.eq(value)
         else
           values = value.to_a.map {|x| x.is_a?(Base) ? x.id : x}
