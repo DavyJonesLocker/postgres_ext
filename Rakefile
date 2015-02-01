@@ -116,6 +116,8 @@ namespace :db do
       t.string   "categories",         array: true
       t.datetime "created_at"
       t.datetime "updated_at"
+      t.integer  "parent_id"
+      t.string   "type"
     end
 
     puts 'Database migrated'
