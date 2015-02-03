@@ -27,6 +27,13 @@ class Tag < ActiveRecord::Base
   belongs_to :person
 end
 
+class ParentTag < Tag
+end
+
+class ChildTag < Tag
+  belongs_to :parent_tag, foreign_key: :parent_id
+end
+
 DatabaseCleaner.strategy = :deletion
 
 class MiniTest::Spec
