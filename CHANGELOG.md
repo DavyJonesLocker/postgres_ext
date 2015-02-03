@@ -1,3 +1,7 @@
+## 2.4.1
+
+ * Fixes error when creating a join between STI related models - edpaget
+
 ## 2.4.0
 
  * Fixes missing CTEProxy delegate - eidge
