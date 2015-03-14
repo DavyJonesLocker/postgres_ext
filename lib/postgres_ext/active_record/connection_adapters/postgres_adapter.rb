@@ -306,6 +306,7 @@ module ActiveRecord
       def add_extension(extension_name, options={})
         raise UnsupportedFeature.new('Extensions are not support by this version of PostgreSQL') unless supports_extensions?
         execute "CREATE extension IF NOT EXISTS \"#{extension_name}\""
+        @opclasses = nil
       end
 
       def change_table(table_name, options = {})
