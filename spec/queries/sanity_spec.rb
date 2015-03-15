@@ -11,7 +11,8 @@ describe 'Ensure that we don\'t stomp on Active Record\'s queries' do
     it 'generates IN clauses for non array columns' do
       query = Person.where(:id => []).to_sql
 
-      query.should match /IN \(NULL\)/
+      # Depending on the Rails version, 2 different queries are possible
+      query.should match /IN \(NULL\)|1=0/
     end
   end
 end
