@@ -18,7 +18,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'activerecord', '>= 4.0.0'
   gem.add_dependency 'arel', '>= 4.0.1'
-  gem.add_dependency 'pg_array_parser', '~> 0.0.9'
 
   gem.add_development_dependency 'rake', '~> 10.1.0'
   gem.add_development_dependency 'minitest'
