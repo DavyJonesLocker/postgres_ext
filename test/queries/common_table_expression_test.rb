@@ -31,6 +31,34 @@ describe 'Common Table Expression queries' do
     end
   end
 
+  describe '.with(common_table_exression_arel_nodes_as)' do
+    it 'generates an expression with the CTE' do
+      table_def = Arel::Nodes::SqlLiteral.new("update_cte(id, new_lucky)")
+      new_values = "(1,12),(2,3),(3,8)"
+
+      select = Arel::Nodes::SqlLiteral.new( "(VALUES #{new_values})" )
+      with = Arel::Nodes::As.new(table_def, select)
+
+      regex_safe = new_values.gsub("(","\\(").gsub(")","\\)")
+
+      query = Person.with(with).joins('JOIN update_cte ON update_cte.id = people.id')
+      query.to_sql.must_match(/WITH update_cte\(id, new_lucky\) AS \(VALUES #{regex_safe}\) SELECT \"people\".* FROM \"people\" JOIN update_cte ON update_cte.id = people.id/)
+    end
+
+    it 'generates an expression mixed with multiple with calls' do
+      table_def = Arel::Nodes::SqlLiteral.new("update_cte(id, new_lucky)")
+      new_values = "(1,12),(2,3),(3,8)"
+
+      select = Arel::Nodes::SqlLiteral.new( "(VALUES #{new_values})" )
+      with = Arel::Nodes::As.new(table_def, select)
+
+      regex_safe = new_values.gsub("(","\\(").gsub(")","\\)")
+
+      query = Person.with(with).with(lucky_number_seven: Person.where(lucky_number: 7)).joins('JOIN update_cte ON update_cte.id = people.id').joins('JOIN lucky_number_seven ON lucky_number_seven.id = people.id')
+      query.to_sql.must_match(/WITH update_cte\(id, new_lucky\) AS \(VALUES #{regex_safe}\), "lucky_number_seven" AS \(SELECT "people".* FROM "people"(\s+)WHERE "people"."lucky_number" = 7\) SELECT \"people\".* FROM \"people\" JOIN update_cte ON update_cte.id = people.id JOIN lucky_number_seven ON lucky_number_seven.id = people.id/)
+    end
+  end
+
   describe '.from_cte(common_table_expression_hash)' do
     it 'generates an expression with the CTE as the main table' do
       query = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7)).where(id: 5)
