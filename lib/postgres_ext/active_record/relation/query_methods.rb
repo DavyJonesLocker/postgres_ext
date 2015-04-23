@@ -19,7 +19,7 @@ module ActiveRecord
           when Arel::Nodes::In, Arel::Nodes::Equality
             column = left_column(rel) || column_from_association(rel)
             equality_for_hstore(rel) if column.type == :hstore
-            
+
             if column.type == :hstore
               Arel::Nodes::ContainsHStore.new(rel.left, rel.right)
             elsif column.respond_to?(:array) && column.array
@@ -71,7 +71,7 @@ module ActiveRecord
           return if rel.right.is_a?(Hash)
           rel.right = {new_right_name => rel.right }
         end
-        
+
         rel.left.name = rel.left.relation.name.to_sym
         rel.left.relation.name = rel.left.relation.engine.table_name
       end
@@ -111,7 +111,7 @@ module ActiveRecord
         end
       end
     end
-    
+
     # WithChain objects act as placeholder for queries in which #with does not have any parameter.
     # In this case, #with must be chained with #recursive to return a new relation.
     class WithChain
@@ -206,6 +206,8 @@ module ActiveRecord
             end
             Arel::Nodes::As.new Arel::Nodes::SqlLiteral.new("\"#{name.to_s}\""), select
           end
+        when Arel::Nodes::As
+          with_value
         end
       end
       unless with_statements.empty?
