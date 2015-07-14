@@ -106,7 +106,7 @@ module ActiveRecord
           when Arel::Nodes::Equality
             Arel::Nodes::Equality.new(rel.right, Arel::Nodes::NamedFunction.new(function_name, [rel.left]))
           else
-            raise ArgumentError, "Invalid argument for .where.#{funciton_name.downcase}(), got #{rel.class}"
+            raise ArgumentError, "Invalid argument for .where.#{function_name.downcase}(), got #{rel.class}"
           end
         end
       end
