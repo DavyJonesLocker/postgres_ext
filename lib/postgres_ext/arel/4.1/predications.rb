@@ -14,6 +14,10 @@ module Arel
       Nodes::Contains.new self, other
     end
 
+    def contained_in_array(other)
+      Nodes::ContainedInArray.new self, other
+    end
+
     def contains_or_equals(other)
       Nodes::ContainsEquals.new self, other
     end
