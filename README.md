@@ -47,7 +47,7 @@ To work on postgres\_ext locally, follow these steps:
  1. Run `bundle install`, this will install (almost) all the development
     dependencies
  2. Run `gem install byebug` (not a declared dependency to not break CI)
- 3. Run `bundle exec rake setup`, this will set up the `.env` file necessary to run
+ 3. Run `bundle exec rake db:setup`, this will set up the `.env` file necessary to run
     the tests and set up the database
  4. Run `bundle exec rake db:create`, this will create the test database
  5. Run `bundle exec rake db:migrate`, this will set up the database tables required
