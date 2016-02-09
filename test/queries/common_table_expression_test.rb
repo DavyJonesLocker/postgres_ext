@@ -80,4 +80,12 @@ describe 'Common Table Expression queries' do
       people.model_name.must_equal 'Person'
     end
   end
+
+  describe '.merge(Model.with(common_table_expression_hash))' do
+    it 'keeps the CTE in the merged request' do
+      query = Person.all.merge(Person.with(lucky_number_seven: Person.where(lucky_number: 7))).joins('JOIN lucky_number_seven ON lucky_number_seven.id = people.id')
+      query.to_sql.must_match(/WITH "lucky_number_seven" AS \(SELECT "people".* FROM "people"(\s+)WHERE "people"."lucky_number" = 7\) SELECT "people".* FROM "people" JOIN lucky_number_seven ON lucky_number_seven.id = people.id/)
+    end
+  end
+
 end
