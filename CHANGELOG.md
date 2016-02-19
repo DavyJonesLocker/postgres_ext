@@ -1,3 +1,7 @@
+## 3.0.0
+
+ * Fixes merging queries with CTE - chitux
+
 ## 2.4.1
 
  * Fixes error when creating a join between STI related models - edpaget
