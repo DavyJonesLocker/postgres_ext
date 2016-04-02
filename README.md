@@ -2,9 +2,9 @@
 
 Adds missing native PostgreSQL data types to ActiveRecord and convenient querying extensions for ActiveRecord and Arel for Rails 4.x
 
-[![Build Status](https://secure.travis-ci.org/dockyard/postgres_ext.png?branch=master)](http://travis-ci.org/dockyard/postgres_ext)
+[![Build Status](https://secure.travis-ci.org/DockYard/postgres_ext.png?branch=master)](https://travis-ci.org/DockYard/postgres_ext)
 [![Code Climate](https://codeclimate.com/github/dockyard/postgres_ext.png)](https://codeclimate.com/github/dockyard/postgres_ext)
-[![Gem Version](https://badge.fury.io/rb/postgres_ext.png)](http://badge.fury.io/rb/postgres_ext)
+[![Gem Version](https://badge.fury.io/rb/postgres_ext.png)](https://badge.fury.io/rb/postgres_ext)
 
 ## Looking for help? ##
 
