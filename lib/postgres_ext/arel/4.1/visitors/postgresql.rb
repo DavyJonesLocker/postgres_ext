@@ -6,20 +6,18 @@ module Arel
       private
 
       def visit_Array o, a
-        begin
-          column = case a.try(:relation)
-                   when Arel::Nodes::TableAlias, NilClass
-                   # noop Prevent from searching for table alias name in schema cache
-                   # which won't exist for aliased table when used with Single Table
-                   # Inheritance. see dockyard/postgres_ext#154
-                   else
-                     a.relation.engine.connection.schema_cache.columns(a.relation.name)
-                       .find { |col| col.name == a.name.to_s }
-                   end
-        rescue ActiveRecord::StatementInvalid
-          # This occurs if we attempt to lookup a table that doesn't actually exist,
-          #   which can happen when using aliases
-        end
+        column = case a.try(:relation)
+                 when Arel::Nodes::TableAlias, NilClass
+                 # noop Prevent from searching for table alias name in schema cache
+                 # which won't exist for aliased table when used with Single Table
+                 # Inheritance. see dockyard/postgres_ext#154
+                 else
+                  cache = a.relation.engine.connection.schema_cache
+                  if cache.table_exists? a.relation.name
+                    cache.columns(a.relation.name).find { |col| col.name == a.name.to_s }
+                  end
+                 end
+
         if column && column.respond_to?(:array) && column.array
           quoted o, a
         else

@@ -5,12 +5,13 @@ module ActiveRecord
     def self.build(attribute, value)
       case value
       when Array
-        engine = attribute.relation.engine
-        begin
-          column = engine.connection.schema_cache.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s }
-        rescue ActiveRecord::StatementInvalid
-          # This occurs if we attempt to lookup a table that doesn't actually exist,
-          #   which can happen when using aliases
+        column = case attribute.try(:relation)
+          when Arel::Nodes::TableAlias, NilClass
+          else
+            cache = attribute.relation.engine.connection.schema_cache
+            if cache.table_exists? attribute.relation.name
+              cache.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s }
+            end
         end
         if column && column.respond_to?(:array) && column.array
           attribute.eq(value)
