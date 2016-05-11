@@ -5,8 +5,14 @@ module ActiveRecord
     def self.build(attribute, value)
       case value
       when Array
-        engine = attribute.relation.engine
-        column = engine.connection.schema_cache.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s }
+        column = case attribute.try(:relation)
+                 when Arel::Nodes::TableAlias, NilClass
+                 else
+                   cache = attribute.relation.engine.connection.schema_cache
+                   if cache.table_exists? attribute.relation.name
+                     cache.columns(attribute.relation.name).detect{ |col| col.name.to_s == attribute.name.to_s } 
+                   end
+                 end
         if column && column.respond_to?(:array) && column.array
           attribute.eq(value)
         else
@@ -14,19 +20,19 @@ module ActiveRecord
           ranges, values = values.partition {|v| v.is_a?(Range)}
 
           values_predicate = if values.include?(nil)
-            values = values.compact
+                               values = values.compact
 
-            case values.length
-            when 0
-              attribute.eq(nil)
-            when 1
-              attribute.eq(values.first).or(attribute.eq(nil))
-            else
-              attribute.in(values).or(attribute.eq(nil))
-            end
-          else
-            attribute.in(values)
-          end
+                               case values.length
+                               when 0
+                                 attribute.eq(nil)
+                               when 1
+                                 attribute.eq(values.first).or(attribute.eq(nil))
+                               else
+                                 attribute.in(values).or(attribute.eq(nil))
+                               end
+                             else
+                               attribute.in(values)
+                             end
 
           array_predicates = ranges.map { |range| attribute.in(range) }
           array_predicates << values_predicate
