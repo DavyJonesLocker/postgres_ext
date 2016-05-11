@@ -12,10 +12,12 @@ module Arel
                  # which won't exist for aliased table when used with Single Table
                  # Inheritance. see dockyard/postgres_ext#154
                  else
-                   a.relation.engine.connection.schema_cache.columns(a.relation.name)
-                     .find { |col| col.name == a.name.to_s }
+                  cache = a.relation.engine.connection.schema_cache
+                  if cache.table_exists? a.relation.name
+                    cache.columns(a.relation.name).find { |col| col.name == a.name.to_s }
+                  end
                  end
-        
+
         if column && column.respond_to?(:array) && column.array
           quoted o, a
         else
@@ -25,14 +27,14 @@ module Arel
 
       def visit_Arel_Nodes_Contains o, a = nil
         left_column = o.left.relation.engine.columns.find { |col| col.name == o.left.name.to_s }
-        
+
         if left_column && (left_column.type == :hstore || (left_column.respond_to?(:array) && left_column.array))
           "#{visit o.left, a} @> #{visit o.right, o.left}"
         else
           "#{visit o.left, a} >> #{visit o.right, o.left}"
         end
       end
-      
+
       def visit_Arel_Nodes_ContainedWithin o, a = nil
         "#{visit o.left, a} << #{visit o.right, o.left}"
       end
