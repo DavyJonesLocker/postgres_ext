@@ -4,13 +4,13 @@ module Arel
   module Visitors
     class PostgreSQL
       private
-      
+
       def visit_Arel_Nodes_ContainedWithin o, collector
-        infix_value o, collector, " << " 
+        infix_value o, collector, " << "
       end
 
       def visit_Arel_Nodes_ContainedWithinEquals o, collector
-        infix_value o, collector, " <<= " 
+        infix_value o, collector, " <<= "
       end
 
       def visit_Arel_Nodes_Contains o, collector
@@ -21,24 +21,32 @@ module Arel
         if left_column && (left_column.type == :hstore || (left_column.respond_to?(:array) && left_column.array))
           infix_value o, collector, " @> "
         else
-          infix_value o, collector, " >> " 
+          infix_value o, collector, " >> "
         end
       end
 
       def visit_Arel_Nodes_ContainsINet o, collector
-        infix_value o, collector, " >> " 
+        infix_value o, collector, " >> "
       end
 
       def visit_Arel_Nodes_ContainsHStore o, collector
         infix_value o, collector, " @> "
       end
-      
+
+      def visit_Arel_Nodes_ContainedInHStore o, collector
+        infix_value o, collector, " <@ "
+      end
+
       def visit_Arel_Nodes_ContainsArray o, collector
         infix_value o, collector, " @> "
       end
-      
+
+      def visit_Arel_Nodes_ContainedInArray o, collector
+        infix_value o, collector, " <@ "
+      end
+
       def visit_Arel_Nodes_ContainsEquals o, collector
-        infix_value o, collector, " >>= " 
+        infix_value o, collector, " >>= "
       end
 
       def visit_Arel_Nodes_Overlap o, collector

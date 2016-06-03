@@ -47,8 +47,16 @@ module Arel
         "#{visit o.left, a} @> #{visit o.right, o.left}"
       end
 
+      def visit_Arel_Nodes_ContainedInArray o, a = nil
+        "#{visit o.left, a} <@ #{visit o.right, o.left}"
+      end
+
       def visit_Arel_Nodes_ContainsHStore o, a = nil
         "#{visit o.left, a} @> #{visit o.right, o.left}"
+      end
+
+      def visit_Arel_Nodes_ContainedInHStore o, a = nil
+        "#{visit o.left, a} <@ #{visit o.right, o.left}"
       end
 
       def visit_Arel_Nodes_ContainsINet o, a = nil

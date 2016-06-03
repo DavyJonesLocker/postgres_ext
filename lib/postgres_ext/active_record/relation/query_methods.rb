@@ -33,6 +33,26 @@ module ActiveRecord
         end
       end
 
+      def contained_in_array(opts, *rest)
+        build_where_chain(opts, rest) do |rel|
+          case rel
+          when Arel::Nodes::In, Arel::Nodes::Equality
+            column = left_column(rel) || column_from_association(rel)
+            equality_for_hstore(rel) if column.type == :hstore
+
+            if column.type == :hstore
+              Arel::Nodes::ContainedInHStore.new(rel.left, rel.right)
+            elsif column.respond_to?(:array) && column.array
+              Arel::Nodes::ContainedInArray.new(rel.left, rel.right)
+            else
+              Arel::Nodes::ContainsINet.new(rel.left, rel.right)
+            end
+          else
+            raise ArgumentError, "Invalid argument for .where.overlap(), got #{rel.class}"
+          end
+        end
+      end
+
       def contains_or_equals(opts, *rest)
         substitute_comparisons(opts, rest, Arel::Nodes::ContainsEquals, 'contains_or_equals')
       end

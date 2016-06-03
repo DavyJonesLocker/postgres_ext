@@ -14,6 +14,10 @@ module Arel
       Nodes::Contains.new self, Nodes.build_quoted(other, self)
     end
 
+    def contained_in_array(other)
+      Nodes::ContainedInArray.new self, Nodes.build_quoted(other, self)
+    end
+
     def contains_or_equals(other)
       Nodes::ContainsEquals.new self, Nodes.build_quoted(other, self)
     end

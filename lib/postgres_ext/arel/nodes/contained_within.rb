@@ -12,7 +12,7 @@ module Arel
     class Contains < Arel::Nodes::Binary
       def operator; :>> end
     end
-    
+
     class ContainsINet < Arel::Nodes::Binary
       def operator; :>> end
     end
@@ -20,11 +20,19 @@ module Arel
     class ContainsHStore < Arel::Nodes::Binary
       def operator; :"@>" end
     end
-    
+
+    class ContainedInHStore < Arel::Nodes::Binary
+      def operator; :"<@" end
+    end
+
     class ContainsArray < Arel::Nodes::Binary
       def operator; :"@>" end
     end
-    
+
+    class ContainedInArray < Arel::Nodes::Binary
+      def operator; :"<@" end
+    end
+
     class ContainsEquals < Arel::Nodes::Binary
       def operator; :">>=" end
     end
