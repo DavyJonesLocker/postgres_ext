@@ -117,8 +117,8 @@ User.where(user_arel[:tags].overlap(['one','two']))
 
 ### @> - Array Contains operator
 
-PostgreSQL has a contains (`@>`) operator for querying whether all the
-elements of an array are within another.
+PostgreSQL has a contains (`@>`) operator for querying whether or not
+a column contain all of the elements of a given array.
 
 ```sql
 ARRAY[1,2,3] @> ARRAY[3,4]
@@ -132,7 +132,8 @@ Postgres\_ext extends the `ActiveRecord::Relation.where` method by
 adding a `contains` method. To make a contains query, you can do:
 
 ```ruby
-User.where.contains(:nick_names => ['Bob', 'Fred'])
+# Users whose hobbies include both Ice Fishing and Basket Weaving
+User.where.contains(:hobbies => ['Ice Fishing', 'Basket Weaving'])
 ```
 
 Postgres\_ext overrides `contains`, an [Arel](https://github.com/rails/arel)
@@ -145,6 +146,27 @@ user_arel = User.arel_table
 # Execute the query
 User.where(user_arel[:tags].contains(['one','two']))
 # => SELECT "users".* FROM "users" WHERE "users"."tags" @> '{"one","two"}'
+```
+
+### <@ - Array Is Contained By operator
+
+PostgreSQL has an is contained by (`<@`) operator for querying whether or not
+the elements in a column are contained within a given array.
+
+```sql
+ARRAY[3,4] <@ ARRAY[1,2,3]
+-- f
+
+ARRAY[2,3] <@ ARRAY[1,2,3]
+-- t
+```
+
+Postgres\_ext extends the `ActiveRecord::Relation.where` method by
+adding a `contained_in_array` method. For example:
+
+```ruby
+# Users whose hobbies are limited to Ice Fishing or Basket Weaving
+User.where.contained_in_array(:hobbies => ['Ice Fishing', 'Basket Weaving'])
 ```
 
 ### ANY or ALL functions
