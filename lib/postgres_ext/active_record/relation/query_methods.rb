@@ -89,13 +89,12 @@ module ActiveRecord
         end
 
         rel.left.name = rel.left.relation.name.to_sym
-        rel.left.relation.name = rel.left.relation.engine.table_name
+        rel.left.relation.name = @scope.klass.table_name
       end
 
       def assoc_from_related_table(rel)
-        engine = rel.left.relation.engine
-        engine.reflect_on_association(rel.left.relation.name.to_sym) ||
-          engine.reflect_on_association(rel.left.relation.name.singularize.to_sym)
+        @scope.klass.reflect_on_association(rel.left.relation.name.to_sym) ||
+          @scope.klass.reflect_on_association(rel.left.relation.name.singularize.to_sym)
       end
 
       def substitute_comparisons(opts, rest, arel_node_class, method)
