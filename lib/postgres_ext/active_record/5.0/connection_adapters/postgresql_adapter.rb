@@ -1,1 +1,0 @@
-require 'postgres_ext/active_record/5.0/connection_adapters/postgresql/column'
