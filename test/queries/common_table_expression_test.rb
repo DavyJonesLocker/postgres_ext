@@ -22,6 +22,14 @@ describe 'Common Table Expression queries' do
       query.to_sql.must_match(/WITH RECURSIVE "lucky_number_seven" AS \(SELECT "people".* FROM "people"(\s+)WHERE "people"."lucky_number" = 7\) SELECT "people".* FROM "people" JOIN lucky_number_seven ON lucky_number_seven.id = people.id/)
     end
 
+    it 'preserves recursive expression during merges' do
+      merge_recursive_in   = Tag.all.merge(Tag.recursive)
+      merge_recursive_in.to_sql.must_match(/WITH RECURSIVE "recursive" AS \(SELECT "tags".* FROM "tags"(\s+)WHERE "tags"."tag" = 'tag'\) SELECT "tags".* FROM "tags"/)
+
+      merge_into_recursive = Tag.recursive.merge(Tag.all)
+      merge_into_recursive.to_sql.must_match(/WITH RECURSIVE "recursive" AS \(SELECT "tags".* FROM "tags"(\s+)WHERE "tags"."tag" = 'tag'\) SELECT "tags".* FROM "tags"/)
+    end
+
     it 'accepts Arel::SelectMangers' do
       arel_table = Arel::Table.new 'test'
       arel_manager = arel_table.project arel_table[:foo]
