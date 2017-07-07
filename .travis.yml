@@ -4,12 +4,25 @@ cache: bundler
 rvm:
 - 2.0.0
 - 2.1.2
-- 2.2.0
+- 2.2.2
+- 2.3.0
+- 2.3.1
+- ruby-head
 
 gemfile:
   - gemfiles/Gemfile.activerecord-4.0.x
   - gemfiles/Gemfile.activerecord-4.1.x
   - gemfiles/Gemfile.activerecord-4.2.x
+  - gemfiles/Gemfile.activerecord-5.0.x
+
+matrix:
+  exclude:
+    - rvm: 2.0.0
+      gemfile: gemfiles/Gemfile.activerecord-5.0.x
+    - rvm: 2.1.2
+      gemfile: gemfiles/Gemfile.activerecord-5.0.x
+  allow_failures:
+    - rvm: ruby-head
 
 env: DATABASE_URL=postgres://postgres@localhost/postgres_ext_test
 

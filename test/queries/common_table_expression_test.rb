@@ -61,7 +61,7 @@ describe 'Common Table Expression queries' do
 
   describe '.from_cte(common_table_expression_hash)' do
     it 'generates an expression with the CTE as the main table' do
-      query = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7)).where(id: 5)
+      query = Person.from_cte('lucky_number_seven', Person.where(lucky_number: 7)).where(lucky_number_seven: { id: 5 })
       query.to_sql.must_match(/WITH "lucky_number_seven" AS \(SELECT "people".* FROM "people"(\s+)WHERE "people"."lucky_number" = 7\) SELECT "lucky_number_seven".* FROM "lucky_number_seven"(\s+)WHERE "lucky_number_seven"."id" = 5/)
     end
 

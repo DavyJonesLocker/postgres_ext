@@ -54,7 +54,8 @@ To work on postgres\_ext locally, follow these steps:
     by the test
  6. Run `BUNDLE_GEMFILE='gemfiles/Gemfile.activerecord-4.0.x' bundle install --quiet` to create the Gemfile.lock for 4.0.
  7. Run `BUNDLE_GEMFILE='gemfiles/Gemfile.activerecord-4.1.x' bundle install --quiet` to create the Gemfile.lock for 4.1.
- 8. Run `bundle exec rake test:all` to run tests against all supported versions of Active Record
+ 8. Run `BUNDLE_GEMFILE='gemfiles/Gemfile.activerecord-4.2.x' bundle install --quiet` to create the Gemfile.lock for 4.2.
+ 9. Run `bundle exec rake test:all` to run tests against all supported versions of Active Record
 
 ## Authors
 

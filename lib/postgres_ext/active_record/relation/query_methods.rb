@@ -71,10 +71,6 @@ module ActiveRecord
         col.name == rel.left.name.to_s || col.name == rel.left.relation.name.to_s
       end
 
-      def left_column(rel)
-        rel.left.relation.engine.columns.find { |col| find_column(col, rel) }
-      end
-
       def column_from_association(rel)
         if assoc = assoc_from_related_table(rel)
           column = assoc.klass.columns.find { |col| find_column(col, rel) }
@@ -93,20 +89,12 @@ module ActiveRecord
         end
 
         rel.left.name = rel.left.relation.name.to_sym
-        rel.left.relation.name = rel.left.relation.engine.table_name
+        rel.left.relation.name = @scope.klass.table_name
       end
 
       def assoc_from_related_table(rel)
-        engine = rel.left.relation.engine
-        engine.reflect_on_association(rel.left.relation.name.to_sym) ||
-          engine.reflect_on_association(rel.left.relation.name.singularize.to_sym)
-      end
-
-      def build_where_chain(opts, rest, &block)
-        where_value = @scope.send(:build_where, opts, rest).map(&block)
-        @scope.references!(PredicateBuilder.references(opts)) if Hash === opts
-        @scope.where_values += where_value
-        @scope
+        @scope.klass.reflect_on_association(rel.left.relation.name.to_sym) ||
+          @scope.klass.reflect_on_association(rel.left.relation.name.singularize.to_sym)
       end
 
       def substitute_comparisons(opts, rest, arel_node_class, method)
