@@ -1,3 +1,7 @@
+# This Gem is No Longer Maintained
+
+It still work and be useful to you for Rails versions < 5, but will not be updated to be compatible with Rails version > 5. 
+
 # PostgresExt
 
 Adds missing native PostgreSQL data types to ActiveRecord and convenient querying extensions for ActiveRecord and Arel for Rails 4.x
