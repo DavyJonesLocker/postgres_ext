@@ -201,6 +201,11 @@ module ActiveRecord
       self
     end
 
+    def recursive!(value)
+      self.recursive_value = value
+      self
+    end
+
     def build_arel_with_extensions
       arel = build_arel_without_extensions
 

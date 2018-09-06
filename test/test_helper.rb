@@ -25,6 +25,8 @@ end
 
 class Tag < ActiveRecord::Base
   belongs_to :person
+
+  scope :recursive, -> { with.recursive(recursive: Tag.where(tag: 'tag')) }
 end
 
 class ParentTag < Tag
