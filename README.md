@@ -1,6 +1,8 @@
 # This Gem is No Longer Maintained
 
-It still works and may be useful to you for Rails versions < 5, but will not be updated to be compatible with Rails version > 5. 
+It still works and may be useful to you for Rails versions < 5, but will not be updated to be compatible with Rails version > 5.
+
+If you need support for Rails > 5 consider using [ActiveRecordExtended](https://github.com/georgekaraszi/ActiveRecordExtended)
 
 # PostgresExt
 
